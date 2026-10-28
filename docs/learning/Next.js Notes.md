@@ -33,6 +33,12 @@ Running notes on concepts as they appear in the project. One heading per concept
 ## `server-only`
 - `import "server-only"` makes the build fail if a client component imports the module. Guards against shipping DB code and secrets to the browser. Used in `src/db/queries/home.ts`. Not in `src/db/index.ts`, because plain Node scripts import it and the package throws outside the React Server condition.
 
+## Testing
+- Test types: unit (one function, hook or component), component, integration, end-to-end (real browser, user flow), snapshot.
+- Vitest cannot render async Server Components yet. Test their pure helpers with Vitest and the rendered page with Playwright.
+- Run E2E against `next build && next start`, not `next dev`: prerendering and `"use cache"` only behave like production in a production build.
+- Query elements the way users find them: `getByRole(..., { name })` first, text second, test ids last.
+
 ## To write up when encountered
 - Rendering modes and how Next decides static vs dynamic.
 - Server Actions and `useActionState`.

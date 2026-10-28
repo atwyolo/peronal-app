@@ -24,6 +24,7 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[ADR-0004 Hand-written Admin]]
 - [[ADR-0005 UI Library]]
 - [[ADR-0006 Forms]]
+- [[ADR-0007 Testing]]
 
 ## Learning
 - [[Next.js Notes]] — running notes on App Router concepts as they come up
