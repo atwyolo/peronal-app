@@ -30,6 +30,7 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 
 ## Journal
 - [[2026-10-26]] — kickoff: decisions, scaffold
+- [[2026-10-28]] — database layer for the home page
 
 ## Templates
 - [[ADR Template]] · [[Journal Template]] · [[Learning Note Template]]

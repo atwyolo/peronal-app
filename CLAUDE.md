@@ -11,7 +11,7 @@ Personal portfolio site. Primary goal besides shipping: the owner is learning Ne
 
 - Next.js 16 App Router, React 19, TypeScript strict, `src/` layout, `@/*` alias, npm.
 - Styling: Tailwind v4 + shadcn/ui (Base UI, style `base-nova`). Components live in `src/components/ui` and are owned code.
-- Data: Neon Postgres via Vercel Marketplace, Drizzle ORM with `@neondatabase/serverless` (HTTP driver). Local dev uses a separate Neon branch.
+- Data: Neon Postgres via Vercel Marketplace, Drizzle ORM with `@neondatabase/serverless` (HTTP driver). One database for local dev, previews and production; schema synced with `drizzle-kit push`, no migration files (see ADR-0002).
 - i18n: `next-intl` for UI strings. DB content is localized through **translation tables** (`<entity>_translations` with `locale` column), never jsonb. Locales: `en` (default, fallback), `ru`, `pt`, `es`, `de`, `fr`, `ja`, `pl`.
 - Forms: React Hook Form + Zod (`zodResolver`). Zod schemas are the single source of validation on both client and server.
 - Admin: hand-written under `/admin`. Auth.js v5 credentials login, routes protected in proxy. Rich text: Tiptap 3, stored as JSON, rendered server-side on the public site.

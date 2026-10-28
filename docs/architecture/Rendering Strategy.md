@@ -1,6 +1,6 @@
 ---
 tags: [architecture]
-updated: 2026-10-26
+updated: 2026-10-28
 ---
 
 # Rendering Strategy
@@ -9,7 +9,7 @@ Deliberately mix rendering modes so each one is learned in practice. Every page 
 
 | Route | Mode | Why |
 |---|---|---|
-| `/[locale]` (home) | static | content changes rarely; built once per locale |
+| `/[locale]` (home) | static, DB-backed: `"use cache"` + `cacheLife("max")` + `cacheTag` per entity; admin calls `updateTag` | content changes rarely; built once per locale, refreshed only when edited |
 | `/[locale]/about` | static | same |
 | `/[locale]/projects` | ISR (`revalidate`) + on-demand `revalidateTag` from admin | DB-backed, but edits are rare |
 | `/[locale]/blog` | ISR | list of posts |
@@ -17,6 +17,8 @@ Deliberately mix rendering modes so each one is learned in practice. Every page 
 | `/[locale]/contact` | dynamic (Server Action) | form submission |
 | `/admin/**` | dynamic, no caching | authenticated, always fresh |
 
-Notes to expand: streaming with `Suspense` on the blog list, `loading.tsx` / `error.tsx` per segment, `unstable_cache` vs `fetch` caching in Next 16 (check `node_modules/next/dist/docs/` before relying on memory).
+The project runs with `cacheComponents: true`, so "ISR" means cached functions with tags, not a route-level `revalidate` export. See [[Next.js Notes]] for both caching models.
+
+Notes to expand: streaming with `Suspense` on the blog list, `loading.tsx` / `error.tsx` per segment.
 
 Related: [[ADR-0001 Framework and Rendering]], [[Next.js Notes]]

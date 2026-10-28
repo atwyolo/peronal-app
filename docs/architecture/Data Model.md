@@ -1,33 +1,106 @@
 ---
 tags: [architecture, database]
-updated: 2026-10-26
+updated: 2026-10-28
 ---
 
 # Data Model
 
-Draft — finalized in Stage 3. Pattern: every entity with user-facing text has a sibling translation table. See [[ADR-0003 Content Localization]].
+Agreed for the home page on 2026-10-28; the rest stays a draft until its stage. Pattern: every entity with user-facing text has a sibling translation table. See [[ADR-0003 Content Localization]] and [[ADR-0002 Database and ORM]].
 
-## Entities
+## Conventions
 
-- `profile` (singleton) + `profile_translations`: headline, bio (rich text JSON), location.
-- `projects` + `project_translations`: slug, url, repo_url, year, featured, sort; title, summary, body (rich text).
-- `skills` + `skill_translations`: category, level, sort; name.
-- `experience` + `experience_translations`: company, start_date, end_date, sort; role, description (rich text).
-- `posts` + `post_translations`: slug, published_at, status; title, excerpt, body (rich text). `post_views` counter.
-- `contact_messages`: name, email, message, locale, created_at, read_at.
-- `users`: admin accounts for Auth.js credentials (email, password_hash).
+- Every table has `id`, `created_at`, `updated_at`. Lists the owner orders by hand have `sort`.
+- Store facts, not formatted strings: dates as `date`, phone as E.164. Display strings (periods, durations, `wa.me` links) are computed at render time with `Intl` / next-intl.
+- Files live in Vercel Blob (public store). The database keeps only the blob URL; `del(url)` removes the file when it is replaced.
+- Rich text is Tiptap JSON in `jsonb`. It is a document, not a localization strategy.
+- No alt-text fields: each image uses an existing text as alt (see per entity).
+
+## Home page entities
+
+### `profile` (singleton, `CHECK (id = 1)`)
+| Column | Type | Notes |
+|---|---|---|
+| `photo_url` | text | Blob URL. Alt = translated `name`. LCP image. |
+| `whatsapp_phone` | text | E.164, e.g. `+37493310039`. Link and display format are derived. Editable in admin. |
+| `email` | text | Editable in admin. Mailbox name for the button is derived. |
+| `linkedin_url` | text | Editable in admin. |
+
+### `profile_translations`
+| Column | Type | Notes |
+|---|---|---|
+| `name` | text | |
+| `headline` | text | "Senior Frontend Software Engineer, 8+ years" |
+| `about_short` | jsonb | Home page About on mobile and desktop: lead, results title, bullet list. |
+| `cv_url` | text, nullable | Blob URL of the PDF for this locale. Served with the blob `downloadUrl`, because `<a download>` is ignored cross-origin. |
+
+`about_full` for the About page is deferred until that page is planned.
+
+### `experience`
+| Column | Type | Notes |
+|---|---|---|
+| `slug` | text unique | Anchor for "Learn more" (`/about#glovo`). |
+| `company` | text | Not translated. Also the image alt. |
+| `start_date` | date | First day of the month. |
+| `end_date` | date, nullable | `null` = present. Duration is computed. |
+| `image_url` | text, nullable | Blob URL; `null` renders the striped placeholder. |
+| `sort` | integer | |
+
+### `experience_translations`
+| Column | Type | Notes |
+|---|---|---|
+| `role` | text, nullable | Not shown on the home card; needed by the About page. |
+| `description_short` | jsonb | Card text, up to 3 sentences. Marks only: bold, italic, link. |
+| `description_full` | jsonb, nullable | Detailed text for the About page. |
+
+### `experience_skills` (many-to-many)
+`experience_id`, `skill_id`, `sort`. 3–5 skills per card. Primary key `(experience_id, skill_id)`.
+
+### `skill_domains` + `skill_domain_translations`
+`skill_domains`: `key` (unique, e.g. `core`), `sort`. Translations: `label`. Replaces the hard-coded categories in messages.
+
+### `skills` (no translation table: tech names are not translated)
+| Column | Type | Notes |
+|---|---|---|
+| `name` | text unique | |
+| `level` | smallint | `CHECK (level BETWEEN 1 AND 10)` |
+| `domain_id` | fk → `skill_domains` | Exactly one domain per skill. |
+| `main` | boolean, default false | `true` = shown as a hero chip. Chips are ordered by `sort`. |
+| `sort` | integer | Explorer order: level desc, then `sort`, then `name`. |
+
+### `posts`
+| Column | Type | Notes |
+|---|---|---|
+| `slug` | text unique | One English slug for all locales. |
+| `status` | enum `draft` / `published` | |
+| `published_at` | timestamptz, nullable | Set on publish; shown on cards. |
+| `cover_url` | text, nullable | Blob URL. Alt = translated `title`. |
+
+### `post_translations`
+| Column | Type | Notes |
+|---|---|---|
+| `title` | text | |
+| `excerpt` | jsonb | Card text, 2–3 sentences. |
+| `body` | jsonb, nullable | Full post (Stage 4). Inline images are Blob URLs inside the JSON. |
+| `tags` | text[] | Free-form, per locale, not linked to `skills`. Admin edits them as a comma-separated input. |
 
 ## Translation table shape
 
 ```
 <entity>_translations
-  id            serial pk
   <entity>_id   fk → <entity>.id on delete cascade
-  locale        text  (enum of supported locales)
-  ...fields
-  unique (<entity>_id, locale)
+  locale        locale enum
+  ...fields     nullable
+  primary key (<entity>_id, locale)
+  check: locale <> 'en' or (required fields are not null)
 ```
 
-Fallback: query the requested locale, fall back to `en` per row when missing. Admin shows a "falls back to English" badge for untranslated fields.
+The pair `(<entity>_id, locale)` is the natural key, so it is the primary key; a surrogate `id` would add nothing. The check constraint makes the `en` row complete, which is what lets queries treat fallback values as non-null.
 
-Rich text is stored as Tiptap JSON (`jsonb` is fine *here*: it is a document, not a localization strategy).
+**Fallback is per field, not per row.** The `en` row is complete; other locales may leave any field `null`. A query joins the requested locale and `en` and takes `coalesce(requested.field, en.field)`. Example: `ja` has a title but no `cv_url` → the Japanese title and the English CV.
+
+## Later stages (draft)
+
+- `projects` + `project_translations`: slug, url, repo_url, year, featured, sort; title, summary, body (rich text).
+- `post_views`: view counter per post (Stage 4).
+- `contact_messages`: name, email, message, locale, created_at, read_at (Stage 5).
+- `users`: admin accounts for Auth.js credentials (email, password_hash) (Stage 6).
