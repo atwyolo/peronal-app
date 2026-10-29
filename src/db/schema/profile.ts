@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { check, integer, jsonb, pgTable, primaryKey, text } from "drizzle-orm/pg-core";
-import type { RichTextDoc } from "../../shared/lib/rich-text";
+import type { RichTextDoc } from "@/shared/lib/rich-text";
 import { localeEnum, timestamps, translationOf } from "./common";
 
 /** Singleton: the check constraint guarantees there is never a second row. */
@@ -27,6 +27,8 @@ export const profileTranslations = pgTable(
     name: text(),
     headline: text(),
     aboutShort: jsonb().$type<RichTextDoc>(),
+    /** Plain-text page description for search engines and link previews, ~160 characters max. */
+    metaDescription: text(),
     /** Per-locale CV. Null falls back to the English one. */
     cvUrl: text(),
     ...timestamps,
@@ -35,7 +37,7 @@ export const profileTranslations = pgTable(
     primaryKey({ columns: [t.profileId, t.locale] }),
     check(
       "profile_translations_en_complete",
-      sql`${t.locale} <> 'en' or (${t.name} is not null and ${t.headline} is not null and ${t.aboutShort} is not null)`,
+      sql`${t.locale} <> 'en' or (${t.name} is not null and ${t.headline} is not null and ${t.aboutShort} is not null and ${t.metaDescription} is not null)`,
     ),
   ],
 );

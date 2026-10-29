@@ -41,6 +41,8 @@ export type HomeProfile = {
   photoUrl: string | null;
   cvUrl: string | null;
   aboutShort: RichTextDoc;
+  /** Plain text for `<meta name="description">` and Open Graph. */
+  metaDescription: string;
   heroSkills: string[];
   contacts: {
     whatsapp: { href: string; display: string };
@@ -68,6 +70,7 @@ export async function getProfile(locale: Locale): Promise<HomeProfile> {
         name: localized(tr.name, en.name),
         headline: localized(tr.headline, en.headline),
         aboutShort: localized(tr.aboutShort, en.aboutShort),
+        metaDescription: localized(tr.metaDescription, en.metaDescription),
         cvUrl: localizedOptional(tr.cvUrl, en.cvUrl),
       })
       .from(profile)
@@ -88,6 +91,7 @@ export async function getProfile(locale: Locale): Promise<HomeProfile> {
     photoUrl: row.photoUrl,
     cvUrl: row.cvUrl,
     aboutShort: row.aboutShort,
+    metaDescription: row.metaDescription,
     heroSkills: heroSkills.map((s) => s.name),
     contacts: {
       whatsapp: {

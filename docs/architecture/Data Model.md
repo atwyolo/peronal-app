@@ -31,6 +31,7 @@ Agreed for the home page on 2026-10-28; the rest stays a draft until its stage. 
 | `name` | text | |
 | `headline` | text | "Senior Frontend Software Engineer, 8+ years" |
 | `about_short` | jsonb | Home page About on mobile and desktop: lead, results title, bullet list. |
+| `meta_description` | text | Plain-text page description for `<meta name="description">` and Open Graph, ~160 characters (validated by Zod in the admin, not in the database). Required in `en` (added 2026-10-29). |
 | `cv_url` | text, nullable | Blob URL of the PDF for this locale. Served with the blob `downloadUrl`, because `<a download>` is ignored cross-origin. |
 
 `about_full` for the About page is deferred until that page is planned.

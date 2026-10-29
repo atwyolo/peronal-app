@@ -71,6 +71,8 @@ export const profile = {
         "At Sony PlayStation, I helped build an in-game notification system from scratch, hired and onboarded 3 developers, and brought test coverage to 95%.",
       ]),
     ),
+    metaDescription:
+      "I'm a Senior Frontend Engineer with 8+ years of commercial experience in React and Next.js, most recently at Glovo, Sony PlayStation and EPAM.",
     cvUrl: null, // TODO(owner): upload the CV PDF to Vercel Blob
   },
 };
