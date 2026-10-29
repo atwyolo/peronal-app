@@ -31,7 +31,7 @@ The `superpowers` plugin is enabled for this project (`.claude/settings.json`). 
 
 Project rules win where the plugin's defaults differ:
 
-- **No commits, branches or worktrees.** The owner manages git. Skip every "commit" step in specs and plans, do not run `using-git-worktrees` or `finishing-a-development-branch`; work in the current checkout and end by reporting the delta for the owner to commit.
+- **No commits, branches or worktrees; Claude stages each step.** The owner commits. Skip every "commit" step in specs and plans, do not run `using-git-worktrees` or `finishing-a-development-branch`; work in the current checkout. At the end of every step, stage the step's whole delta with `git add` (new files included) and report it with a suggested Conventional Commit message. Every new file is either staged or covered by `.gitignore` (extend it when a file must not be versioned); never leave files untracked.
 - **Specs and plans live in the vault**, in English, with frontmatter and `[[wikilinks]]`: `docs/specs/YYYY-MM-DD-<topic>.md` and `docs/plans/YYYY-MM-DD-<feature>.md` (not `docs/superpowers/...`). Link them from `docs/Home.md`.
 - **Learning first.** Execute plans inline (`executing-plans`), not through `subagent-driven-development`, so every step is visible and explained to the owner. Brainstorming is the "discuss before coding" step; the conversation stays in Russian.
 - **Tests** (ADR-0007). `test-driven-development` applies to logic and client components with Vitest. Async Server Components and database-backed pages are verified with Playwright, which must never write to the database (it is the production one). Verification before completion: `npm run test:run`, `npm run test:e2e`, `npm run lint`, `npx tsc --noEmit`, `npm run build`.
@@ -71,7 +71,7 @@ export const HomePage: FC<HomePageProps> = (props) => {
 - Data access goes through `src/db/` (schema, queries). Pages never import the driver directly.
 - Mutations are Server Actions in `src/actions/`, validated with the form's Zod schema from `src/schemas/`, returning typed `{ ok, errors }` results for `useActionState`. Every action checks auth itself: actions are public POST endpoints, `proxy` does not protect them.
 - Rendering intent is explicit per route: static, ISR (`revalidate`), or dynamic. Note it in a one-line comment at the top of the page file.
-- Commits: Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`). The owner manages git; do not commit or push unless asked. Never put Claude session links into commits, PRs or issues.
+- Commits: Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`). The owner commits; Claude stages each step's delta (see Feature workflow) and does not commit or push unless asked. Never put Claude session links into commits, PRs or issues.
 
 ## Commands
 

@@ -7,6 +7,7 @@ import type { FC } from "react";
 
 import { locales } from "@/shared/lib/locales";
 import { siteUrl } from "@/shared/lib/site-url";
+import { SiteLayout } from "@/views/site-layout/SiteLayout";
 
 import { ThemeProvider } from "../_providers/ThemeProvider";
 
@@ -48,7 +49,9 @@ const RootLayout: FC<LayoutProps<"/[locale]">> = async (props) => {
       <body className="min-h-full flex flex-col">
         {/* Gives client components the locale and messages from the request config. */}
         <NextIntlClientProvider>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            <SiteLayout>{children}</SiteLayout>
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>
