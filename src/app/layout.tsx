@@ -3,9 +3,12 @@ import type { FC } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+// next/font self-hosts the font at build time (no runtime requests to Google) and adds a metric-matched fallback.
+// `subsets` only controls preloading: latin + cyrillic (en, ru) are preloaded; other glyphs (latin-ext for pl, de, fr...)
+// still come from the same font, loaded on demand through unicode-range.
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
 });
 
 const geistMono = Geist_Mono({

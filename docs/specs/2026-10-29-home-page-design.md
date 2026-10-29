@@ -112,6 +112,7 @@ widgets/skills/SkillsSection.tsx            server: getSkills(locale)
 Small steps, **one step per commit** (owner's decision). Working order, the rest of it still to confirm: structure move → tokens/fonts → i18n routing → theme → header → hero/contacts/about → experience → skills → blog → footer → motion pass. i18n goes before theme because the `[locale]` segment rebuilds the root layout (Claude's call).
 
 1. **Structure move + boundaries lint — done 2026-10-29.** shadcn → `src/shared/shadcn/ui`, `src/lib` → `src/shared/lib`, the temporary data dump → `src/views/home/HomePage.tsx` with a thin `src/app/page.tsx`, `components.json` aliases repointed, `eslint-plugin-boundaries` configured and checked against deliberate violations. `src/db/schema` and `src/db/seed` keep relative imports because drizzle-kit and tsx load them outside Next.
+2. **Tokens and fonts — done 2026-10-29.** `src/app/globals.css` uses the palette and extra tokens from `docs/design/home/tokens.css` (shadcn `sidebar`/`chart` variables dropped as unused, Claude's call); the self-referencing `--font-sans` fixed; Geist preloads latin + cyrillic; Japanese falls back to a system font stack (owner's decision, see [[Localization]]). The reveal animation CSS waits for the motion step. Covered by `e2e/design-tokens.spec.ts` (palette in both themes, Geist applied).
 
 ## Open (resume here)
 

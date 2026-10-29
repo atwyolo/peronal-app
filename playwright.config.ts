@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const port = 3000;
+// Not 3000: a running `next dev` there would be reused and the tests would skip the production build.
+const port = 3100;
 const baseURL = `http://localhost:${port}`;
 
 /**

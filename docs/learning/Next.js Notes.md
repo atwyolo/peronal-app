@@ -45,6 +45,12 @@ Running notes on concepts as they appear in the project. One heading per concept
 - Moving a component out of `app/` does not change rendering: the page is still static because the view only calls `"use cache"` functions.
 - `FC` in React 19 types returns `ReactNode | Promise<ReactNode>`, so `const Page: FC = async () => ...` type-checks for async Server Components. `FC` no longer adds `children` implicitly; declare it in props when needed.
 
+## Fonts and design tokens
+- `next/font/google` downloads the font at build time and serves it from our domain: no runtime requests to Google, and a metric-matched fallback (`size-adjust`) keeps layout from jumping while the font loads.
+- `variable: "--font-geist-sans"` exposes the font as a CSS variable on `<html>`; Tailwind's `--font-sans` points at it.
+- `subsets` only chooses what is **preloaded**. All subsets are still in the CSS with `unicode-range`, so the browser fetches e.g. Polish glyphs only when a page uses them.
+- Tailwind v4 `@theme inline`: utilities reference the CSS variable directly (`bg-card` → `var(--card)`), so toggling the `.dark` class repaints everything at runtime. A variable referencing itself (`--font-sans: var(--font-sans)`) is invalid at computed-value time and silently drops the declaration.
+
 ## To write up when encountered
 - Rendering modes and how Next decides static vs dynamic.
 - Server Actions and `useActionState`.

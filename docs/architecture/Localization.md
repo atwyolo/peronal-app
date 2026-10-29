@@ -23,4 +23,8 @@ Chosen for job-market relevance: markets where the local language matters in hir
 - `lang` attribute and `hreflang` alternates come from the locale segment.
 - Dates/numbers formatted with `Intl` through `next-intl` helpers, never by hand.
 
+## Fonts
+- Geist / Geist Mono cover latin, latin-ext and cyrillic: every locale except `ja`. Preloaded subsets: latin + cyrillic; the rest load on demand via `unicode-range`.
+- `ja` uses the platform's Japanese UI font through a system stack (`--font-ja-system` in `src/app/globals.css`): Hiragino on Apple, Yu Gothic / Meiryo on Windows, Noto Sans CJK on Android. Chosen over Noto Sans JP via `next/font` to avoid a heavy CJK webfont (owner's decision, 2026-10-29).
+
 Related: [[ADR-0003 Content Localization]]
