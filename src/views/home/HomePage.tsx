@@ -1,12 +1,13 @@
 // TEMPORARY: a plain dump of the home page data to verify the database layer. The real UI follows the design handoff.
+import { getLocale } from "next-intl/server";
 import type { FC } from "react";
 
 import { getExperience, getLatestPosts, getProfile, getSkills } from "@/db/queries/home";
-import { defaultLocale } from "@/shared/lib/locales";
 import { toPlainText } from "@/shared/lib/rich-text";
 
 export const HomePage: FC = async () => {
-  const locale = defaultLocale; // replaced by the [locale] segment in Stage 2
+  // The locale of the current [locale] segment; the queries fall back to English for untranslated rows.
+  const locale = await getLocale();
 
   // Four independent cached reads, started together instead of one after another.
   const [profile, experience, skills, posts] = await Promise.all([

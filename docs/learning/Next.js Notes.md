@@ -51,9 +51,17 @@ Running notes on concepts as they appear in the project. One heading per concept
 - `subsets` only chooses what is **preloaded**. All subsets are still in the CSS with `unicode-range`, so the browser fetches e.g. Polish glyphs only when a page uses them.
 - Tailwind v4 `@theme inline`: utilities reference the CSS variable directly (`bg-card` → `var(--card)`), so toggling the `.dark` class repaints everything at runtime. A variable referencing itself (`--font-sans: var(--font-sans)`) is invalid at computed-value time and silently drops the declaration.
 
+## i18n routing
+- A dynamic segment above the root layout (`app/[locale]/layout.tsx`, no `app/layout.tsx`) makes `locale` a **root param**. `next/root-params` exposes it as `await locale()` in any Server Component, without prop drilling, and Next tracks it as part of `"use cache"` keys.
+- With Cache Components every root param needs `generateStaticParams`, otherwise the build fails. One value per locale = one prerendered page per locale.
+- `proxy.ts` (Next 16 name for middleware) runs before the cache. next-intl's proxy only redirects paths without a locale; localized paths pass through to the static pages.
+- Unmatched URLs under a dynamic root segment do not render `[locale]/not-found.tsx` by themselves: a catch-all `[locale]/[...rest]/page.tsx` that calls `notFound()` routes them into the locale layout with a 404 status.
+- Build output symbols: `○` fully static, `◐` partial prerender (static shell + parts streamed per request), `ƒ` dynamic. A collapsed `[+N more paths]` row has no page info of its own and shows the **parent pattern's** symbol (`next/dist/build/utils.js`): `/[locale]` is `◐` because it is the fallback shell for locales not in `generateStaticParams`, not because the six hidden locales are partial.
+- To confirm a page is fully static, check `.next/server/app/<path>.html` (content present) and `.meta` (no postponed state). `renderingMode: "PARTIALLY_STATIC"` in `prerender-manifest.json` is the generic Cache Components label, set even on `/_not-found`.
+
 ## To write up when encountered
 - Rendering modes and how Next decides static vs dynamic.
 - Server Actions and `useActionState`.
-- `proxy` (formerly `middleware`) and route protection.
-- `generateStaticParams`, `generateMetadata`.
+- Route protection in `proxy`.
+- `generateMetadata`.
 - Streaming with `Suspense`, `loading.tsx`, `error.tsx`, `not-found.tsx`.

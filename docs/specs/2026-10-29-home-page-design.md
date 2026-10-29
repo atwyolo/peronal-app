@@ -113,11 +113,13 @@ Small steps, **one step per commit** (owner's decision). Working order, the rest
 
 1. **Structure move + boundaries lint — done 2026-10-29.** shadcn → `src/shared/shadcn/ui`, `src/lib` → `src/shared/lib`, the temporary data dump → `src/views/home/HomePage.tsx` with a thin `src/app/page.tsx`, `components.json` aliases repointed, `eslint-plugin-boundaries` configured and checked against deliberate violations. `src/db/schema` and `src/db/seed` keep relative imports because drizzle-kit and tsx load them outside Next.
 2. **Tokens and fonts — done 2026-10-29.** `src/app/globals.css` uses the palette and extra tokens from `docs/design/home/tokens.css` (shadcn `sidebar`/`chart` variables dropped as unused, Claude's call); the self-referencing `--font-sans` fixed; Geist preloads latin + cyrillic; Japanese falls back to a system font stack (owner's decision, see [[Localization]]). The reveal animation CSS waits for the motion step. Covered by `e2e/design-tokens.spec.ts` (palette in both themes, Geist applied).
+3. **i18n routing — done 2026-10-29.** `next-intl` 4.14, config in `src/shared/lib/i18n/`, routes under `src/app/[locale]/` (its layout is the root layout, locale via `next/root-params`, `generateStaticParams` for 8 locales), `src/proxy.ts` with locale detection and a one-year cookie, `messages/en.json` from the design plus empty files for the other locales merged over English (Claude's call, instead of the handoff's copies). Unknown paths: `[locale]/[...rest]` calls `notFound()`, temporary `[locale]/not-found.tsx`. The proxy is classified in the boundaries lint as a file category (`boundaries/files`), allowed to import `shared` only. Tests: `merge-messages.test.ts`, `e2e/i18n-routing.spec.ts`; all 8 locales prerendered.
+4. **Next: localized metadata and `hreflang`.**
 
 ## Open (resume here)
 
-1. **Remaining step order** from step 2 on (see Steps).
-2. **i18n details:** what `/` does (redirect to `/en` or detect from `Accept-Language`), locale cookie, `NextIntlClientProvider` messages scope for client features, localized metadata and `hreflang`.
+1. **Remaining step order** from step 4 on (see Steps).
+2. **i18n details left:** localized metadata and `hreflang` (step 4). Client messages scope: all messages for now, narrow later if the payload grows (Claude's call).
 3. **Theme details:** the handoff specifies `attribute="class"`, `enableSystem`, `defaultTheme="system"`, icon rendered after mount.
 4. From the handoff: mobile menu (Sheet) contents and tablet layout were not designed; what "Learn more" on experience cards points to.
 5. TDD per step: which parts get Vitest tests first (duration formatting, skill sorting/filtering, carousel index) and which get Playwright checks.

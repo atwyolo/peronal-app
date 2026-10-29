@@ -24,6 +24,11 @@ const architecture = {
       { type: "actions", pattern: "src/actions", partialMatch: false },
       { type: "schemas", pattern: "src/schemas", partialMatch: false },
     ],
+    // Single files outside any element. Elements describe folders only, so files are classified here.
+    "boundaries/files": [
+      // Next 16 proxy (formerly middleware): one file in the src root, wired like a route file.
+      { category: "proxy", pattern: "src/proxy.ts" },
+    ],
   },
   rules: {
     // Every file in src/ must belong to a layer.
@@ -47,6 +52,10 @@ const architecture = {
 
           // Layer order. Imports into a slice of views/widgets/features go through its
           // public files only: files in the slice root, never lib/, model/ or ui/ subfolders.
+          {
+            from: { file: { categories: "proxy" } },
+            allow: { to: { element: { type: "shared" } } },
+          },
           {
             from: { element: { type: "app" } },
             allow: [
