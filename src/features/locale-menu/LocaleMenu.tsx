@@ -1,0 +1,48 @@
+"use client";
+
+import { ChevronDownIcon } from "lucide-react";
+import { hasLocale, useLocale, useTranslations } from "next-intl";
+import type { FC } from "react";
+
+import { usePathname, useRouter } from "@/shared/lib/i18n/navigation";
+import { locales } from "@/shared/lib/locales";
+import { Button } from "@/shared/ui/Button";
+import { Menu, type MenuItem } from "@/shared/ui/Menu";
+
+/**
+ * Language switcher in the header: native names with the code as a hint. Picking a locale opens the same path
+ * in that locale. The locale is the root layout's segment, so Next loads the new page fully; on that request the
+ * proxy stores the choice in the NEXT_LOCALE cookie when it differs from the browser language.
+ */
+export const LocaleMenu: FC = () => {
+  const t = useTranslations("LocaleMenu");
+  const locale = useLocale();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const items: MenuItem[] = locales.map((code) => ({
+    value: code,
+    label: t(`names.${code}`),
+    hint: code.toUpperCase(),
+  }));
+
+  const switchLocale = (next: string) => {
+    if (next === locale || !hasLocale(locales, next)) return;
+    router.replace(pathname, { locale: next });
+  };
+
+  return (
+    <Menu
+      label={t("label")}
+      trigger={
+        <Button tone="brand" shape="circle-to-pill" aria-label={t("label")}>
+          <span className="font-mono text-[13px]">{locale.toUpperCase()}</span>
+          <ChevronDownIcon aria-hidden className="hidden size-3.5 lg:block" />
+        </Button>
+      }
+      items={items}
+      value={locale}
+      onValueChange={switchLocale}
+    />
+  );
+};

@@ -20,6 +20,12 @@ test("stays at the top of the viewport while scrolling", async ({ page }) => {
 test.describe("desktop", () => {
   test.skip(({ isMobile }) => isMobile, "the navigation is shown from lg");
 
+  test("has no menu button", async ({ page }) => {
+    await page.goto("/en");
+
+    await expect(page.getByRole("button", { name: "Open menu" })).toBeHidden();
+  });
+
   test("shows every section in the current locale and marks the current page", async ({ page }) => {
     await page.goto("/de");
 
@@ -39,5 +45,42 @@ test.describe("mobile", () => {
     await page.goto("/en");
 
     await expect(page.getByRole("navigation", { name: "Main navigation" })).toBeHidden();
+  });
+
+  test("the menu panel lists every section, traps focus and closes with Escape", async ({ page }) => {
+    await page.goto("/ru");
+
+    const trigger = page.getByRole("button", { name: "Open menu" });
+    await trigger.click();
+    const panel = page.getByRole("dialog", { name: "Main navigation" });
+    await expect(panel.getByRole("link")).toHaveText(["Home", "About", "Projects", "Blog", "Contact"]);
+    await expect(panel.getByRole("link", { name: "Home" })).toHaveAttribute("href", "/ru");
+    await expect(panel.getByRole("link", { name: "Home" })).toHaveAttribute("aria-current", "page");
+
+    // Tab through more stops than the panel has: focus never leaves it.
+    for (let i = 0; i < 8; i++) {
+      await page.keyboard.press("Tab");
+      await expect(panel.locator(":focus")).toHaveCount(1);
+    }
+
+    await page.keyboard.press("Escape");
+    await expect(panel).toBeHidden();
+    await expect(trigger).toBeFocused();
+  });
+});
+
+test.describe("mobile navigation to a missing page", () => {
+  test.skip(({ isMobile }) => !isMobile, "mobile layout only");
+  // Sections without a page yet lead to the 404 page (owner's decision); the browser logs the 404 itself.
+  test.use({ allowedConsoleErrors: [/status of 404/] });
+
+  test("following a link closes the panel", async ({ page }) => {
+    await page.goto("/en");
+
+    await page.getByRole("button", { name: "Open menu" }).click();
+    await page.getByRole("dialog", { name: "Main navigation" }).getByRole("link", { name: "Blog" }).click();
+
+    await expect(page).toHaveURL(/\/en\/blog$/);
+    await expect(page.getByRole("dialog")).toBeHidden();
   });
 });

@@ -66,3 +66,27 @@ test.describe("unknown paths", () => {
     expect(response?.status()).toBe(404);
   });
 });
+
+test.describe("locale menu", () => {
+  test.use({ locale: "en-US" });
+
+  test("opens the same page in the picked locale and remembers the choice", async ({ page, context }) => {
+    await page.goto("/en");
+
+    await page.getByRole("banner").getByRole("button", { name: "Language" }).click();
+    await page.getByRole("menu", { name: "Language" }).getByRole("menuitemradio", { name: /Deutsch/ }).click();
+
+    await expect(page).toHaveURL(/\/de$/);
+    await expect(page.locator("html")).toHaveAttribute("lang", "de");
+    await expect(page.getByRole("banner").getByRole("button", { name: "Language" })).toHaveText("DE");
+
+    // The browser speaks English, so the proxy stores the different choice for a year.
+    await expect.poll(async () => (await context.cookies()).find((c) => c.name === "NEXT_LOCALE")?.value).toBe("de");
+    const cookie = (await context.cookies()).find((c) => c.name === "NEXT_LOCALE");
+    expect(cookie!.expires * 1000 - Date.now()).toBeGreaterThan(360 * 24 * 60 * 60 * 1000);
+
+    await page.goto("/");
+    await expect(page).toHaveURL(/\/de$/);
+  });
+});
+
