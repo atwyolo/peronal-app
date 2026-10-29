@@ -17,8 +17,8 @@ import {
   skillDomains,
   skills,
 } from "@/db/schema";
-import type { Locale } from "@/lib/locales";
-import type { RichTextDoc } from "@/lib/rich-text";
+import type { Locale } from "@/shared/lib/locales";
+import type { RichTextDoc } from "@/shared/lib/rich-text";
 import { localized, localizedOptional } from "./localized";
 
 /**

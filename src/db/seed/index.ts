@@ -18,7 +18,7 @@ import {
   skillDomains,
   skills,
 } from "../schema";
-import { doc, paragraph } from "../../lib/rich-text";
+import { doc, paragraph } from "../../shared/lib/rich-text";
 import * as data from "./data";
 
 async function main() {

@@ -10,7 +10,7 @@ Personal portfolio site. Primary goal besides shipping: the owner is learning Ne
 ## Stack (decided, do not re-litigate)
 
 - Next.js 16 App Router, React 19, TypeScript strict, `src/` layout, `@/*` alias, npm.
-- Styling: Tailwind v4 + shadcn/ui (Base UI, style `base-nova`). Components live in `src/components/ui` and are owned code.
+- Styling: Tailwind v4 + shadcn/ui (Base UI, style `base-nova`). Generated components live in `src/shared/shadcn` and are wrapped by our own adapters in `src/shared/ui`.
 - Data: Neon Postgres via Vercel Marketplace, Drizzle ORM with `@neondatabase/serverless` (HTTP driver). One database for local dev, previews and production; schema synced with `drizzle-kit push`, no migration files (see ADR-0002).
 - i18n: `next-intl` for UI strings. DB content is localized through **translation tables** (`<entity>_translations` with `locale` column), never jsonb. Locales: `en` (default, fallback), `ru`, `pt`, `es`, `de`, `fr`, `ja`, `pl`.
 - Forms: React Hook Form + Zod (`zodResolver`). Zod schemas are the single source of validation on both client and server.
@@ -38,9 +38,38 @@ Project rules win where the plugin's defaults differ:
 
 ## Conventions
 
+### Architecture (adapted Feature-Sliced Design)
+
+- Layers: `src/app` (routes only) → `src/views` → `src/widgets` → `src/features` → `src/shared` (`ui`, `shadcn`, `lib`). `src/db`, `src/actions` (Server Actions) and `src/schemas` (Zod schemas) sit outside the layers. Full rules: `docs/specs/2026-10-29-home-page-design.md`.
+- A layer imports only from layers below it; no imports between slices of the same layer. Only files in a slice root are importable from outside. No barrel `index.ts` files.
+- `src/shared/shadcn` is imported only by `src/shared/ui`; `@base-ui/*` only by `src/shared/shadcn`.
+- `src/actions` and `src/schemas` have no import-order rules: any layer may import them and they may import any local file. Features may import `src/db` only with `import type`; mutations go through actions.
+- Enforced by `eslint-plugin-boundaries` in `eslint.config.mjs` (`npm run lint`).
+
+### Code style
+
+- **File names:** every file containing JSX is PascalCase (`src/views/home/HomePage.tsx`). Custom hook files are camelCase and match the hook name (`usePosts.ts`). Folder names and other non-JSX files stay kebab-case (`src/shared/lib/rich-text.ts`).
+- **Exceptions:** Next special files keep the names Next requires (`page.tsx`, `layout.tsx`, `not-found.tsx`, ...). Generated code in `src/shared/shadcn` keeps the shadcn CLI names and style so `npx shadcn add`/`diff` keep working; the rules below do not apply to it.
+- **Components** are arrow functions typed with `FC<Props>`, named exports. Props are an `interface <Name>Props` and are destructured on the first line of the body, not in the signature. Async Server Components use `FC` too (`FC` allows `Promise<ReactNode>` in React 19). Next special files assign the component to a const and `export default` it, or re-export a view: `export { HomePage as default } from "@/views/home/HomePage";`.
+- **Custom hooks** type both input and output: `interface Use<Name>Params` and `interface Use<Name>`, e.g. `export const usePosts = (params: UsePostsParams): UsePosts => { const { page, limit } = params; ... }`. Params are destructured on the first line.
+
+```tsx
+interface HomePageProps {
+  title: string;
+}
+
+export const HomePage: FC<HomePageProps> = (props) => {
+  const { title } = props;
+
+  return <div>{title}</div>;
+};
+```
+
+### General
+
 - Server Components by default. Add `"use client"` only where hooks, browser APIs or event handlers are required, and keep those leaves small.
 - Data access goes through `src/db/` (schema, queries). Pages never import the driver directly.
-- Mutations are Server Actions in `src/actions/`, validated with Zod, returning typed `{ ok, errors }` results for `useActionState`.
+- Mutations are Server Actions in `src/actions/`, validated with the form's Zod schema from `src/schemas/`, returning typed `{ ok, errors }` results for `useActionState`. Every action checks auth itself: actions are public POST endpoints, `proxy` does not protect them.
 - Rendering intent is explicit per route: static, ISR (`revalidate`), or dynamic. Note it in a one-line comment at the top of the page file.
 - Commits: Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`). The owner manages git; do not commit or push unless asked. Never put Claude session links into commits, PRs or issues.
 

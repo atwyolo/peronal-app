@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { check, integer, jsonb, pgTable, primaryKey, text } from "drizzle-orm/pg-core";
-import type { RichTextDoc } from "../../lib/rich-text";
+import type { RichTextDoc } from "../../shared/lib/rich-text";
 import { localeEnum, timestamps, translationOf } from "./common";
 
 /** Singleton: the check constraint guarantees there is never a second row. */

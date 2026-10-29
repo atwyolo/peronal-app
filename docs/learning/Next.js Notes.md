@@ -39,6 +39,12 @@ Running notes on concepts as they appear in the project. One heading per concept
 - Run E2E against `next build && next start`, not `next dev`: prerendering and `"use cache"` only behave like production in a production build.
 - Query elements the way users find them: `getByRole(..., { name })` first, text second, test ids last.
 
+## Project files outside `app`
+- Next is unopinionated about structure: only files in `app/` named `page`, `layout`, `route`, etc. become routes, and their names are fixed lowercase. Everything else can live anywhere (`src/views`, `src/shared`, ...).
+- A route file can stay one line: `export { HomePage as default } from "@/views/home/HomePage";`. Next only needs a default export from `page.tsx`; a re-export counts. Route-level exports (`metadata`, `generateStaticParams`, `revalidate`) stay in the route file.
+- Moving a component out of `app/` does not change rendering: the page is still static because the view only calls `"use cache"` functions.
+- `FC` in React 19 types returns `ReactNode | Promise<ReactNode>`, so `const Page: FC = async () => ...` type-checks for async Server Components. `FC` no longer adds `children` implicitly; declare it in props when needed.
+
 ## To write up when encountered
 - Rendering modes and how Next decides static vs dynamic.
 - Server Actions and `useActionState`.

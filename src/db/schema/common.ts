@@ -1,5 +1,5 @@
 import { type AnyPgColumn, integer, pgEnum, timestamp } from "drizzle-orm/pg-core";
-import { locales } from "../../lib/locales";
+import { locales } from "../../shared/lib/locales";
 
 /** Postgres enum: the database itself rejects a locale the app does not support. */
 export const localeEnum = pgEnum("locale", locales);

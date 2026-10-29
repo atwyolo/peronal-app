@@ -2,7 +2,7 @@
  * Initial content, taken from docs/design/home/content.ts (English only; other locales fall back).
  * Values marked TODO(owner) are design placeholders, not facts. Edit them later in the admin.
  */
-import { boldParagraph, bulletList, doc, paragraph } from "../../lib/rich-text";
+import { boldParagraph, bulletList, doc, paragraph } from "../../shared/lib/rich-text";
 
 export const domains = [
   { key: "core", label: "Core" },

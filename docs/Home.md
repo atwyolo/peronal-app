@@ -1,6 +1,6 @@
 ---
 tags: [moc]
-updated: 2026-10-26
+updated: 2026-10-29
 ---
 
 # Home
@@ -26,12 +26,16 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[ADR-0006 Forms]]
 - [[ADR-0007 Testing]]
 
+## Specs
+- [[2026-10-29-home-page-design]] — home page architecture, draft; step 1 (structure + boundaries lint) done
+
 ## Learning
 - [[Next.js Notes]] — running notes on App Router concepts as they come up
 
 ## Journal
 - [[2026-10-26]] — kickoff: decisions, scaffold
 - [[2026-10-28]] — database layer for the home page
+- [[2026-10-29]] — home page architecture, step 1: structure move and boundaries lint
 
 ## Templates
 - [[ADR Template]] · [[Journal Template]] · [[Learning Note Template]]

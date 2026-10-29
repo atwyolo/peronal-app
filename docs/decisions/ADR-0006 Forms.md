@@ -10,7 +10,7 @@ date: 2026-10-26
 Public contact form and many admin forms; validation must match on client and server.
 
 ## Decision
-React Hook Form + Zod via `@hookform/resolvers`. Each form has one Zod schema in `src/schemas/`, imported by both the client form and the Server Action. Server Actions return `{ ok: true, data } | { ok: false, fieldErrors, formError }`; client maps field errors back into RHF with `setError`.
+React Hook Form + Zod via `@hookform/resolvers`. Each form has one Zod schema in `src/schemas/`, imported by both the client form and the Server Action. Server Actions live in `src/actions/`. They return `{ ok, errors }`: `ok: true` on success, `ok: false` with `errors` keyed by field name on failure (changed from `{ ok, data } | { ok, fieldErrors, formError }` on 2026-10-29; the exact type is defined with the first form). The client maps `errors` back into RHF with `setError`.
 
 ## Alternatives
 - Plain `useActionState` + native validation: enough for one form, painful for an admin with dozens.
@@ -18,4 +18,5 @@ React Hook Form + Zod via `@hookform/resolvers`. Each form has one Zod schema in
 
 ## Consequences
 - shadcn `Field`/`Form` components wrap RHF; keep that integration in one shared component.
+- `src/actions/` and `src/schemas/` sit outside the Feature-Sliced layers: any layer may import them, and the boundaries lint puts no import-order rules on them.
 - Progressive enhancement is partial: forms still post without JS, but client-side UX needs hydration.
