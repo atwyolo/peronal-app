@@ -24,3 +24,4 @@ The superpowers workflow is test-driven, and the project had no test runner. Nex
 - `@types/node` raised to `^22` (required by Vitest 5; matches the local Node 22).
 - E2E tests read the shared production database (see [[ADR-0002 Database and ORM]]). They must stay read-only.
 - Playwright browsers live outside the repo: `npx playwright install chromium` once per machine.
+- 2026-10-29: the workflow moved from superpowers to agent-skills ([[ADR-0009 Agent Workflow]]); the testing rules above are unchanged and `test-driven-development` comes from agent-skills now.

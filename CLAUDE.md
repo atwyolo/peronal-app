@@ -25,16 +25,39 @@ Personal portfolio site. Primary goal besides shipping: the owner is learning Ne
 - Discuss approach and alternatives before implementing anything non-trivial (global rule). Confirm, then code.
 - Check `docs/Home.md` for the current roadmap, decisions (ADRs) and open questions. Update them when a decision changes.
 
-## Feature workflow: superpowers
+## Feature workflow: agent-skills
 
-The `superpowers` plugin is enabled for this project (`.claude/settings.json`). Use it for every feature: `brainstorming` → `writing-plans` → `executing-plans` → `verification-before-completion`. Use `systematic-debugging` for bugs and `requesting-code-review` before handing work over.
+The `agent-skills` plugin (addyosmani/agent-skills) drives the workflow; `superpowers` is disabled for this project (`.claude/settings.json`, ADR-0009). Skills to use:
+
+| When | Skill |
+|---|---|
+| Discuss before coding: unclear ask, new feature | `interview-me` (one question at a time), `idea-refine` for open-ended ideas |
+| Write the spec | `spec-driven-development` |
+| Break a spec into steps | `planning-and-task-breakdown` |
+| Build a step | `incremental-implementation` + `test-driven-development` |
+| UI work (pages, components, layout, a11y) | `frontend-ui-engineering` |
+| Next.js / library APIs | `source-driven-development` (read `node_modules/next/dist/docs/` and installed package docs first) |
+| Bugs, failing tests, broken builds | `debugging-and-error-recovery` |
+| Before handing a step over | `code-review-and-quality` (or the `agent-skills:code-reviewer` agent) |
+| Decisions | `documentation-and-adrs` |
+| Performance pass, Lighthouse, bundle size | `performance-optimization`, `/webperf` |
+| Admin, auth, forms, uploads | `security-and-hardening` |
+| Risky or irreversible steps (production database) | `doubt-driven-development` |
 
 Project rules win where the plugin's defaults differ:
 
-- **No commits, branches or worktrees; Claude stages each step.** The owner commits. Skip every "commit" step in specs and plans, do not run `using-git-worktrees` or `finishing-a-development-branch`; work in the current checkout. At the end of every step, stage the step's whole delta with `git add` (new files included) and report it with a suggested Conventional Commit message. Every new file is either staged or covered by `.gitignore` (extend it when a file must not be versioned); never leave files untracked.
-- **Specs and plans live in the vault**, in English, with frontmatter and `[[wikilinks]]`: `docs/specs/YYYY-MM-DD-<topic>.md` and `docs/plans/YYYY-MM-DD-<feature>.md` (not `docs/superpowers/...`). Link them from `docs/Home.md`.
-- **Learning first.** Execute plans inline (`executing-plans`), not through `subagent-driven-development`, so every step is visible and explained to the owner. Brainstorming is the "discuss before coding" step; the conversation stays in Russian.
-- **Tests** (ADR-0007). `test-driven-development` applies to logic and client components with Vitest. Async Server Components and database-backed pages are verified with Playwright, which must never write to the database (it is the production one). Verification before completion: `npm run test:run`, `npm run test:e2e`, `npm run lint`, `npx tsc --noEmit`, `npm run build`.
+- **No commits, branches or worktrees; Claude stages each step.** The owner commits. Wherever a skill says "commit" (`incremental-implementation`, `git-workflow-and-versioning`, `/build`), stage instead: at the end of every step, stage the step's whole delta with `git add` (new files included) and report it with a suggested Conventional Commit message. Every new file is either staged or covered by `.gitignore` (extend it when a file must not be versioned); never leave files untracked. Do not use `/build auto`.
+- **Specs and plans live in the vault**, in English, with frontmatter and `[[wikilinks]]`: `docs/specs/YYYY-MM-DD-<topic>.md` and `docs/plans/YYYY-MM-DD-<feature>.md`, not `SPEC.md`, `tasks/plan.md` or `tasks/todo.md`. The plan's task list is a checklist inside the plan note. ADRs go to `docs/decisions/` (template in `docs/templates/`). Link everything from `docs/Home.md`.
+- **Learning first.** Implement inline, one step at a time, so every step is visible and explained to the owner; no subagent-driven implementation. Discussion happens in Russian, before any code.
+- **Tests** (ADR-0007). `test-driven-development` applies to logic and client components with Vitest. Async Server Components and database-backed pages are verified with Playwright, which must never write to the database (it is the production one). Definition of done for every step: `npm run test:run`, `npm run test:e2e`, `npm run lint`, `npx tsc --noEmit`, `npm run build`.
+
+## UI sources: 21st.dev MCP
+
+The `21st` MCP server (user scope) searches the 21st.dev catalog. The design handoff (`docs/design/Home Page Handoff.md`) stays the source of truth; 21st is for references, not replacements.
+
+- **Use:** `search` / `get_inspiration` (free metadata) to find patterns for blocks the handoff leaves open; `search_logo` for brand SVGs (e.g. the contact buttons; the handoff allows swapping its generic glyphs).
+- **Code from `get_component` (uses quota) is a reference to adapt, never pasted as is:** rebuild it on our shadcn (Base UI, not Radix) primitives and `shared/ui` adapters, in the right FSD layer, with our naming and component style, Server Components by default. Do not run its install command or add its dependencies without discussing them first.
+- **Never** send project source, secrets or paths to 21st, and do not call account-changing tools (publish, delete, profile, bookmarks) or paid AI generation unless the owner asks.
 
 ## Conventions
 

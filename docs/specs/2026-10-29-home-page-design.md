@@ -129,7 +129,7 @@ Small steps, **one step per commit** (owner's decision). Working order, the rest
 3. **Theme details left:** the switcher icon renders after mount (header step).
 4. From the handoff: mobile menu (Sheet) contents and tablet layout were not designed; what "Learn more" on experience cards points to.
 5. TDD per step: which parts get Vitest tests first (duration formatting, skill sorting/filtering, carousel index) and which get Playwright checks.
-6. After the questions: write the final spec, run the builder check, get the owner's approval, then `writing-plans`.
+6. After the questions: finish the spec with `spec-driven-development`, get the owner's approval, then break the remaining blocks down with `planning-and-task-breakdown` (vault paths, see [[ADR-0009 Agent Workflow]]). Until then each block is agreed in chat and built step by step.
 
 ## Calls made by Claude (to confirm on approval)
 
