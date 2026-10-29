@@ -25,6 +25,7 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[ADR-0005 UI Library]]
 - [[ADR-0006 Forms]]
 - [[ADR-0007 Testing]]
+- [[ADR-0008 Theme]]
 
 ## Specs
 - [[2026-10-29-home-page-design]] — home page architecture, draft; step 1 (structure + boundaries lint) done

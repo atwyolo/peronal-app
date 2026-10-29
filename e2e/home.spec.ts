@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 // Smoke test: the home page renders content that comes from the database.
 test("home page shows the profile from the database", async ({ page }) => {

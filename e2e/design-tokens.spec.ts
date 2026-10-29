@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 // Design tokens from docs/design/home/tokens.css reach the page: palette for both themes and the Geist font.
 // Visual regressions here (a self-referencing CSS variable, a lost palette) are easy to miss by eye.

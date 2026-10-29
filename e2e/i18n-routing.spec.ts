@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 import { locales } from "@/shared/lib/locales";
 
@@ -45,6 +45,12 @@ test.describe("localized pages", () => {
       await expect(page.locator("html")).toHaveAttribute("lang", locale);
     });
   }
+
+});
+
+test.describe("unknown paths", () => {
+  // The browser logs its own console error for any 404 document.
+  test.use({ allowedConsoleErrors: [/status of 404/] });
 
   test("an unknown path inside a locale is a 404", async ({ page }) => {
     const response = await page.goto("/en/does-not-exist");

@@ -16,7 +16,7 @@ Personal portfolio site. Primary goal besides shipping: the owner is learning Ne
 - Forms: React Hook Form + Zod (`zodResolver`). Zod schemas are the single source of validation on both client and server.
 - Tests: Vitest + React Testing Library (colocated `*.test.ts(x)`), Playwright in `e2e/` against a production build.
 - Admin: hand-written under `/admin`. Auth.js v5 credentials login, routes protected in proxy. Rich text: Tiptap 3, stored as JSON, rendered server-side on the public site.
-- Theme: `next-themes`, class strategy, respects system preference.
+- Theme: `next-themes`, class strategy, respects system preference. Provider with a React 19 workaround in `src/app/_providers/ThemeProvider.tsx` (ADR-0008).
 - Hosting: Vercel Hobby. Filesystem is read-only at runtime; uploads go to Vercel Blob.
 
 ## Before writing code

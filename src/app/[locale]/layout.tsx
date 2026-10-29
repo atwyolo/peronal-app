@@ -8,6 +8,8 @@ import type { FC } from "react";
 import { locales } from "@/shared/lib/locales";
 import { siteUrl } from "@/shared/lib/site-url";
 
+import { ThemeProvider } from "../_providers/ThemeProvider";
+
 import "../globals.css";
 
 // next/font self-hosts the font at build time (no runtime requests to Google) and adds a metric-matched fallback.
@@ -37,10 +39,17 @@ const RootLayout: FC<LayoutProps<"/[locale]">> = async (props) => {
   const locale = await getLocale();
 
   return (
-    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    // suppressHydrationWarning: the theme script sets the class and color-scheme on <html> before React hydrates.
+    <html
+      lang={locale}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
       <body className="min-h-full flex flex-col">
         {/* Gives client components the locale and messages from the request config. */}
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

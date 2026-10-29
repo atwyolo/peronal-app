@@ -59,6 +59,12 @@ Running notes on concepts as they appear in the project. One heading per concept
 - Build output symbols: `○` fully static, `◐` partial prerender (static shell + parts streamed per request), `ƒ` dynamic. A collapsed `[+N more paths]` row has no page info of its own and shows the **parent pattern's** symbol (`next/dist/build/utils.js`): `/[locale]` is `◐` because it is the fallback shell for locales not in `generateStaticParams`, not because the six hidden locales are partial.
 - To confirm a page is fully static, check `.next/server/app/<path>.html` (content present) and `.meta` (no postponed state). `renderingMode: "PARTIALLY_STATIC"` in `prerender-manifest.json` is the generic Cache Components label, set even on `/_not-found`.
 
+## Theme without a flash
+- A static page cannot know the visitor's theme on the server. next-themes puts a tiny inline script in the HTML that reads `localStorage`/`prefers-color-scheme` and sets the class on `<html>` before the first paint, long before React hydrates.
+- That script changes `<html>` attributes React rendered, so `<html suppressHydrationWarning>` is required; it silences attribute mismatches on that element only, one level deep.
+- React 19 never executes a `<script>` it creates on the client, and in development it reports one. Hydration reuses the server's element, so the report only appears in fully client-side renders. Script "data blocks" (non-JS `type`) are skipped.
+- A UI that depends on the resolved theme (the switcher icon) must render after mount: on the server the theme is unknown, so the first client render must match the server HTML.
+
 ## To write up when encountered
 - Rendering modes and how Next decides static vs dynamic.
 - Server Actions and `useActionState`.
