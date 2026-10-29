@@ -1,0 +1,48 @@
+import type { ComponentPropsWithRef, FC } from "react";
+
+import { cn } from "@/shared/lib/utils";
+import { Button as ShadcnButton } from "@/shared/shadcn/ui/button";
+
+// Full state set per tone (hover, open menu): the shadcn "default" variant underneath only brings bg/hover
+// utilities, which these replace; variants like "outline" add aria-expanded/dark rules that would win instead.
+const tones = {
+  default: "border-card-border bg-card text-foreground hover:bg-accent aria-expanded:bg-accent",
+  brand: "border-card-border bg-card text-brand hover:bg-accent aria-expanded:bg-accent",
+  primary: "border-primary bg-primary text-primary-foreground hover:bg-primary/85",
+} as const;
+
+const shapes = {
+  pill: "h-11 px-[18px]",
+  circle: "size-11 p-0",
+  /** Header controls: a 44px round icon button on mobile, a pill from lg. */
+  "circle-to-pill": "size-11 p-0 lg:w-auto lg:px-3.5",
+} as const;
+
+interface ButtonProps extends Omit<ComponentPropsWithRef<"button">, "className"> {
+  tone?: keyof typeof tones;
+  shape?: keyof typeof shapes;
+  /** Layout only (margins, grid placement); colors and sizes come from `tone` and `shape`. */
+  className?: string;
+}
+
+/**
+ * Our button in design terms (pills and round icon buttons, 44px touch target), over the shadcn Button.
+ * Spreads the remaining props, so it also works as a Menu trigger (aria-expanded, ref, handlers).
+ * A `href` variant rendering next/link arrives with its first consumer.
+ */
+export const Button: FC<ButtonProps> = (props) => {
+  const { tone = "default", shape = "pill", className, ...rest } = props;
+
+  return (
+    <ShadcnButton
+      variant="default"
+      className={cn(
+        "gap-2 rounded-full text-[15px] font-medium [&_svg:not([class*='size-'])]:size-[18px]",
+        tones[tone],
+        shapes[shape],
+        className,
+      )}
+      {...rest}
+    />
+  );
+};

@@ -65,6 +65,9 @@ Running notes on concepts as they appear in the project. One heading per concept
 - React 19 never executes a `<script>` it creates on the client, and in development it reports one. Hydration reuses the server's element, so the report only appears in fully client-side renders. Script "data blocks" (non-JS `type`) are skipped.
 - A UI that depends on the resolved theme (the switcher icon) must render after mount: on the server the theme is unknown, so the first client render must match the server HTML.
 
+## "Mounted" without an effect
+- `useSyncExternalStore(subscribe, () => true, () => false)` returns the server snapshot (`false`) during SSR and hydration and the client snapshot (`true`) right after. It replaces the classic `useEffect(() => setMounted(true), [])`, which renders twice and is flagged by the React Compiler-era lint rule against setState in effects.
+
 ## To write up when encountered
 - Rendering modes and how Next decides static vs dynamic.
 - Server Actions and `useActionState`.

@@ -46,3 +46,25 @@ test.describe("before hydration", () => {
     await expect(page.locator("html")).toHaveClass(/\bdark\b/);
   });
 });
+
+test.describe("theme menu", () => {
+  test.use({ colorScheme: "light" });
+
+  test("switches the theme and keeps the choice after a reload", async ({ page }) => {
+    await page.goto("/en");
+
+    await page.getByRole("banner").getByRole("button", { name: "Theme" }).click();
+    const menu = page.getByRole("menu", { name: "Theme" });
+    await expect(menu.getByRole("menuitemradio", { name: /System/ })).toHaveAttribute("aria-checked", "true");
+    await expect(menu.getByRole("menuitemradio", { name: /System/ })).toContainText("now light");
+
+    await menu.getByRole("menuitemradio", { name: "Dark" }).click();
+    await expect(menu).toBeHidden();
+    await expect(page.locator("html")).toHaveClass(/\bdark\b/);
+
+    await page.reload();
+    await expect(page.locator("html")).toHaveClass(/\bdark\b/);
+    await expect(page.locator("body")).toHaveCSS("background-color", darkBackground);
+  });
+});
+

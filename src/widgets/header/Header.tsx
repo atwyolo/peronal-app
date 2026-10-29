@@ -2,12 +2,13 @@ import { getLocale, getTranslations } from "next-intl/server";
 import type { FC } from "react";
 
 import { getProfile } from "@/db/queries/home";
+import { ThemeMenu } from "@/features/theme-menu/ThemeMenu";
 import { Link } from "@/shared/lib/i18n/navigation";
 import { siteNav } from "@/shared/lib/site-nav";
 import { NavLink } from "@/shared/ui/NavLink";
 
 /**
- * Sticky site header (Server Component): name linking home, desktop navigation from lg.
+ * Sticky site header (Server Component): name linking home, desktop navigation from lg, theme menu.
  * Below lg (mobile and the undesigned tablet range) the navigation moves to the mobile menu (later step).
  */
 export const Header: FC = async () => {
@@ -30,6 +31,10 @@ export const Header: FC = async () => {
             </NavLink>
           ))}
         </nav>
+        {/* Client leaves; the header itself stays a Server Component. */}
+        <div className="flex gap-2">
+          <ThemeMenu />
+        </div>
       </div>
     </header>
   );

@@ -13,9 +13,9 @@ test.describe("design tokens", () => {
   });
 
   test("dark theme switches the palette with the .dark class", async ({ page }) => {
+    // next-themes owns the class on <html>; a stored choice is the supported way to force a theme.
+    await page.addInitScript(() => localStorage.setItem("theme", "dark"));
     await page.goto("/en");
-    // The theme switcher arrives in a later step; next-themes will toggle this same class.
-    await page.evaluate(() => document.documentElement.classList.add("dark"));
 
     const body = page.locator("body");
     await expect(body).toHaveCSS("background-color", "rgb(16, 20, 42)");
