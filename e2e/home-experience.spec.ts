@@ -11,6 +11,27 @@ test("shows the jobs from the database in their order", async ({ page }) => {
   await expect(section.getByRole("article").first().getByRole("listitem")).not.toHaveCount(0);
 });
 
+test.describe("when an image fails to load", () => {
+  test.use({ allowedConsoleErrors: [/status of 404/] });
+
+  // Failing every image shows the placeholder whichever jobs have one in the database.
+  test("frames the image area with the placeholder", async ({ page, isMobile }) => {
+    await page.route("**/_next/image**", (route) => route.fulfill({ status: 404 }));
+    await page.goto("/en");
+
+    const placeholder = page.getByRole("region", { name: "Experience" }).getByRole("img", { name: "Glovo" });
+    await expect.poll(() => placeholder.evaluate((element) => element.tagName)).toBe("DIV");
+    await expect(placeholder).toHaveCSS("border-top-style", "dashed");
+    await expect(placeholder).toHaveCSS("border-top-left-radius", "14px");
+    // Thin lines, or the stripes hide the dashes of a border in the same color.
+    await expect(placeholder).toHaveCSS("background-image", /^repeating-linear-gradient\(135deg,.* 1px, .* 10px\)$/);
+
+    // `sizes` in ExperienceCard is derived from this box.
+    const box = await placeholder.boundingBox();
+    expect(box).toMatchObject({ width: isMobile ? 332 : 258, height: isMobile ? 140 : 180 });
+  });
+});
+
 test("keeps the current locale in the links", async ({ page }) => {
   await page.goto("/de");
 
@@ -62,6 +83,19 @@ test.describe("desktop layout", () => {
     const bottoms = await links.evaluateAll((items) => items.map((item) => item.getBoundingClientRect().bottom));
 
     expect(new Set(bottoms).size).toBe(1);
+  });
+
+  // object-cover scales a 16:9 file by the 180px height: it renders 320px wide, more than the 194px card at this width.
+  test("loads a file as wide as the image scaled by its height", async ({ page }) => {
+    await page.setViewportSize({ width: 1024, height: 800 });
+    await page.goto("/en");
+
+    const image = page.getByRole("region", { name: "Experience" }).getByRole("img", { name: "Glovo" });
+    await image.scrollIntoViewIfNeeded();
+    await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBeGreaterThan(0);
+
+    const file = await image.evaluate((element: HTMLImageElement) => new URL(element.currentSrc).searchParams.get("w"));
+    expect(Number(file)).toBeGreaterThanOrEqual(320);
   });
 });
 

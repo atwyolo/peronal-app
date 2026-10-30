@@ -20,6 +20,7 @@ Related: [[2026-10-29-home-page-design]], [[Home Page Handoff]], [[ADR-0007 Test
 - **Carousel strings.** `Home.carousel` moves to a top-level `Carousel` namespace, because `shared/ui` must not know about the home page. A new `slide` message holds `{current} of {total}`.
 
 - **Full-width desktop (owner's decision, added after task 2).** From `lg` there is no maximum width: 20 px on the left, 60 px on the right. Done before task 3, because card sizes depend on it.
+- **Placeholder frame (Claude's call, task 3).** A `framed` prop on `Image`, not a class from the parent: only `Image` knows a load failed. A framed placeholder has the prototype's 1 px lines, because wide stripes in the same color hide the dashes of the border; the photo keeps its own stripes. The prototype's "COMPANY IMAGE" text is left out. A real image gets the same 14 px radius.
 
 ## Tasks
 
@@ -49,9 +50,9 @@ Files: `src/shared/ui/SectionHeader.tsx`, `src/shared/ui/ButtonLink.tsx`, `src/f
 
 No job has an image yet, so the striped placeholder is what shows. The prototype's dashed border and 14 px radius join the placeholder here, as the spec planned.
 
-- [ ] The image area is 140 px tall on mobile and 180 px on desktop.
-- [ ] A missing `imageUrl` shows the placeholder with the dashed border and radius; the photo's placeholder keeps the look it has now.
-- [ ] `alt` is the company name.
+- [x] The image area is 140 px tall on mobile and 180 px on desktop.
+- [x] A missing `imageUrl` shows the placeholder with the dashed border and radius; the photo's placeholder keeps the look it has now.
+- [x] `alt` is the company name.
 
 Verify: extend `Image.test.tsx`; screenshot in both themes. Depends on: task 2.
 
@@ -80,3 +81,4 @@ Files: `src/shared/lib/carousel-index.ts`, `src/shared/ui/Carousel.tsx`, `src/wi
 | `Tile` or `overflow` breaks scroll-snap on real devices | Medium | Playwright mobile project plus a manual check on a phone |
 | The first load scroll event moves the position off "1 / 4" | Low | Position starts from state, the listener only updates it; test the initial value |
 | Fractional duration in `ru` and `pl` plural forms | Low | Translators supply the `other` form; the `#` value is formatted per locale |
+| The carousel's region label contains "Experience", so `getByRole("region", { name: "Experience" })` matches two nested regions and every test in the spec fails | Low | Pick another label, or pass `exact: true` in the spec |

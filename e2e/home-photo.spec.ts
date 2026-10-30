@@ -26,7 +26,12 @@ test("downloads the photo once, even with the error replay of next/image", async
 
   await page.goto("/en", { waitUntil: "networkidle" });
 
-  expect(downloads).toHaveLength(1);
+  // Other images of the page go through the same optimizer, so match the source file.
+  const sourceOf = (url: string) => new URL(url).searchParams.get("url");
+  const photo = page.getByRole("img", { name: "Mikhail Aleksandrov" });
+  const photoUrl = await photo.evaluate((image: HTMLImageElement) => image.currentSrc);
+
+  expect(downloads.filter((url) => sourceOf(url) === sourceOf(photoUrl))).toHaveLength(1);
 });
 
 test.describe("when the image fails to load", () => {

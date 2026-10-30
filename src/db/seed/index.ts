@@ -18,7 +18,7 @@ import {
   skillDomains,
   skills,
 } from "../schema";
-import { doc, paragraph } from "../../shared/lib/rich-text";
+import { doc, paragraph } from "@/shared/lib/rich-text";
 import * as data from "./data";
 
 async function main() {
@@ -60,6 +60,7 @@ async function main() {
           company: e.company,
           startDate: e.startDate,
           endDate: e.endDate,
+          imageUrl: e.imageUrl,
           sort: index,
         })),
       )

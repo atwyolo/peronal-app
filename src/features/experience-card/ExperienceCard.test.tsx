@@ -31,6 +31,18 @@ const renderCard = (overrides: Partial<HomeExperience> = {}) =>
   );
 
 describe("ExperienceCard", () => {
+  it("shows the job's image, described by the company name", () => {
+    renderCard({ imageUrl: "https://example.com/glovo.jpg" });
+
+    expect(screen.getByRole("img", { name: "Glovo" }).tagName).toBe("IMG");
+  });
+
+  it("shows a placeholder described by the company name when the job has no image", () => {
+    renderCard();
+
+    expect(screen.getByRole("img", { name: "Glovo" }).tagName).toBe("DIV");
+  });
+
   it("names the company in a third-level heading", () => {
     renderCard();
 

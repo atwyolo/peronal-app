@@ -3,6 +3,8 @@
 import NextImage from "next/image";
 import { type FC, useState } from "react";
 
+import { cn } from "@/shared/lib/utils";
+
 interface ImageProps {
   /** Null renders the placeholder, e.g. a database field that is not filled yet. */
   src: string | null;
@@ -14,6 +16,8 @@ interface ImageProps {
   preload?: boolean;
   /** Applied to the image, e.g. `object-cover`. */
   className?: string;
+  /** For an image inset in a padded tile: 14px radius; the placeholder gets a dashed border and thin stripes. */
+  framed?: boolean;
 }
 
 /**
@@ -22,7 +26,7 @@ interface ImageProps {
  * A client component because `onError` is a browser event; the image is still in the prerendered HTML.
  */
 export const Image: FC<ImageProps> = (props) => {
-  const { src, alt, sizes, preload, className } = props;
+  const { src, alt, sizes, preload, className, framed } = props;
   // The failed URL rather than a flag: a new `src` gets its own chance without resetting state in an effect.
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
@@ -31,7 +35,12 @@ export const Image: FC<ImageProps> = (props) => {
       <div
         role="img"
         aria-label={alt}
-        className="absolute inset-0 bg-[repeating-linear-gradient(45deg,var(--placeholder)_0_8px,transparent_8px_16px)]"
+        className={cn(
+          "absolute inset-0",
+          framed
+            ? "rounded-[14px] border border-dashed border-placeholder bg-[repeating-linear-gradient(135deg,var(--placeholder)_0_1px,transparent_1px_10px)]"
+            : "bg-[repeating-linear-gradient(45deg,var(--placeholder)_0_8px,transparent_8px_16px)]",
+        )}
       />
     );
   }
@@ -43,7 +52,7 @@ export const Image: FC<ImageProps> = (props) => {
       fill
       sizes={sizes}
       preload={preload}
-      className={className}
+      className={cn(framed && "rounded-[14px]", className)}
       onError={() => setFailedSrc(src)}
     />
   );

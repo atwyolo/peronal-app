@@ -85,6 +85,7 @@ export const experience = [
     company: "Glovo",
     startDate: "2024-11-01",
     endDate: "2026-10-01",
+    imageUrl: "https://5iyco5bcxydlbyja.public.blob.vercel-storage.com/glovo.png",
     skills: ["Next.js", "TypeScript", "Mantine", "React Hook Form", "Jest"], // TODO(owner): confirm
     descriptionShort:
       "Built an AI-powered chat for user support and set up frontend monitoring. Introduced unit testing that cut production defects by 23%. Shipped an offline mode that increased average session time by 17%.",

@@ -1,6 +1,6 @@
 ---
 tags: [moc]
-updated: 2026-10-30
+updated: 2026-10-31
 ---
 
 # Home
@@ -30,7 +30,7 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[ADR-0010 Superpowers Workflow]]
 
 ## Specs
-- [[2026-10-29-home-page-design]] — home page architecture, draft; steps 1–7 done, including the first screen (hero, photo, contacts, About); Experience next
+- [[2026-10-29-home-page-design]] — home page architecture, draft; steps 1–7 done, including the first screen (hero, photo, contacts, About); Experience in progress
 
 ## Plans
 - [[2026-10-30-home-experience]] — Experience block, approved, in progress
@@ -46,6 +46,7 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[2026-10-28]] — database layer for the home page
 - [[2026-10-29]] — home page architecture, step 1: structure move and boundaries lint
 - [[2026-10-30]] — home page: photo, Blob store, image optimization
+- [[2026-10-31]] — home page: Experience card image
 
 ## Templates
 - [[ADR Template]] · [[Journal Template]] · [[Learning Note Template]]

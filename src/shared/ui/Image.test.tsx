@@ -33,4 +33,22 @@ describe("Image", () => {
 
     expect(screen.getByRole("img", { name: "Photo" }).tagName).toBe("IMG");
   });
+
+  it("leaves the placeholder without a frame by default", () => {
+    render(<Image src={null} alt="Photo" sizes="100vw" />);
+
+    expect(screen.getByRole("img", { name: "Photo" })).not.toHaveClass("border-dashed");
+  });
+
+  it("gives a framed placeholder the dashed border and the radius", () => {
+    render(<Image src={null} alt="Photo" sizes="100vw" framed />);
+
+    expect(screen.getByRole("img", { name: "Photo" })).toHaveClass("border-dashed", "rounded-[14px]");
+  });
+
+  it("rounds a framed image and keeps its own classes", () => {
+    render(<Image src={src} alt="Photo" sizes="100vw" className="object-cover" framed />);
+
+    expect(screen.getByRole("img", { name: "Photo" })).toHaveClass("rounded-[14px]", "object-cover");
+  });
 });
