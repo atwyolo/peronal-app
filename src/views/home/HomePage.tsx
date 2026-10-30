@@ -3,8 +3,9 @@
 import { getLocale } from "next-intl/server";
 import type { FC } from "react";
 
-import { getExperience, getLatestPosts, getProfile, getSkills } from "@/db/queries/home";
+import { getExperience, getLatestPosts, getSkills } from "@/db/queries/home";
 import { toPlainText } from "@/shared/lib/rich-text";
+import { About } from "@/widgets/about/About";
 import { Contacts } from "@/widgets/contacts/Contacts";
 import { Hero } from "@/widgets/hero/Hero";
 import { ProfilePhoto } from "@/widgets/profile-photo/ProfilePhoto";
@@ -13,9 +14,8 @@ export const HomePage: FC = async () => {
   // The locale of the current [locale] segment; the queries fall back to English for untranslated rows.
   const locale = await getLocale();
 
-  // Four independent cached reads, started together instead of one after another.
-  const [profile, experience, skills, posts] = await Promise.all([
-    getProfile(locale),
+  // Three independent cached reads, started together instead of one after another.
+  const [experience, skills, posts] = await Promise.all([
     getExperience(locale),
     getSkills(locale),
     getLatestPosts(locale),
@@ -36,11 +36,8 @@ export const HomePage: FC = async () => {
         <Hero className="[grid-area:hero]" />
         <ProfilePhoto className="[grid-area:photo]" />
         <Contacts className="[grid-area:contacts]" />
+        <About className="[grid-area:about]" />
       </div>
-
-      <section className="flex flex-col gap-2">
-        <p className="whitespace-pre-line">{toPlainText(profile.aboutShort)}</p>
-      </section>
 
       <section className="flex flex-col gap-4">
         <h2 className="text-2xl font-semibold">Experience ({experience.length})</h2>

@@ -29,7 +29,7 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[ADR-0009 Agent Workflow]]
 
 ## Specs
-- [[2026-10-29-home-page-design]] — home page architecture, draft; steps 1–6 done, first screen in progress (hero, photo and contacts done, About next)
+- [[2026-10-29-home-page-design]] — home page architecture, draft; steps 1–7 done, including the first screen (hero, photo, contacts, About); Experience next
 
 ## Learning
 - [[Next.js Notes]] — running notes on App Router concepts as they come up
