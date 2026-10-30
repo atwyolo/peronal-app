@@ -25,30 +25,34 @@ Personal portfolio site. Primary goal besides shipping: the owner is learning Ne
 - Discuss approach and alternatives before implementing anything non-trivial (global rule). Confirm, then code.
 - Check `docs/Home.md` for the current roadmap, decisions (ADRs) and open questions. Update them when a decision changes.
 
-## Feature workflow: agent-skills
+## Feature workflow: superpowers
 
-The `agent-skills` plugin (addyosmani/agent-skills) drives the workflow (ADR-0009). Skills to use:
+The `superpowers` plugin drives the workflow (ADR-0010). Skills to use:
 
 | When | Skill |
 |---|---|
-| Discuss before coding: unclear ask, new feature | `interview-me` (one question at a time), `idea-refine` for open-ended ideas |
-| Write the spec | `spec-driven-development` |
-| Break a spec into steps | `planning-and-task-breakdown` |
-| Build a step | `incremental-implementation` + `test-driven-development` |
-| UI work (pages, components, layout, a11y) | `frontend-ui-engineering` |
-| Next.js / library APIs | `source-driven-development` (read `node_modules/next/dist/docs/` and installed package docs first) |
-| Bugs, failing tests, broken builds | `debugging-and-error-recovery` |
-| Before handing a step over | `code-review-and-quality` (or the `agent-skills:code-reviewer` agent) |
-| Decisions | `documentation-and-adrs` |
-| Performance pass, Lighthouse, bundle size | `performance-optimization`, `/webperf` |
-| Admin, auth, forms, uploads | `security-and-hardening` |
-| Risky or irreversible steps (production database) | `doubt-driven-development` |
+| Discuss before coding and write the spec: new feature, unclear ask | `brainstorming` |
+| Break a spec into steps | `writing-plans` |
+| Build a step | `executing-plans` + `test-driven-development` |
+| Bugs, failing tests, broken builds | `systematic-debugging` |
+| Before saying a step is done | `verification-before-completion` |
+| Before handing a step over | `requesting-code-review`, then `receiving-code-review` for the findings |
+
+The plugin has no topic skills, so these stay plain rules:
+
+- **UI work (pages, components, layout, a11y):** follow the design handoff and "UI sources" below; meet WCAG yourself, nothing checks it for you.
+- **Next.js / library APIs:** read `node_modules/next/dist/docs/` and installed package docs first, then context7.
+- **Decisions:** write an ADR from `docs/templates/`.
+- **Performance pass:** no skill or `/webperf` any more; run Lighthouse and measure the bundle by hand.
+- **Admin, auth, forms, uploads:** run the built-in `/security-review` on the pending changes.
+- **Risky or irreversible steps (production database):** show the owner the exact SQL or command and get a confirmation first.
 
 Project rules win where the plugin's defaults differ:
 
-- **No commits, branches or worktrees; Claude stages each step.** The owner commits. Wherever a skill says "commit" (`incremental-implementation`, `git-workflow-and-versioning`, `/build`), stage instead: at the end of every step, stage the step's whole delta with `git add` (new files included) and report it with a suggested Conventional Commit message. Every new file is either staged or covered by `.gitignore` (extend it when a file must not be versioned); never leave files untracked. Do not use `/build auto`.
-- **Specs and plans live in the vault**, in English, with frontmatter and `[[wikilinks]]`: `docs/specs/YYYY-MM-DD-<topic>.md` and `docs/plans/YYYY-MM-DD-<feature>.md`, not `SPEC.md`, `tasks/plan.md` or `tasks/todo.md`. The plan's task list is a checklist inside the plan note. ADRs go to `docs/decisions/` (template in `docs/templates/`). Link everything from `docs/Home.md`.
-- **Learning first.** Implement inline, one step at a time, so every step is visible and explained to the owner; no subagent-driven implementation. Discussion happens in Russian, before any code.
+- **No commits, branches or worktrees; Claude stages each step.** The owner commits. Wherever a skill says "commit" (`brainstorming`, `writing-plans`, `executing-plans`), stage instead: at the end of every step, stage the step's whole delta with `git add` (new files included) and report it with a suggested Conventional Commit message. Plan steps end with `git add`, never `git commit`. Do not use `using-git-worktrees` or `finishing-a-development-branch`. Every new file is either staged or covered by `.gitignore` (extend it when a file must not be versioned); never leave files untracked.
+- **`executing-plans` runs without its scripts.** `task-start`, `task-done`, `review-package` and the `.superpowers/sdd/` ledger are built on commit ranges, which are empty here. The plan's checklist is the ledger: tick a task when its delta is staged. Follow the rest of the skill, including the completion contract. Reviews run on `git diff --cached`, not on `BASE..HEAD`.
+- **Specs and plans live in the vault**, in English, with frontmatter and `[[wikilinks]]`: `docs/specs/YYYY-MM-DD-<topic>.md` and `docs/plans/YYYY-MM-DD-<feature>.md`, not `docs/superpowers/`. The plan's task list is a checklist inside the plan note. ADRs go to `docs/decisions/` (template in `docs/templates/`). Link everything from `docs/Home.md`.
+- **Learning first.** Implement inline, one step at a time, so every step is visible and explained to the owner. Never use `subagent-driven-development` or `dispatching-parallel-agents` for implementation; do not ask which execution approach to use after `writing-plans`, it is always inline. A read-only review subagent from `requesting-code-review` is fine. Discussion happens in Russian, before any code.
 - **Tests** (ADR-0007). `test-driven-development` applies to logic and client components with Vitest. Async Server Components and database-backed pages are verified with Playwright, which must never write to the database (it is the production one). Definition of done for every step: `npm run test:run`, `npm run test:e2e`, `npm run lint`, `npx tsc --noEmit`, `npm run build`.
 
 ## UI sources: 21st.dev MCP

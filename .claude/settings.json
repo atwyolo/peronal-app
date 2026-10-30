@@ -1,6 +1,6 @@
 {
   "enabledPlugins": {
-    "superpowers@claude-plugins-official": false,
-    "agent-skills@addy-agent-skills": true
+    "superpowers@claude-plugins-official": true,
+    "agent-skills@addy-agent-skills": false
   }
 }

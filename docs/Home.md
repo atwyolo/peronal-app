@@ -26,7 +26,8 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[ADR-0006 Forms]]
 - [[ADR-0007 Testing]]
 - [[ADR-0008 Theme]]
-- [[ADR-0009 Agent Workflow]]
+- [[ADR-0009 Agent Workflow]] — superseded by ADR-0010
+- [[ADR-0010 Superpowers Workflow]]
 
 ## Specs
 - [[2026-10-29-home-page-design]] — home page architecture, draft; steps 1–7 done, including the first screen (hero, photo, contacts, About); Experience next

@@ -1,10 +1,12 @@
 ---
 tags: [adr, workflow]
-status: accepted
+status: superseded
 date: 2026-10-29
 ---
 
 # ADR-0009 Agent Workflow
+
+Superseded by [[ADR-0010 Superpowers Workflow]] on 2026-10-30.
 
 ## Context
 Claude Code works on this project through a skills plugin that defines the feature workflow. On 2026-10-29 the owner installed `agent-skills` (addyosmani/agent-skills): 25 skills over the whole lifecycle, including topic skills (frontend UI and accessibility, web performance, security, API design, ADRs) and reviewer agents. A second workflow plugin would cover the same spec, planning, TDD and review stages, partly under the same skill names, and make skill selection ambiguous.
