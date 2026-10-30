@@ -9,6 +9,9 @@ const tones = {
   default: "border-card-border bg-card text-foreground hover:bg-accent aria-expanded:bg-accent",
   brand: "border-card-border bg-card text-brand hover:bg-accent aria-expanded:bg-accent",
   primary: "border-primary bg-primary text-primary-foreground hover:bg-primary/85",
+  /** Carousel arrows; `aria-disabled` instead of `disabled` keeps the keyboard focus, and the focus ring is not dimmed. */
+  outline:
+    "border-brand bg-transparent text-brand hover:bg-accent aria-disabled:pointer-events-none aria-disabled:not-focus-visible:opacity-35",
 } as const;
 
 const shapes = {

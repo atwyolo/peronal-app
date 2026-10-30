@@ -36,7 +36,7 @@ Verify: `e2e/home-motion.spec.ts`, screenshot after the animation ends. Depends 
 ### Task 3: Below the fold, on scroll (S)
 
 - [ ] Experience, Skills and Blog blocks use `.reveal`; the cards inside a carousel carry no reveal class.
-- [ ] Scroll-snap inside a revealed carousel keeps working, despite `overflow: hidden` on the block.
+- [ ] Scroll-snap inside a revealed carousel keeps working, despite `overflow: hidden` on the block. `.reveal` goes on a wrapper around `Carousel`: its `className` lands on the scrolling track, where `overflow: hidden` would stop the swipe.
 
 Verify: Playwright mobile project, manual check in Safari (no `animation-timeline` support is the fallback path). Depends on: task 1.
 

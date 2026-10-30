@@ -4,6 +4,7 @@ import type { FC } from "react";
 import { getExperience } from "@/db/queries/home";
 import { ExperienceCard } from "@/features/experience-card/ExperienceCard";
 import { ButtonLink } from "@/shared/ui/ButtonLink";
+import { Carousel } from "@/shared/ui/Carousel";
 import { SectionHeader } from "@/shared/ui/SectionHeader";
 
 /** Experience block: the jobs in the database's order, then the way to the full list. */
@@ -14,11 +15,11 @@ export const Experience: FC = async () => {
   return (
     <section aria-labelledby="experience-title" className="flex flex-col gap-3 lg:gap-4">
       <SectionHeader id="experience-title">{t("label")}</SectionHeader>
-      <div className="grid gap-3 lg:grid-cols-4 lg:gap-4">
+      <Carousel label={t("label")} className="lg:grid-cols-4">
         {jobs.map((job) => (
           <ExperienceCard key={job.slug} job={job} />
         ))}
-      </div>
+      </Carousel>
       <ButtonLink href="/projects" tone="primary" className="lg:self-end">
         {t("all")}
       </ButtonLink>

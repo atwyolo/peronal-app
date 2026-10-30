@@ -21,6 +21,7 @@ Related: [[2026-10-29-home-page-design]], [[Home Page Handoff]], [[ADR-0007 Test
 
 - **Full-width desktop (owner's decision, added after task 2).** From `lg` there is no maximum width: 20 px on the left, 60 px on the right. Done before task 3, because card sizes depend on it.
 - **Placeholder frame (Claude's call, task 3).** A `framed` prop on `Image`, not a class from the parent: only `Image` knows a load failed. A framed placeholder has the prototype's 1 px lines, because wide stripes in the same color hide the dashes of the border; the photo keeps its own stripes. The prototype's "COMPANY IMAGE" text is left out. A real image gets the same 14 px radius.
+- **Carousel semantics (Claude's call, task 4).** `role="group"`, which the ARIA carousel pattern allows, not `region`: the section around it is already a region with the same name. On desktop the roles stay in the DOM on the grid, the price of one DOM. The position comes only from the scroll offset, read through `useSyncExternalStore`, because the track scrolls before hydration; arrows just scroll. They use `aria-disabled`, so the keyboard focus survives the last slide, and the dimming is dropped on keyboard focus, so the ring stays readable. Smooth scrolling is CSS, so reduced motion needs no JavaScript.
 
 ## Tasks
 
@@ -60,9 +61,9 @@ Verify: extend `Image.test.tsx`; screenshot in both themes. Depends on: task 2.
 
 `shared/lib/carousel-index.ts` (pure), `shared/ui/Carousel.tsx` ("use client"), the messages move, then `Experience` uses it.
 
-- [ ] Index is `round(scrollLeft / (clientWidth + gap))`, test first, including a zero width.
-- [ ] Mobile shows one card per view, "1 / 4" and 44 px arrows above the track; the arrows are inactive at the ends. From `lg` the same DOM is a grid and the controls are hidden.
-- [ ] `aria-roledescription="carousel"`, a region label, `aria-label` on each slide and on the arrows.
+- [x] Index is `round(scrollLeft / (clientWidth + gap))`, test first, including a zero width.
+- [x] Mobile shows one card per view, "1 / 4" and 44 px arrows above the track; the arrows are inactive at the ends. From `lg` the same DOM is a grid and the controls are hidden.
+- [x] `aria-roledescription="carousel"`, a region label, `aria-label` on each slide and on the arrows.
 
 Verify: `Carousel.test.tsx` for the buttons and labels (jsdom has no layout); Playwright for real scrolling, a swipe updating the position, and the desktop grid. Depends on: task 2.
 
@@ -70,8 +71,9 @@ Files: `src/shared/lib/carousel-index.ts`, `src/shared/ui/Carousel.tsx`, `src/wi
 
 ## Checkpoint
 
-- [ ] Definition of done from `CLAUDE.md` is green.
-- [ ] Mobile and desktop screenshots in both themes match the handoff.
+- [x] Definition of done from `CLAUDE.md` is green.
+- [x] Mobile and desktop screenshots in both themes match the handoff.
+- [ ] Manual check on an iPhone in Safari, since the automated runs are Chromium only: arrows stop exactly on a card, a swipe right after an arrow does not jump back, the position is right after a rotation. On an iPad, also a rotation across `lg`.
 - [ ] The owner reviewed the block before Skills starts.
 
 ## Risks
@@ -79,6 +81,5 @@ Files: `src/shared/lib/carousel-index.ts`, `src/shared/ui/Carousel.tsx`, `src/wi
 | Risk | Impact | Mitigation |
 |---|---|---|
 | `Tile` or `overflow` breaks scroll-snap on real devices | Medium | Playwright mobile project plus a manual check on a phone |
-| The first load scroll event moves the position off "1 / 4" | Low | Position starts from state, the listener only updates it; test the initial value |
+| A swipe before hydration leaves the position on "1 / 4" | Low | The position is read from the track, so React corrects it right after hydration; covered in `Carousel.test.tsx` |
 | Fractional duration in `ru` and `pl` plural forms | Low | Translators supply the `other` form; the `#` value is formatted per locale |
-| The carousel's region label contains "Experience", so `getByRole("region", { name: "Experience" })` matches two nested regions and every test in the spec fails | Low | Pick another label, or pass `exact: true` in the spec |
