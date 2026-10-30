@@ -76,8 +76,8 @@ test.describe("desktop", () => {
 
     const photo = await page.getByRole("img", { name: "Mikhail Aleksandrov" }).locator("..").boundingBox();
     const box = await page.getByRole("list", { name: "Contacts" }).boundingBox();
-    expect(box?.x).toBeCloseTo(40 + 40, 0);
-    expect(box?.width).toBeCloseTo(268, 0);
+    expect(box?.x).toBeCloseTo(20, 0);
+    expect(box?.width).toBeCloseTo(288, 0);
     expect(box?.y).toBeCloseTo((photo?.y ?? 0) + (photo?.height ?? 0) + 16, 0);
   });
 });

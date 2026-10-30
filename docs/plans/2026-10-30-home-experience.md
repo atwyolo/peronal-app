@@ -19,6 +19,8 @@ Related: [[2026-10-29-home-page-design]], [[Home Page Handoff]], [[ADR-0007 Test
 - **Current job.** `endDate` is nullable, although all four seeded jobs have one. `new Date()` during a static render fails under Cache Components, so "today" has to be captured inside the cached `getExperience`. It then stays frozen until the next build or tag invalidation, which is acceptable for a one-decimal value. Confirm against `node_modules/next/dist/docs/` before building it.
 - **Carousel strings.** `Home.carousel` moves to a top-level `Carousel` namespace, because `shared/ui` must not know about the home page. A new `slide` message holds `{current} of {total}`.
 
+- **Full-width desktop (owner's decision, added after task 2).** From `lg` there is no maximum width: 20 px on the left, 60 px on the right. Done before task 3, because card sizes depend on it.
+
 ## Tasks
 
 ### Task 1: Period and duration logic (XS)

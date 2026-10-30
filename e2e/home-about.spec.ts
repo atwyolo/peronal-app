@@ -54,15 +54,15 @@ test.describe("desktop", () => {
     await expect(about.locator("strong")).toHaveCSS("font-size", "16px");
   });
 
-  // Viewport 1280: container 1200 at x 40, padding 40, columns (1120 - 3 * 16) / 4 = 268.
+  // Viewport 1280: 20px on the left, 60px on the right, columns (1200 - 3 * 16) / 4 = 288.
   test("sits in columns 2 to 4 and ends on the contacts' bottom line", async ({ page }) => {
     await page.goto("/en");
 
     const box = await page.getByRole("region", { name: "About" }).boundingBox();
     const contacts = await page.getByRole("list", { name: "Contacts" }).boundingBox();
 
-    expect(box?.x).toBeCloseTo(40 + 40 + 268 + 16, 0);
-    expect(box?.width).toBeCloseTo(268 * 3 + 16 * 2, 0);
+    expect(box?.x).toBeCloseTo(20 + 288 + 16, 0);
+    expect(box?.width).toBeCloseTo(288 * 3 + 16 * 2, 0);
     expect((box?.y ?? 0) + (box?.height ?? 0)).toBeCloseTo((contacts?.y ?? 0) + (contacts?.height ?? 0), 0);
   });
 

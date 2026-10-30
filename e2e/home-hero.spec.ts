@@ -14,14 +14,14 @@ test("shows the name as the page heading, the headline and the hero skills", asy
 test.describe("desktop", () => {
   test.skip(({ isMobile }) => isMobile, "the four-column grid starts at lg");
 
-  // Columns 2-4 of the 1200px container: column 1 is left for the photo and contacts.
+  // Columns 2-4 of the grid: column 1 is left for the photo and contacts.
   test("sits in columns 2 to 4 of the grid", async ({ page }) => {
     await page.goto("/en");
 
     const box = await page.getByRole("region", { name: "Mikhail Aleksandrov" }).boundingBox();
-    // Viewport 1280: container 1200 at x 40, padding 40, columns (1120 - 3 * 16) / 4 = 268.
-    expect(box?.x).toBeCloseTo(40 + 40 + 268 + 16, 0);
-    expect(box?.width).toBeCloseTo(268 * 3 + 16 * 2, 0);
+    // Viewport 1280: 20px on the left, 60px on the right, columns (1200 - 3 * 16) / 4 = 288.
+    expect(box?.x).toBeCloseTo(20 + 288 + 16, 0);
+    expect(box?.width).toBeCloseTo(288 * 3 + 16 * 2, 0);
   });
 });
 

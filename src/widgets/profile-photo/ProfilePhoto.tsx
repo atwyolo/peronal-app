@@ -13,9 +13,10 @@ interface ProfilePhotoProps {
 
 /**
  * Photo tile, the LCP element of the home page: square on mobile, fills its grid area on desktop.
- * `sizes` is the rendered image width, not the tile width: in the tall desktop tile `object-cover` scales the photo
- * by its height, so the 268px column needs a wider file (322px at 1280, 345px at 1024). The same crop is why the
- * photo is anchored left: it brings the face to the middle of the tile. On mobile nothing is cropped sideways.
+ * `sizes` is the rendered image width, not the tile width: in a tall desktop tile `object-cover` scales the photo by
+ * its height, so the 288px column needs a wider file (322px at 1280, 345px at 1024). From about 1440 the tile is wider
+ * than tall and the column decides, so desktop takes the larger of the two. The same crop is why the photo is
+ * anchored left: it brings the face to the middle of the tile. On mobile nothing is cropped sideways.
  */
 export const ProfilePhoto: FC<ProfilePhotoProps> = async (props) => {
   const { className } = props;
@@ -27,7 +28,7 @@ export const ProfilePhoto: FC<ProfilePhotoProps> = async (props) => {
       <Image
         src={photoUrl}
         alt={name}
-        sizes="(min-width: 1024px) 360px, (min-width: 720px) 688px, calc(100vw - 32px)"
+        sizes="(min-width: 1024px) max(360px, 25vw), (min-width: 720px) 688px, calc(100vw - 32px)"
         preload
         className="object-cover object-[0_0]"
       />

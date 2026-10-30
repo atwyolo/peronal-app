@@ -19,7 +19,7 @@ export const HomePage: FC = async () => {
   const [skills, posts] = await Promise.all([getSkills(locale), getLatestPosts(locale)]);
 
   return (
-    <main className="mx-auto flex w-full max-w-[720px] flex-col gap-3 px-4 pt-4 pb-8 lg:max-w-[1200px] lg:gap-4 lg:px-10 lg:pt-6 lg:pb-12">
+    <main className="mx-auto flex w-full max-w-[720px] flex-col gap-3 px-4 pt-4 pb-8 lg:max-w-none lg:gap-4 lg:pr-15 lg:pl-5 lg:pt-6 lg:pb-12">
       {/*
         First screen: one DOM order (the mobile one: hero, photo, contacts, About), placed by named grid areas.
         Mobile, 2 columns:      Desktop (lg), 4 columns:

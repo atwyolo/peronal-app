@@ -49,10 +49,21 @@ test.describe("desktop", () => {
     await page.goto("/en");
 
     const box = await page.getByRole("img", { name: "Mikhail Aleksandrov" }).locator("..").boundingBox();
-    // Viewport 1280: container 1200 at x 40, padding 40, columns (1120 - 3 * 16) / 4 = 268.
-    expect(box?.x).toBeCloseTo(40 + 40, 0);
-    expect(box?.width).toBeCloseTo(268, 0);
+    // Viewport 1280: 20px on the left, 60px on the right, columns (1200 - 3 * 16) / 4 = 288.
+    expect(box?.x).toBeCloseTo(20, 0);
+    expect(box?.width).toBeCloseTo(288, 0);
     expect(box?.height).toBeGreaterThanOrEqual(380);
+  });
+
+  test("loads a file at least as wide as the tile on a wide screen", async ({ page }) => {
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    await page.goto("/en");
+
+    const image = page.getByRole("img", { name: "Mikhail Aleksandrov" });
+    await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBeGreaterThan(0);
+    const fileWidth = await image.evaluate((element: HTMLImageElement) => element.naturalWidth);
+
+    expect(fileWidth).toBeGreaterThanOrEqual((await image.boundingBox())?.width ?? Infinity);
   });
 });
 

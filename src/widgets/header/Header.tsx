@@ -19,7 +19,7 @@ export const Header: FC = async () => {
 
   return (
     <header className="sticky top-0 z-10 border-b border-card-border bg-card">
-      <div className="mx-auto flex h-16 max-w-[720px] items-center gap-2 pr-3 pl-4 lg:h-[72px] lg:max-w-[1200px] lg:gap-8 lg:px-10">
+      <div className="mx-auto flex h-16 max-w-[720px] items-center gap-2 pr-3 pl-4 lg:h-[72px] lg:max-w-none lg:gap-8 lg:pr-15 lg:pl-5">
         <Link
           href="/"
           className="min-w-0 grow truncate text-[17px] font-semibold tracking-[-0.02em] whitespace-nowrap lg:text-xl"
