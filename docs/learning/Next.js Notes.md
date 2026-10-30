@@ -1,6 +1,6 @@
 ---
 tags: [learning, nextjs]
-updated: 2026-10-28
+updated: 2026-10-30
 ---
 
 # Next.js Notes
@@ -73,6 +73,7 @@ Running notes on concepts as they appear in the project. One heading per concept
 - `sizes` tells the browser how wide the image renders before layout, so it can pick a file from `srcset`. With `object-cover` in a tall box the photo is scaled by height, so the rendered width is larger than the box.
 - `remotePatterns` is an allowlist: without it the optimizer would convert any image on the internet at our expense. `qualities` limits variants for the same reason.
 - `priority` is deprecated in Next 16 in favour of `preload`, which adds a `<link rel="preload">` to `<head>`. Only for the LCP image.
+- `onError` is a function prop, so it needs a Client Component (`src/shared/ui/Image.tsx`). The image stays in the prerendered HTML: `"use client"` does not mean client-only rendering. An error that fires before hydration would be lost, so next/image re-assigns `src` after mount when `onError` is set.
 
 ## To write up when encountered
 - Rendering modes and how Next decides static vs dynamic.

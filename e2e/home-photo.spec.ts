@@ -18,6 +18,30 @@ test("preloads the photo, since it is the LCP element", async ({ page }) => {
   await expect(page.locator('head link[rel="preload"][as="image"]')).toHaveCount(1);
 });
 
+test("downloads the photo once, even with the error replay of next/image", async ({ page }) => {
+  const downloads: string[] = [];
+  page.on("response", (response) => {
+    if (response.url().includes("/_next/image")) downloads.push(response.url());
+  });
+
+  await page.goto("/en", { waitUntil: "networkidle" });
+
+  expect(downloads).toHaveLength(1);
+});
+
+test.describe("when the image fails to load", () => {
+  test.use({ allowedConsoleErrors: [/status of 404/] });
+
+  test("shows the labelled placeholder in the same tile", async ({ page }) => {
+    await page.route("**/_next/image**", (route) => route.fulfill({ status: 404 }));
+    await page.goto("/en");
+
+    const placeholder = page.getByRole("img", { name: "Mikhail Aleksandrov" });
+    await expect.poll(() => placeholder.evaluate((element) => element.tagName)).toBe("DIV");
+    await expect(placeholder).toBeVisible();
+  });
+});
+
 test.describe("desktop", () => {
   test.skip(({ isMobile }) => isMobile, "the four-column grid starts at lg");
 

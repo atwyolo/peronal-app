@@ -1,9 +1,9 @@
-import Image from "next/image";
 import { getLocale } from "next-intl/server";
 import type { FC } from "react";
 
 import { getProfile } from "@/db/queries/home";
 import { cn } from "@/shared/lib/utils";
+import { Image } from "@/shared/ui/Image";
 import { Tile } from "@/shared/ui/Tile";
 
 interface ProfilePhotoProps {
@@ -23,21 +23,13 @@ export const ProfilePhoto: FC<ProfilePhotoProps> = async (props) => {
 
   return (
     <Tile className={cn("relative aspect-square overflow-hidden p-0 lg:aspect-auto lg:min-h-[380px] lg:p-0", className)}>
-      {photoUrl ? (
-        <Image
-          src={photoUrl}
-          alt={name}
-          fill
-          preload
-          sizes="(min-width: 1024px) 400px, (min-width: 720px) 688px, calc(100vw - 32px)"
-          className="object-cover object-[50%_0]"
-        />
-      ) : (
-        <div
-          aria-hidden
-          className="size-full bg-[repeating-linear-gradient(45deg,var(--placeholder)_0_8px,transparent_8px_16px)]"
-        />
-      )}
+      <Image
+        src={photoUrl}
+        alt={name}
+        sizes="(min-width: 1024px) 400px, (min-width: 720px) 688px, calc(100vw - 32px)"
+        preload
+        className="object-cover object-[50%_0]"
+      />
     </Tile>
   );
 };

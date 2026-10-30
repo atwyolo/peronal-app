@@ -27,7 +27,7 @@ Personal portfolio site. Primary goal besides shipping: the owner is learning Ne
 
 ## Feature workflow: agent-skills
 
-The `agent-skills` plugin (addyosmani/agent-skills) drives the workflow; `superpowers` is disabled for this project (`.claude/settings.json`, ADR-0009). Skills to use:
+The `agent-skills` plugin (addyosmani/agent-skills) drives the workflow (ADR-0009). Skills to use:
 
 | When | Skill |
 |---|---|
@@ -91,6 +91,7 @@ export const HomePage: FC<HomePageProps> = (props) => {
 ### General
 
 - Server Components by default. Add `"use client"` only where hooks, browser APIs or event handlers are required, and keep those leaves small.
+- Images render through `src/shared/ui/Image.tsx`, never `next/image` directly: it gives every image the placeholder for a missing source or a failed load.
 - Data access goes through `src/db/` (schema, queries). Pages never import the driver directly.
 - Mutations are Server Actions in `src/actions/`, validated with the form's Zod schema from `src/schemas/`, returning typed `{ ok, errors }` results for `useActionState`. Every action checks auth itself: actions are public POST endpoints, `proxy` does not protect them.
 - Rendering intent is explicit per route: static, ISR (`revalidate`), or dynamic. Note it in a one-line comment at the top of the page file.
