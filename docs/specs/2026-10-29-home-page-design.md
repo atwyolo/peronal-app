@@ -20,6 +20,7 @@ Implement the approved home page design on top of the existing database layer, a
 - **Included now:** localization (next-intl, `[locale]` segment, 8 locales) and theme (next-themes, dark/light/system), together with the header menus.
 - **Delivery:** step by step, one functionality at a time, each step ending green (tests, lint, types, build). Not everything at once.
 - Out of scope: About, Projects, Blog, Contact pages; admin. The photo and CV were uploaded to Blob by hand in the dashboard (owner's decision, 2026-10-30), an upload UI waits for the admin.
+- **No footer (owner's decision, 2026-10-30):** a deviation from the handoff, the page ends with the Blog block. Crawlers lose nothing: the `hreflang` links already list every locale.
 
 ## Decided
 
@@ -29,7 +30,7 @@ Implement the approved home page design on top of the existing database layer, a
 src/
 ├─ app/        Next routes only: page/layout/loading/error/not-found, metadata, generateStaticParams; providers in app/_providers
 ├─ views/      page compositions ("pages" layer, renamed: src/pages would be picked up by the Next Pages Router)
-├─ widgets/    large page blocks: header, hero, contacts, about, experience, skills, blog, footer
+├─ widgets/    large page blocks: header, hero, contacts, about, experience, skills, blog
 ├─ features/   concrete business UI: experience card, post card, skills explorer, locale menu, theme menu
 ├─ shared/
 │  ├─ ui/      our components and adapters over shadcn (own API)
@@ -109,7 +110,7 @@ widgets/skills/SkillsSection.tsx            server: getSkills(locale)
 
 ## Steps
 
-Small steps, **one step per commit** (owner's decision). Working order: structure move → tokens/fonts → i18n routing → localized metadata → theme → header → first screen (hero, photo, contacts, About) → experience → skills → blog → footer → motion pass; the order after the first screen is still to confirm. i18n goes before theme because the `[locale]` segment rebuilds the root layout (Claude's call).
+Small steps, **one step per commit** (owner's decision). Working order: structure move → tokens/fonts → i18n routing → localized metadata → theme → header → first screen (hero, photo, contacts, About) → experience → skills → blog → motion pass (order confirmed by the owner, 2026-10-30). The remaining blocks have plans: [[2026-10-30-home-experience]], [[2026-10-30-home-skills]], [[2026-10-30-home-blog]], [[2026-10-30-home-motion]]. i18n goes before theme because the `[locale]` segment rebuilds the root layout (Claude's call).
 
 1. **Structure move + boundaries lint — done 2026-10-29.** shadcn → `src/shared/shadcn/ui`, `src/lib` → `src/shared/lib`, the temporary data dump → `src/views/home/HomePage.tsx` with a thin `src/app/page.tsx`, `components.json` aliases repointed, `eslint-plugin-boundaries` configured and checked against deliberate violations. `src/db/schema` and `src/db/seed` keep relative imports because drizzle-kit and tsx load them outside Next.
 2. **Tokens and fonts — done 2026-10-29.** `src/app/globals.css` uses the palette and extra tokens from `docs/design/home/tokens.css` (shadcn `sidebar`/`chart` variables dropped as unused, Claude's call); the self-referencing `--font-sans` fixed; Geist preloads latin + cyrillic; Japanese falls back to a system font stack (owner's decision, see [[Localization]]). The reveal animation CSS waits for the motion step. Covered by `e2e/design-tokens.spec.ts` (palette in both themes, Geist applied).
@@ -121,7 +122,7 @@ Small steps, **one step per commit** (owner's decision). Working order: structur
    2. **Theme menu — done 2026-10-29.** shadcn `dropdown-menu` added (`src/shared/shadcn/ui`). Adapters: `shared/ui/Menu.tsx` (single-choice menu as data: `trigger`, `label`, `items` with optional `hint`, `value`, `onValueChange`; styled per the prototype) and `shared/ui/Button.tsx` (`tone`: default/brand/primary, `shape`: pill/circle/circle-to-pill; built on the shadcn "default" variant because "outline" brings aria-expanded/dark rules that override our colors). `shared/lib/useMounted.ts` (`useSyncExternalStore`, no setState in an effect). `features/theme-menu/ThemeMenu.tsx`: Dark/Light/System, "now dark/light" hint, resolved-theme icon after mount. Tests: `Menu.test.tsx`, `ThemeMenu.test.tsx`, theme menu case in `e2e/theme.spec.ts`; the token test now forces dark through the stored choice, since next-themes owns the `<html>` class.
    3. **Locale menu — done 2026-10-29.** `features/locale-menu/LocaleMenu.tsx` on the same Menu/Button adapters: native names, uppercase code as hint and on the trigger, `router.replace(pathname, { locale })`. Switching changes the root layout, so Next loads the page fully; the proxy sets `NEXT_LOCALE` (one year) when the choice differs from the browser language, verified end to end. Tests: `LocaleMenu.test.tsx`, locale menu case in `e2e/i18n-routing.spec.ts`.
    4. **Mobile menu — done 2026-10-29.** shadcn `sheet` added. Adapter `shared/ui/Drawer.tsx`: right-side panel, controlled (`open`/`onOpenChange`), visually hidden title, our own close button with a translated label (the shadcn one is hard-coded "Close") at the hamburger's spot. `features/mobile-nav/MobileNav.tsx`: hamburger below lg, the `siteNav` items through `NavLink` (17 px, 48 px rows), closes on link click via one delegated handler. Tests: `MobileNav.test.tsx`; `e2e/header.spec.ts` covers the panel, focus trap, Escape returning focus to the trigger, closing on navigation, and no hamburger on desktop.
-7. **First screen: hero, photo, contacts, About — in progress** (owner agreed on the order): grid + Tile + hero → photo → Image adapter → contacts and CV → About.
+7. **First screen: hero, photo, contacts, About — done 2026-10-30** (owner agreed on the order): grid + Tile + hero → photo → Image adapter → contacts and CV → About.
    - **Layout (owner chose option A):** one DOM order, the mobile one (hero, photo, contacts, About), placed by named `grid-template-areas`. Desktop: photo spans rows 1–2 and contacts row 3 in column 1; hero row 1 and About rows 2–3 in columns 2–4. Rejected: desktop column wrappers with `display: contents` on mobile (DOM order puts the photo before the name, a11y risk), and rendering the markup twice (two h1, duplicated content).
    - **About (owner's decision):** the whole `aboutShort` document is shown on every breakpoint; no CSS hiding of a desktop-only paragraph.
    1. **Grid, Tile, hero — done 2026-10-29.** `shared/ui/Tile.tsx` (surface, border, 20/24 radius, padding; `as` for `section`/`article`, `className` for grid placement and overrides), `shared/ui/Chip.tsx` (mono pill, colored text, no fill), `widgets/hero/Hero.tsx` (reads `getProfile` itself; the page's only h1, headline, chips from `heroSkills` as a list). `HomePage` gets the first-screen grid; the temporary dump stays below it. Empty grid areas keep their row gaps until their tiles arrive. Tests: `e2e/home-hero.spec.ts` (content, a single h1, grid position on desktop and mobile).
@@ -132,11 +133,10 @@ Small steps, **one step per commit** (owner's decision). Working order: structur
 
 ## Open (resume here)
 
-1. **Remaining step order** after the first screen (see Steps).
-2. **i18n:** client messages scope is all messages for now, narrow later if the payload grows (Claude's call).
-3. From the handoff: what "Learn more" on experience cards points to.
-4. TDD per step: which parts get Vitest tests first (duration formatting, skill sorting/filtering, carousel index) and which get Playwright checks.
-5. After the questions: finish the spec with `spec-driven-development`, get the owner's approval, then break the remaining blocks down with `planning-and-task-breakdown` (vault paths, see [[ADR-0009 Agent Workflow]]). Until then each block is agreed in chat and built step by step.
+1. **TDD per step:** the plans propose the split between Vitest and Playwright, waiting for the owner's confirmation.
+2. **i18n:** client messages scope is all messages for now (Claude's call); measured again in [[2026-10-30-home-motion]].
+3. **Plans** are drafts until the owner approves them. The owner chose to plan the remaining blocks now (2026-10-30); the spec stays a draft until the motion pass closes the page.
+4. "Learn more" on experience cards goes to `/projects` for now (owner's decision, 2026-10-30), to be revisited when that page exists.
 
 ## Calls made by Claude (to confirm on approval)
 

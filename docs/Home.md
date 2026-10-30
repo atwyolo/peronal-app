@@ -31,6 +31,12 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 ## Specs
 - [[2026-10-29-home-page-design]] — home page architecture, draft; steps 1–7 done, including the first screen (hero, photo, contacts, About); Experience next
 
+## Plans
+- [[2026-10-30-home-experience]] — Experience block, approved, in progress
+- [[2026-10-30-home-skills]] — Skills block, draft
+- [[2026-10-30-home-blog]] — Blog block and clean-up, draft
+- [[2026-10-30-home-motion]] — accent wipe and verification pass, draft
+
 ## Learning
 - [[Next.js Notes]] — running notes on App Router concepts as they come up
 
