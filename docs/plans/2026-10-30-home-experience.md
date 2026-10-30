@@ -1,6 +1,6 @@
 ---
 tags: [plan, home]
-status: approved
+status: done
 date: 2026-10-30
 ---
 
@@ -73,8 +73,19 @@ Files: `src/shared/lib/carousel-index.ts`, `src/shared/ui/Carousel.tsx`, `src/wi
 
 - [x] Definition of done from `CLAUDE.md` is green.
 - [x] Mobile and desktop screenshots in both themes match the handoff.
-- [ ] Manual check on an iPhone in Safari, since the automated runs are Chromium only: arrows stop exactly on a card, a swipe right after an arrow does not jump back, the position is right after a rotation. On an iPad, also a rotation across `lg`.
-- [ ] The owner reviewed the block before Skills starts.
+- [ ] Manual check on an iPhone in Safari, since the automated runs are Chromium only: arrows stop exactly on a card, a swipe right after an arrow does not jump back, the position is right after a rotation. On an iPad, also a rotation across `lg`. No result recorded when the block was closed; see Deferred.
+- [x] The owner reviewed the block before Skills starts (block closed by the owner, 2026-10-31).
+
+## Deferred
+
+Left open when the block was closed. Blog reuses `Carousel`, so that is the natural moment to pick them up.
+
+- Safari result of the manual check above, and any fix it asks for.
+- `glovo.png` needs a new export: the logo sits above the center, so the top of its pin is cut between 720 and 1023 px. Sony, EPAM and Omega-R have no image yet and show the placeholder. Rules: step 8.4 of [[2026-10-29-home-page-design]].
+- `scrollToSlide` computes the target from `clientWidth`, which is rounded. WebKit may not correct a programmatic `scrollTo` with snap, so at a fractional width the track can stop up to 1.5 px off on the fourth card. Reading the slide's own offset fixes it, and drops the `GAP` dependency there.
+- `getCarouselIndex` assumes a slide is as wide as the track: horizontal padding passed through `className` would break it.
+- A quick double tap on an arrow can move one card instead of two, a consequence of arrows only scrolling.
+- Tests missing: equal card height on mobile, a run between 720 and 1023 px. `scrolls smoothly from the arrows` checks the computed style, not the animation.
 
 ## Risks
 

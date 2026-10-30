@@ -30,10 +30,10 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[ADR-0010 Superpowers Workflow]]
 
 ## Specs
-- [[2026-10-29-home-page-design]] — home page architecture, draft; steps 1–7 done, including the first screen (hero, photo, contacts, About); Experience in progress
+- [[2026-10-29-home-page-design]] — home page architecture, draft; steps 1–8 done, up to the Experience block; Skills next
 
 ## Plans
-- [[2026-10-30-home-experience]] — Experience block, approved, in progress
+- [[2026-10-30-home-experience]] — Experience block, done; deferred items listed there
 - [[2026-10-30-home-skills]] — Skills block, draft
 - [[2026-10-30-home-blog]] — Blog block and clean-up, draft
 - [[2026-10-30-home-motion]] — accent wipe and verification pass, draft
@@ -46,7 +46,7 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[2026-10-28]] — database layer for the home page
 - [[2026-10-29]] — home page architecture, step 1: structure move and boundaries lint
 - [[2026-10-30]] — home page: photo, Blob store, image optimization
-- [[2026-10-31]] — home page: Experience card image
+- [[2026-10-31]] — home page: Experience block closed
 
 ## Templates
 - [[ADR Template]] · [[Journal Template]] · [[Learning Note Template]]

@@ -75,6 +75,15 @@ Running notes on concepts as they appear in the project. One heading per concept
 - `priority` is deprecated in Next 16 in favour of `preload`, which adds a `<link rel="preload">` to `<head>`. Only for the LCP image.
 - `onError` is a function prop, so it needs a Client Component (`src/shared/ui/Image.tsx`). The image stays in the prerendered HTML: `"use client"` does not mean client-only rendering. An error that fires before hydration would be lost, so next/image re-assigns `src` after mount when `onError` is set.
 
+## Client leaf around server content
+- A Client Component can wrap Server Components through `children`: `Carousel` is `"use client"`, the cards inside render on the server and stay out of the client bundle. `Children.toArray` still sees them, so each card gets its own slide.
+- Client state starts from a fixed value, but the browser does not wait for React: a CSS scroll-snap track scrolls before hydration, and no handler sees that scroll. When the truth lives in the DOM, read it with `useSyncExternalStore`: the server snapshot keeps the first render deterministic, and React corrects the value right after hydration, without a `setState` in an effect.
+- One DOM for every breakpoint: the row and the grid are CSS, so nothing is rendered twice and the markup never depends on `window`.
+- `scroll-behavior` in CSS also covers a `scrollTo` from JavaScript, so `motion-reduce:scroll-auto` handles reduced motion without reading `matchMedia`.
+
+## Dev server across the network
+- `next dev` blocks its internal resources for any host other than `localhost` and the one it started with. `allowedDevOrigins` lists more: hostnames only, no scheme or port, and `*` stands for one label. It has no effect on a production build.
+
 ## To write up when encountered
 - Rendering modes and how Next decides static vs dynamic.
 - Server Actions and `useActionState`.

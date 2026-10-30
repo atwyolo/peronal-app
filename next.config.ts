@@ -8,8 +8,8 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
-  // Dev server only: the Mac's LAN address, to open the site on a phone. Update it if the router hands out a new one.
-  allowedDevOrigins: ["192.168.1.116"],
+  // Dev server only: the home subnet, to open the site on a phone whatever address the router hands out.
+  allowedDevOrigins: ["192.168.1.*"],
   images: {
     // AVIF first, WebP for browsers without it. Every extra quality or format multiplies the variants Vercel encodes.
     formats: ["image/avif", "image/webp"],
