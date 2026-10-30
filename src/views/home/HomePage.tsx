@@ -6,6 +6,7 @@ import type { FC } from "react";
 import { getExperience, getLatestPosts, getProfile, getSkills } from "@/db/queries/home";
 import { toPlainText } from "@/shared/lib/rich-text";
 import { Hero } from "@/widgets/hero/Hero";
+import { ProfilePhoto } from "@/widgets/profile-photo/ProfilePhoto";
 
 export const HomePage: FC = async () => {
   // The locale of the current [locale] segment; the queries fall back to English for untranslated rows.
@@ -32,6 +33,7 @@ export const HomePage: FC = async () => {
       */}
       <div className="grid grid-cols-2 gap-3 [grid-template-areas:'hero_hero'_'photo_photo'_'contacts_contacts'_'about_about'] lg:grid-cols-4 lg:gap-4 lg:[grid-template-areas:'photo_hero_hero_hero'_'photo_about_about_about'_'contacts_about_about_about']">
         <Hero className="[grid-area:hero]" />
+        <ProfilePhoto className="[grid-area:photo]" />
       </div>
 
       <section className="flex flex-col gap-2">
@@ -46,8 +48,7 @@ export const HomePage: FC = async () => {
           <li>
             LinkedIn: <a href={profile.contacts.linkedin.href}>{profile.contacts.linkedin.display}</a>
           </li>
-          <li>CV: {profile.cvUrl ?? "not uploaded"}</li>
-          <li>Photo: {profile.photoUrl ?? "not uploaded"}</li>
+          <li className="break-all">CV: {profile.cvUrl ?? "not uploaded"}</li>
         </ul>
       </section>
 

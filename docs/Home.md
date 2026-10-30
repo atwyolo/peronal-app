@@ -1,6 +1,6 @@
 ---
 tags: [moc]
-updated: 2026-10-29
+updated: 2026-10-30
 ---
 
 # Home
@@ -38,6 +38,7 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[2026-10-26]] — kickoff: decisions, scaffold
 - [[2026-10-28]] — database layer for the home page
 - [[2026-10-29]] — home page architecture, step 1: structure move and boundaries lint
+- [[2026-10-30]] — home page: photo, Blob store, image optimization
 
 ## Templates
 - [[ADR Template]] · [[Journal Template]] · [[Learning Note Template]]

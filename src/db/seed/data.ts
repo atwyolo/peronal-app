@@ -2,7 +2,7 @@
  * Initial content, taken from docs/design/home/content.ts (English only; other locales fall back).
  * Values marked TODO(owner) are design placeholders, not facts. Edit them later in the admin.
  */
-import { boldParagraph, bulletList, doc, paragraph } from "../../shared/lib/rich-text";
+import { boldParagraph, bulletList, doc, paragraph } from "@/shared/lib/rich-text";
 
 export const domains = [
   { key: "core", label: "Core" },
@@ -53,7 +53,8 @@ export const skills = (Object.keys(byDomain) as DomainKey[]).flatMap((domain) =>
 );
 
 export const profile = {
-  photoUrl: null, // TODO(owner): upload the photo to Vercel Blob
+  photoUrl:
+    "https://5iyco5bcxydlbyja.public.blob.vercel-storage.com/rXcYu8eejMYRp7vIq0LflWxtPtHx6xAZ8_nOpxiKeG2h_8qFJQ_tAMvrtAiLqsoEJN5xM3MOjWnY74ct052qnkve.jpg",
   whatsappPhone: "+37493310039",
   email: "mikhail.aleksandrov.job@gmail.com",
   linkedinUrl: "https://www.linkedin.com/in/mikhail-aleksandrov-job",
@@ -73,7 +74,8 @@ export const profile = {
     ),
     metaDescription:
       "I'm a Senior Frontend Engineer with 8+ years of commercial experience in React and Next.js, most recently at Glovo, Sony PlayStation and EPAM.",
-    cvUrl: null, // TODO(owner): upload the CV PDF to Vercel Blob
+    // `?download=1` is the blob's download URL: `<a download>` is ignored cross-origin.
+    cvUrl: "https://5iyco5bcxydlbyja.public.blob.vercel-storage.com/Mikhail_Aleksandrov_Frontend.pdf?download=1",
   },
 };
 

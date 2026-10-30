@@ -8,6 +8,13 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  images: {
+    // AVIF first, WebP for browsers without it. Every extra quality or format multiplies the variants Vercel encodes.
+    formats: ["image/avif", "image/webp"],
+    qualities: [85],
+    // Only our Blob store: the optimizer must not work as an open proxy for other sites' images.
+    remotePatterns: [new URL("https://5iyco5bcxydlbyja.public.blob.vercel-storage.com/**")],
+  },
   turbopack: {
     rules: {
       "*.css": {

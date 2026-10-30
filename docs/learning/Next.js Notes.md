@@ -68,6 +68,12 @@ Running notes on concepts as they appear in the project. One heading per concept
 ## "Mounted" without an effect
 - `useSyncExternalStore(subscribe, () => true, () => false)` returns the server snapshot (`false`) during SSR and hydration and the client snapshot (`true`) right after. It replaces the classic `useEffect(() => setMounted(true), [])`, which renders twice and is flagged by the React Compiler-era lint rule against setState in effects.
 
+## next/image
+- The visitor downloads an optimized copy, not the uploaded file: `/_next/image?url=...&w=...&q=...` encodes one variant per width, format and quality on first request and caches it. So upload a good master and control the weight with `formats`, `qualities` and `sizes` (`src/widgets/profile-photo/ProfilePhoto.tsx`, `next.config.ts`).
+- `sizes` tells the browser how wide the image renders before layout, so it can pick a file from `srcset`. With `object-cover` in a tall box the photo is scaled by height, so the rendered width is larger than the box.
+- `remotePatterns` is an allowlist: without it the optimizer would convert any image on the internet at our expense. `qualities` limits variants for the same reason.
+- `priority` is deprecated in Next 16 in favour of `preload`, which adds a `<link rel="preload">` to `<head>`. Only for the LCP image.
+
 ## To write up when encountered
 - Rendering modes and how Next decides static vs dynamic.
 - Server Actions and `useActionState`.

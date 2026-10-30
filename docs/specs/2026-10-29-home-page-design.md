@@ -19,7 +19,7 @@ Implement the approved home page design on top of the existing database layer, a
 - Home page (`/[locale]`) per [[Home Page Handoff]].
 - **Included now:** localization (next-intl, `[locale]` segment, 8 locales) and theme (next-themes, dark/light/system), together with the header menus.
 - **Delivery:** step by step, one functionality at a time, each step ending green (tests, lint, types, build). Not everything at once.
-- Out of scope: About, Projects, Blog, Contact pages; admin; uploading the photo and CV to Blob.
+- Out of scope: About, Projects, Blog, Contact pages; admin. The photo and CV were uploaded to Blob by hand in the dashboard (owner's decision, 2026-10-30), an upload UI waits for the admin.
 
 ## Decided
 
@@ -125,6 +125,7 @@ Small steps, **one step per commit** (owner's decision). Working order, the rest
    - **Layout (owner chose option A):** one DOM order, the mobile one (hero, photo, contacts, About), placed by named `grid-template-areas`. Desktop: photo spans rows 1–2 and contacts row 3 in column 1; hero row 1 and About rows 2–3 in columns 2–4. Rejected: desktop column wrappers with `display: contents` on mobile (DOM order puts the photo before the name, a11y risk), and rendering the markup twice (two h1, duplicated content).
    - **About (owner's decision):** the whole `aboutShort` document is shown on every breakpoint; no CSS hiding of a desktop-only paragraph.
    1. **Grid, Tile, hero — done 2026-10-29.** `shared/ui/Tile.tsx` (surface, border, 20/24 radius, padding; `as` for `section`/`article`, `className` for grid placement and overrides), `shared/ui/Chip.tsx` (mono pill, colored text, no fill), `widgets/hero/Hero.tsx` (reads `getProfile` itself; the page's only h1, headline, chips from `heroSkills` as a list). `HomePage` gets the first-screen grid; the temporary dump stays below it. Empty grid areas keep their row gaps until their tiles arrive. Tests: `e2e/home-hero.spec.ts` (content, a single h1, grid position on desktop and mobile).
+   2. **Photo — done 2026-10-30.** Public Blob store created and connected in the Vercel dashboard; the owner uploaded a 1600×2000 sRGB JPEG master (q90, no EXIF) and the CV, and wrote the URLs to the database (`cv_url` with `?download=1`). `widgets/profile-photo/ProfilePhoto.tsx` (reads `getProfile` itself, `next/image` with `fill` and `preload`, striped placeholder while `photoUrl` is null). `next.config.ts`: `formats` AVIF + WebP, `qualities: [85]`, `remotePatterns` limited to our store. Quality measured on the real photo: 60–75 visibly soften the skin next to the source, 85 is the closest for about 6 KB more than 70; AVIF at q85 is 14 KB at 640 px, 21 KB at 828 px (desktop 2x), 34 KB at 1080 px (phone), about half the WebP size. Deviations from the handoff: `preload` instead of the deprecated `priority`; `object-position: 50% 0` instead of `50% 12%`, because the head nearly touches the top edge of this photo and 12% would cut about 6 px off it on mobile. To revisit in the About step: the desktop `sizes` value (400px is provisional, the tile height depends on About) and the horizontal position (the face sits left of centre). Tests: `e2e/home-photo.spec.ts`.
 
 ## Open (resume here)
 
