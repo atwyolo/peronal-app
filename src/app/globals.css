@@ -56,8 +56,7 @@
 
   /* Contact brand colors are the same in both themes. */
   --color-whatsapp: #25d366;
-  --color-whatsapp-foreground: #10142a;
-  --color-whatsapp-icon: #128c7e;
+  --color-whatsapp-foreground: #ffffff;
   --color-gmail: #d93025;
   --color-gmail-foreground: #ffffff;
   --color-linkedin: #0a66c2;

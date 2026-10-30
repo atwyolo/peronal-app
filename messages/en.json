@@ -32,6 +32,7 @@
     "systemNow": "now {theme, select, dark {dark} other {light}}"
   },
   "Contacts": {
+    "label": "Contacts",
     "whatsapp": "WhatsApp",
     "whatsappAria": "WhatsApp: {phone}",
     "mailAria": "Mail: {email}",
