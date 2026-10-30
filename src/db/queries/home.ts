@@ -110,6 +110,8 @@ export type HomeExperience = {
   /** "YYYY-MM-DD"; formatting and duration happen in the UI with next-intl. */
   startDate: string;
   endDate: string | null;
+  /** "YYYY-MM-DD" when this result was cached: closes a running job, frozen until the next build or `updateTag`. */
+  today: string;
   imageUrl: string | null;
   descriptionShort: RichTextDoc;
   skills: string[];
@@ -145,8 +147,12 @@ export async function getExperience(locale: Locale): Promise<HomeExperience[]> {
       .orderBy(asc(experienceSkills.sort)),
   ]);
 
+  // A static render must not read the clock; inside "use cache" the value is simply part of the cached result.
+  const today = new Date().toISOString().slice(0, 10);
+
   return jobs.map(({ id, ...job }) => ({
     ...job,
+    today,
     skills: links.filter((link) => link.experienceId === id).map((link) => link.name),
   }));
 }

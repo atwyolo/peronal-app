@@ -15,27 +15,31 @@ describe("formatMonthYear", () => {
 });
 
 describe("getDurationYears", () => {
-  it("rounds the whole months between two dates to one decimal", () => {
-    expect(getDurationYears("2024-11-01", "2026-10-01", today)).toBe(1.9);
+  it("counts both the first and the last month, so a job from November to October is two years", () => {
+    expect(getDurationYears("2024-11-01", "2026-10-01", today)).toBe(2);
+  });
+
+  it("rounds to one decimal", () => {
+    expect(getDurationYears("2023-08-01", "2024-11-01", today)).toBe(1.3);
   });
 
   it("counts twelve months as exactly one year", () => {
-    expect(getDurationYears("2023-03-01", "2024-03-01", today)).toBe(1);
+    expect(getDurationYears("2023-03-01", "2024-02-01", today)).toBe(1);
   });
 
   it("rounds eleven months to 0.9", () => {
-    expect(getDurationYears("2023-03-01", "2024-02-01", today)).toBe(0.9);
+    expect(getDurationYears("2023-03-01", "2024-01-01", today)).toBe(0.9);
   });
 
   it("counts months across a year boundary", () => {
-    expect(getDurationYears("2023-12-01", "2024-01-01", today)).toBe(0.1);
+    expect(getDurationYears("2023-12-01", "2024-01-01", today)).toBe(0.2);
   });
 
   it("uses today for a job without an end date", () => {
-    expect(getDurationYears("2025-10-01", null, today)).toBe(1);
+    expect(getDurationYears("2025-11-01", null, today)).toBe(1);
   });
 
-  it("gives zero for a job that started this month", () => {
-    expect(getDurationYears("2026-10-01", null, today)).toBe(0);
+  it("counts the running month for a job that started this month", () => {
+    expect(getDurationYears("2026-10-01", null, today)).toBe(0.1);
   });
 });

@@ -18,31 +18,34 @@ const shapes = {
   "circle-to-pill": "size-11 p-0 lg:w-auto lg:px-3.5",
 } as const;
 
-interface ButtonProps extends Omit<ComponentPropsWithRef<"button">, "className"> {
+export interface ButtonLookProps {
   tone?: keyof typeof tones;
   shape?: keyof typeof shapes;
   /** Layout only (margins, grid placement); colors and sizes come from `tone` and `shape`. */
   className?: string;
 }
 
+interface ButtonProps extends Omit<ComponentPropsWithRef<"button">, "className">, ButtonLookProps {}
+
+/** The design's look on top of the shadcn base, shared with ButtonLink. */
+export const getButtonClasses = (look: ButtonLookProps): string => {
+  const { tone = "default", shape = "pill", className } = look;
+
+  return cn(
+    "gap-2 rounded-full text-[15px] font-medium [&_svg:not([class*='size-'])]:size-[18px]",
+    tones[tone],
+    shapes[shape],
+    className,
+  );
+};
+
 /**
  * Our button in design terms (pills and round icon buttons, 44px touch target), over the shadcn Button.
  * Spreads the remaining props, so it also works as a Menu trigger (aria-expanded, ref, handlers).
- * A `href` variant rendering next/link arrives with its first consumer.
+ * For a link with this look see ButtonLink: this file stays free of routing, so a plain button needs no router.
  */
 export const Button: FC<ButtonProps> = (props) => {
-  const { tone = "default", shape = "pill", className, ...rest } = props;
+  const { tone, shape, className, ...rest } = props;
 
-  return (
-    <ShadcnButton
-      variant="default"
-      className={cn(
-        "gap-2 rounded-full text-[15px] font-medium [&_svg:not([class*='size-'])]:size-[18px]",
-        tones[tone],
-        shapes[shape],
-        className,
-      )}
-      {...rest}
-    />
-  );
+  return <ShadcnButton variant="default" className={getButtonClasses({ tone, shape, className })} {...rest} />;
 };

@@ -15,7 +15,7 @@ Related: [[2026-10-29-home-page-design]], [[Home Page Handoff]], [[ADR-0007 Test
 - **One DOM on every breakpoint.** The track is a scroll-snap row below `lg` and a 4-column grid from `lg`, in CSS. The cards are never rendered twice, and the markup does not depend on `window` (spec, "Deterministic first render").
 - **Layers.** `widgets/experience/Experience.tsx` (server) reads `getExperience` and composes; `features/experience-card/ExperienceCard.tsx` is synchronous, gets data as props and renders in Vitest; `shared/ui/Carousel.tsx` is the client leaf and takes server-rendered cards as `children`.
 - **Links (owner's decision).** "Learn more" goes to `/projects`, a 404 until that page exists. "All experience" goes to the same place (Claude's call, the handoff names no target).
-- **Duration.** Whole months between the two dates, divided by 12, rounded to one decimal: `2024-11-01` to `2026-10-01` is 1.9. The period line reads the month and year straight from the `YYYY-MM-DD` string, so no time zone can shift them.
+- **Duration (owner's decision).** Calendar months of the job, counting both the first and the last, divided by 12, rounded to one decimal: `2024-11-01` to `2026-10-01` is 2. The period line reads the month and year straight from the `YYYY-MM-DD` string, so no time zone can shift them.
 - **Current job.** `endDate` is nullable, although all four seeded jobs have one. `new Date()` during a static render fails under Cache Components, so "today" has to be captured inside the cached `getExperience`. It then stays frozen until the next build or tag invalidation, which is acceptable for a one-decimal value. Confirm against `node_modules/next/dist/docs/` before building it.
 - **Carousel strings.** `Home.carousel` moves to a top-level `Carousel` namespace, because `shared/ui` must not know about the home page. A new `slide` message holds `{current} of {total}`.
 
@@ -27,7 +27,7 @@ Related: [[2026-10-29-home-page-design]], [[Home Page Handoff]], [[ADR-0007 Test
 
 - [x] Two dates give `MM/YYYY – MM/YYYY` parts and a value with one decimal.
 - [x] A missing end date uses the passed "today".
-- [x] Rounding is covered at the edges: 12 months is 1, 11 months is 0.9.
+- [x] Rounding is covered at the edges: 12 counted months are 1, 11 are 0.9.
 
 Verify: Vitest. Depends on: nothing.
 
@@ -35,13 +35,13 @@ Verify: Vitest. Depends on: nothing.
 
 `SectionHeader` in `shared/ui`, `ExperienceCard`, `widgets/experience/Experience.tsx`, wired into `HomePage`. The dump's Experience section goes away, together with its `getExperience` call in `HomePage`. Cards stack on mobile until task 4.
 
-- [ ] Four cards with company, period, duration, description, and 3–5 skills as chips, equal height on desktop.
-- [ ] "Learn more" stays at the bottom of each card and points to `/{locale}/projects`.
-- [ ] A primary "All experience" pill sits right-aligned on desktop, full width on mobile (add `href` to `Button` if it is missing).
+- [x] Four cards with company, period, duration, description, and 3–5 skills as chips, equal height on desktop.
+- [x] "Learn more" stays at the bottom of each card and points to `/{locale}/projects`.
+- [x] A primary "All experience" pill sits right-aligned on desktop, full width on mobile, through a new `ButtonLink`.
 
 Verify: `ExperienceCard.test.tsx` (test first); `e2e/home-experience.spec.ts` for the database-backed section and layout. Depends on: task 1.
 
-Files: `src/shared/ui/SectionHeader.tsx`, `src/features/experience-card/ExperienceCard.tsx`, `src/widgets/experience/Experience.tsx`, `src/views/home/HomePage.tsx`, `e2e/home-experience.spec.ts`.
+Files: `src/shared/ui/SectionHeader.tsx`, `src/shared/ui/ButtonLink.tsx`, `src/features/experience-card/ExperienceCard.tsx`, `src/widgets/experience/Experience.tsx`, `src/views/home/HomePage.tsx`, `e2e/home-experience.spec.ts`.
 
 ### Task 3: Card image (S)
 

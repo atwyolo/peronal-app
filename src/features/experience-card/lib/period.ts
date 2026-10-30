@@ -15,11 +15,12 @@ export const formatMonthYear = (date: string): string => {
 };
 
 /**
- * Whole calendar months between the dates in years, with one decimal. `today` closes a job that is still running;
- * it is an argument because a static render must not read the clock.
+ * The job's calendar months in years, with one decimal. Both the first and the last month count, so 11/2024 – 10/2026
+ * is two years. `today` closes a job that is still running; it is an argument because a static render must not read
+ * the clock.
  */
 export const getDurationYears = (startDate: string, endDate: string | null, today: string): number => {
-  const months = getMonthIndex(endDate ?? today) - getMonthIndex(startDate);
+  const months = getMonthIndex(endDate ?? today) - getMonthIndex(startDate) + 1;
 
   return Math.round((months / MONTHS_IN_YEAR) * 10) / 10;
 };

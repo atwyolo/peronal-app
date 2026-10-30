@@ -1,12 +1,13 @@
-// The home page is being built block by block: the first-screen grid is real, the rest below it is still the
+// The home page is being built block by block: the first screen and Experience are real, the rest is still the
 // TEMPORARY plain dump of the database layer, replaced section by section (see docs/specs/2026-10-29-home-page-design.md).
 import { getLocale } from "next-intl/server";
 import type { FC } from "react";
 
-import { getExperience, getLatestPosts, getSkills } from "@/db/queries/home";
+import { getLatestPosts, getSkills } from "@/db/queries/home";
 import { toPlainText } from "@/shared/lib/rich-text";
 import { About } from "@/widgets/about/About";
 import { Contacts } from "@/widgets/contacts/Contacts";
+import { Experience } from "@/widgets/experience/Experience";
 import { Hero } from "@/widgets/hero/Hero";
 import { ProfilePhoto } from "@/widgets/profile-photo/ProfilePhoto";
 
@@ -14,15 +15,11 @@ export const HomePage: FC = async () => {
   // The locale of the current [locale] segment; the queries fall back to English for untranslated rows.
   const locale = await getLocale();
 
-  // Three independent cached reads, started together instead of one after another.
-  const [experience, skills, posts] = await Promise.all([
-    getExperience(locale),
-    getSkills(locale),
-    getLatestPosts(locale),
-  ]);
+  // Two independent cached reads, started together instead of one after another.
+  const [skills, posts] = await Promise.all([getSkills(locale), getLatestPosts(locale)]);
 
   return (
-    <main className="mx-auto flex w-full max-w-[720px] flex-col gap-10 px-4 pt-4 pb-8 lg:max-w-[1200px] lg:px-10 lg:pt-6 lg:pb-12">
+    <main className="mx-auto flex w-full max-w-[720px] flex-col gap-3 px-4 pt-4 pb-8 lg:max-w-[1200px] lg:gap-4 lg:px-10 lg:pt-6 lg:pb-12">
       {/*
         First screen: one DOM order (the mobile one: hero, photo, contacts, About), placed by named grid areas.
         Mobile, 2 columns:      Desktop (lg), 4 columns:
@@ -39,19 +36,7 @@ export const HomePage: FC = async () => {
         <About className="[grid-area:about]" />
       </div>
 
-      <section className="flex flex-col gap-4">
-        <h2 className="text-2xl font-semibold">Experience ({experience.length})</h2>
-        {experience.map((job) => (
-          <article key={job.slug}>
-            <h3 className="font-semibold">{job.company}</h3>
-            <p className="font-mono text-sm">
-              {job.startDate} – {job.endDate ?? "present"}
-            </p>
-            <p>{toPlainText(job.descriptionShort)}</p>
-            <p className="font-mono text-sm">{job.skills.join(" · ")}</p>
-          </article>
-        ))}
-      </section>
+      <Experience />
 
       <section className="flex flex-col gap-2">
         <h2 className="text-2xl font-semibold">Skills ({skills.skills.length})</h2>
