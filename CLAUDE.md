@@ -1,6 +1,15 @@
 # CLAUDE.md — project rules for `personal`
 
-Personal portfolio site. Primary goal besides shipping: the owner is learning Next.js fundamentals along the way, so every step should come with a short "why it is built this way" explanation.
+Personal portfolio site. Two goals of equal weight: a working site, and the owner learning Next.js by building it.
+
+## Working with the owner (mandatory)
+
+These rules apply to every reply and every task, however small. The owner's words, 2026-10-31.
+
+- **Teach in every reply.** Explain everything we touch, not only what was asked: how it works, why it is built this way, and related topics that help the owner learn, in the form "by the way, since we touched X...". This covers Next.js and everything around it: React, browsers, CSS, tooling, testing, the database.
+- **Learning content stays in the chat.** Nothing in the repository teaches: no learning notes, no tutorials, no general explanations of how a tool works. `docs/` records project facts, decisions and their reasons.
+- **The owner sees every decision.** Real choices go to the owner. When Claude decides something itself, it reports it: what was chosen, which alternatives existed, why this one is the best. Nothing is decided silently: the owner wants a full picture of the codebase.
+- **Maximum effort.** The goal is the best quality of the project and the owner's full awareness of it and of every aspect of working with Next.js.
 
 ## Language
 
@@ -118,4 +127,4 @@ npm run db:studio # browse data
 
 ## Docs vault
 
-`docs/` is an Obsidian-style vault: Markdown with `[[wikilinks]]`, YAML frontmatter, one topic per note. Entry point is `docs/Home.md`. Record architectural decisions as ADRs in `docs/decisions/`, session summaries in `docs/journal/`, learning notes in `docs/learning/`.
+`docs/` is an Obsidian-style vault: Markdown with `[[wikilinks]]`, YAML frontmatter, one topic per note. Entry point is `docs/Home.md`. Record architectural decisions as ADRs in `docs/decisions/` and session summaries in `docs/journal/`. Learning content does not go here (see "Working with the owner").

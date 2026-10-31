@@ -38,9 +38,6 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[2026-10-30-home-blog]] — Blog block and clean-up, draft
 - [[2026-10-30-home-motion]] — accent wipe and verification pass, draft
 
-## Learning
-- [[Next.js Notes]] — running notes on App Router concepts as they come up
-
 ## Journal
 - [[2026-10-26]] — kickoff: decisions, scaffold
 - [[2026-10-28]] — database layer for the home page
@@ -49,4 +46,4 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[2026-10-31]] — home page: Experience block closed
 
 ## Templates
-- [[ADR Template]] · [[Journal Template]] · [[Learning Note Template]]
+- [[ADR Template]] · [[Journal Template]]

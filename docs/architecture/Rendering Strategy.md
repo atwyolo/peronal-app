@@ -17,8 +17,8 @@ Deliberately mix rendering modes so each one is learned in practice. Every page 
 | `/[locale]/contact` | dynamic (Server Action) | form submission |
 | `/admin/**` | dynamic, no caching | authenticated, always fresh |
 
-The project runs with `cacheComponents: true`, so "ISR" means cached functions with tags, not a route-level `revalidate` export. See [[Next.js Notes]] for both caching models.
+The project runs with `cacheComponents: true`, so "ISR" means cached functions with tags, not a route-level `revalidate` export.
 
 Notes to expand: streaming with `Suspense` on the blog list, `loading.tsx` / `error.tsx` per segment.
 
-Related: [[ADR-0001 Framework and Rendering]], [[Next.js Notes]]
+Related: [[ADR-0001 Framework and Rendering]]

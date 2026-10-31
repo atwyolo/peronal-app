@@ -7,6 +7,17 @@ import { Carousel } from "./Carousel";
 
 const slideWidth = 358;
 const scrollTo = vi.fn();
+const disconnect = vi.fn();
+let reportResize: () => void;
+
+class FakeResizeObserver {
+  constructor(callback: () => void) {
+    reportResize = callback;
+  }
+
+  observe = vi.fn();
+  disconnect = disconnect;
+}
 
 const renderCarousel = (count = 4) =>
   render(
@@ -22,20 +33,24 @@ const renderCarousel = (count = 4) =>
 const getTrack = () => screen.getByRole("group", { name: "1 of 4" }).parentElement as HTMLElement;
 
 // jsdom has no layout: scrolling is the browser's job, so a test only reports where the track ended up.
-const scrollTrackTo = (scrollLeft: number) => {
+const scrollTrackTo = (scrollLeft: number, width = slideWidth) => {
   const track = getTrack();
-  Object.defineProperty(track, "clientWidth", { configurable: true, value: slideWidth });
+  Object.defineProperty(track, "clientWidth", { configurable: true, value: width });
   Object.defineProperty(track, "scrollLeft", { configurable: true, value: scrollLeft });
   fireEvent.scroll(track);
 };
 
 beforeEach(() => {
+  vi.spyOn(Element.prototype, "clientWidth", "get").mockReturnValue(slideWidth);
   Element.prototype.scrollTo = scrollTo;
+  vi.stubGlobal("ResizeObserver", FakeResizeObserver);
 });
 
 afterEach(() => {
   scrollTo.mockClear();
+  disconnect.mockClear();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 describe("Carousel", () => {
@@ -72,7 +87,6 @@ describe("Carousel", () => {
   });
 
   it("picks up a swipe made before the JavaScript arrived", () => {
-    vi.spyOn(Element.prototype, "clientWidth", "get").mockReturnValue(slideWidth);
     vi.spyOn(Element.prototype, "scrollLeft", "get").mockReturnValue(370);
 
     renderCarousel();
@@ -118,6 +132,58 @@ describe("Carousel", () => {
 
     expect(next).toBeEnabled();
     expect(scrollTo).not.toHaveBeenCalled();
+  });
+
+  it("returns to the same slide when the track gets wider", () => {
+    renderCarousel();
+    scrollTrackTo(370);
+
+    Object.defineProperty(getTrack(), "clientWidth", { configurable: true, value: 688 });
+    reportResize();
+
+    expect(scrollTo).toHaveBeenCalledExactlyOnceWith({ left: 700, behavior: "instant" });
+  });
+
+  // Narrowing the track clamps a far offset, and the browser reports that as a scroll to another slide.
+  it("ignores the scroll that a narrower track causes", () => {
+    vi.spyOn(Element.prototype, "clientWidth", "get").mockReturnValue(688);
+    renderCarousel();
+    scrollTrackTo(1400, 688);
+
+    scrollTrackTo(1110);
+    expect(screen.getByText("3 / 4")).toBeVisible();
+
+    reportResize();
+    expect(scrollTo).toHaveBeenCalledExactlyOnceWith({ left: 740, behavior: "instant" });
+  });
+
+  // The last slide on a narrower track: the browser has clamped the offset there. A pixel off comes from a rounded width.
+  it("leaves the track alone when the browser has already put it on the slide", () => {
+    vi.spyOn(Element.prototype, "clientWidth", "get").mockReturnValue(688);
+    renderCarousel();
+    scrollTrackTo(2100, 688);
+
+    scrollTrackTo(1111);
+    reportResize();
+
+    expect(scrollTo).not.toHaveBeenCalled();
+  });
+
+  it("leaves the track alone when only its height changes", () => {
+    renderCarousel();
+    scrollTrackTo(370);
+
+    reportResize();
+
+    expect(scrollTo).not.toHaveBeenCalled();
+  });
+
+  it("stops watching the track when it goes away", () => {
+    const { unmount } = renderCarousel();
+
+    unmount();
+
+    expect(disconnect).toHaveBeenCalledOnce();
   });
 
   it("drops the controls when there is nothing to scroll to", () => {

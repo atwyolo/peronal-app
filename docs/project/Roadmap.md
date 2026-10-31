@@ -5,7 +5,7 @@ updated: 2026-10-30
 
 # Roadmap
 
-Each stage ends with a working build and a short explanation of the Next.js concepts it introduced (captured in [[Next.js Notes]]).
+Each stage ends with a working build.
 
 - [x] **Stage 0 — Scaffold** (2026-10-26): `create-next-app`, shadcn init, lint/type/build green, docs vault, `CLAUDE.md`.
 - [x] **Stage 1 — Skeleton & theme** (2026-10-29): root layout, sticky header with desktop and mobile navigation, `next-themes` dark mode, base shadcn components, metadata API. No placeholder routes: links to missing pages go to the 404 page until those pages exist (owner's decision).

@@ -94,6 +94,6 @@ test.describe("mobile", () => {
     const about = await page.getByRole("region", { name: "About" }).boundingBox();
 
     expect(about?.y).toBeCloseTo((contacts?.y ?? 0) + (contacts?.height ?? 0) + 12, 0);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(page.viewportSize()?.width);
   });
 });
