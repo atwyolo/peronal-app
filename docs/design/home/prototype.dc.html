@@ -173,14 +173,11 @@ nav a.on{color:var(--accent);font-weight:600;text-decoration:underline;text-deco
 </div></div>
 <a class="btn pri" href="#" style="grid-column: span 2">All experience</a>
 
-<div class="sec" style="grid-column: span 2"><span class="lbl">Skills</span><span class="lbl">{{skillCount}}</span></div>
+<div class="sec" style="grid-column: span 2"><span class="lbl">My top skills</span></div>
 <div class="t rv" style="grid-column: span 2; padding: 20px; gap: 14px">
-<label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span class="sr">Search skills</span><input type="search" placeholder="Search skills" value="{{q}}" onChange="{{onSearch}}"></label>
-<div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{cats}}" as="k" hint-placeholder-count="5"><button class="{{k.cls}}" onClick="{{k.pick}}">{{k.name}}<span class="cnt">{{k.count}}</span></button></sc-for></div>
-<sc-for list="{{skills}}" as="s" hint-placeholder-count="5"><div style="display: flex; flex-direction: column; gap: 6px"><div style="display: flex; justify-content: space-between; font-size: 15px"><span style="font-weight: 500">{{s.name}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--mute)">[n]/10</span></div><div class="seg"><sc-for list="{{s.segs}}" as="g" hint-placeholder-count="10"><i class="{{g.cls}}"></i></sc-for></div></div></sc-for>
-<sc-if value="{{noMatch}}" hint-placeholder-val="{{false}}"><p style="margin: 0; font-size: 15px; color: var(--ink2)">No skills match “{{q}}”.</p></sc-if>
-<sc-if value="{{showToggle}}" hint-placeholder-val="{{true}}"><button class="btn pri" onClick="{{toggleAll}}">{{allLabel}}</button></sc-if>
+<sc-for list="{{skills}}" as="s" hint-placeholder-count="5"><div style="display: flex; flex-direction: column; gap: 6px"><div style="display: flex; justify-content: space-between; font-size: 15px"><span style="font-weight: 500">{{s.name}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--mute)">{{s.lv}}/10</span></div><div class="seg"><sc-for list="{{s.segs}}" as="g" hint-placeholder-count="10"><i class="{{g.cls}}"></i></sc-for></div></div></sc-for>
 </div>
+<a class="btn pri" href="#" style="grid-column: span 2">{{allLabel}}</a>
 
 <div class="sec" style="grid-column: span 2"><span class="lbl">Blog</span></div>
 <div class="sw rv" style="grid-column: span 2"><div class="swnav"><span class="lbl">{{postPos}}</span><span style="display: flex; gap: 8px"><button class="{{postPrevCls}}" aria-label="Previous" onClick="{{postPrev}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button><button class="{{postNextCls}}" aria-label="Next" onClick="{{postNext}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button></span></div><div class="trk" ref="{{setPostTrk}}">
@@ -202,7 +199,7 @@ nav a.on{color:var(--accent);font-weight:600;text-decoration:underline;text-deco
 <header style="position: sticky; top: 0; z-index: 10; background: var(--tile); border-bottom: 1px solid var(--tile-line)">
 <div style="max-width: 1200px; margin: 0 auto; padding: 0 40px; height: 72px; display: flex; align-items: center; gap: 32px">
 <a href="#" style="flex-grow: 1; font-size: 20px; font-weight: 600; letter-spacing: -.02em; text-decoration: none; white-space: nowrap">Mikhail Aleksandrov</a>
-<nav style="display: flex; gap: 28px; font-size: 15px"><a href="#" class="on">Home</a><a href="#">About</a><a href="#">Projects</a><a href="#">Blog</a><a href="#">Contact</a></nav>
+<nav style="display: flex; gap: 28px; font-size: 15px"><a href="#" class="on">Home</a><a href="#">About</a><a href="#">Projects</a><a href="#">Skills</a><a href="#">Blog</a><a href="#">Contact</a></nav>
 <div style="display: flex; gap: 8px">
 <span class="dd"><button class="btn acc" style="padding: 0 14px; font-family: 'Geist Mono', monospace; font-size: 13px" aria-label="Language" aria-haspopup="menu" onClick="{{openLang}}">{{langCode}}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><sc-if value="{{langOpen}}" hint-placeholder-val="{{false}}"><div class="ddbg" onClick="{{closeMenu}}"></div><div class="ddm" role="menu"><sc-for list="{{langOpts}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" role="menuitemradio" onClick="{{o.pick}}"><span>{{o.label}}</span><span class="ddx">{{o.hint}}</span><svg class="ck" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></button></sc-for></div></sc-if></span>
 <span class="dd"><button class="btn acc" style="padding: 0 14px" onClick="{{openTheme}}" aria-label="Theme" aria-haspopup="menu"><sc-if value="{{isDark}}" hint-placeholder-val="{{true}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if><sc-if value="{{isLight}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></sc-if><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><sc-if value="{{themeOpen}}" hint-placeholder-val="{{false}}"><div class="ddbg" onClick="{{closeMenu}}"></div><div class="ddm" role="menu"><sc-for list="{{themeOpts}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" role="menuitemradio" onClick="{{o.pick}}"><span>{{o.label}}</span><span class="ddx">{{o.hint}}</span><svg class="ck" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></button></sc-for></div></sc-if></span>
@@ -248,21 +245,13 @@ nav a.on{color:var(--accent);font-weight:600;text-decoration:underline;text-deco
 </div>
 <div style="display: flex; justify-content: flex-end"><a class="btn pri" href="#">All experience</a></div>
 
-<div class="sec"><span class="lbl">Skills</span><span class="lbl">{{skillCount}}</span></div>
-<div class="t rv" style="padding: 28px; display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 40px; align-items: start">
-<aside style="display: flex; flex-direction: column; gap: 14px; padding-right: 32px; border-right: 1px solid var(--tile-line); min-height: 100%">
-<label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span class="sr">Search skills</span><input type="search" placeholder="Search skills" value="{{q}}" onChange="{{onSearch}}"></label>
-<span class="lbl" style="padding: 6px 4px 0">Domain</span>
-<div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{cats}}" as="k" hint-placeholder-count="5"><button class="{{k.cls}}" onClick="{{k.pick}}">{{k.name}}<span class="cnt">{{k.count}}</span></button></sc-for></div>
-<sc-if value="{{showToggle}}" hint-placeholder-val="{{true}}"><button class="btn pri" style="margin-top: 6px" onClick="{{toggleAll}}">{{allLabel}}</button></sc-if>
-</aside>
-<div style="display: flex; flex-direction: column; gap: 16px; min-width: 0">
-<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 40px">
-<sc-for list="{{skills}}" as="s" hint-placeholder-count="5"><div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) 44px; gap: 14px; align-items: center"><span style="font-weight: 500">{{s.name}}</span><div class="seg"><sc-for list="{{s.segs}}" as="g" hint-placeholder-count="10"><i class="{{g.cls}}"></i></sc-for></div><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--mute)">[n]/10</span></div></sc-for>
-</div>
-<sc-if value="{{noMatch}}" hint-placeholder-val="{{false}}"><p style="margin: 0; font-size: 16px; color: var(--ink2)">No skills match “{{q}}”.</p></sc-if>
+<div class="sec"><span class="lbl">My top skills</span></div>
+<div class="t rv" style="padding: 28px 32px">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px 48px">
+<sc-for list="{{skills}}" as="s" hint-placeholder-count="5"><div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) 44px; gap: 14px; align-items: center"><span style="font-weight: 500">{{s.name}}</span><div class="seg"><sc-for list="{{s.segs}}" as="g" hint-placeholder-count="10"><i class="{{g.cls}}"></i></sc-for></div><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--mute)">{{s.lv}}/10</span></div></sc-for>
 </div>
 </div>
+<div style="display: flex; justify-content: flex-end"><a class="btn pri" href="#">{{allLabel}}</a></div>
 
 <div class="sec"><span class="lbl">Blog</span></div>
 <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px">
@@ -360,7 +349,10 @@ class Component extends DCLogic {
     const filtered = q || cat !== 'All';
     const topN = s.device === 'desktop' ? 14 : 5;
     if (!filtered && !s.showAll) list = list.slice(0, topN);
-    const skills = list.map((x) => ({ name: x.name, segs: Array.from({ length: 10 }, (_, k) => ({ cls: k < x.lv ? 'on' : '' })) }));
+    // featured skills, marked in the main list (1–20 items)
+    const featured = ['React', 'Next.js', 'TypeScript', 'Redux Toolkit', 'Nest.js', 'GraphQL', 'Jest', 'Tailwind'];
+    list = all.filter((x) => featured.indexOf(x.name) >= 0);
+    const skills = list.map((x) => ({ name: x.name, lv: x.lv, segs: Array.from({ length: 10 }, (_, k) => ({ cls: k < x.lv ? 'on' : '' })) }));
     const cats = ['All', 'Core', 'Frameworks', 'Frontend', 'Tools'].map((name) => ({ name, cls: name === cat ? 'chip on' : 'chip', fcls: name === cat ? 'fl on' : 'fl', count: name === 'All' ? all.length : D[name].length, pick: () => this.setState({ cat: name }) }));
     return {
       t: T[s.theme],
@@ -370,7 +362,7 @@ class Component extends DCLogic {
       onSearch: (e) => this.setState({ q: e.target.value }),
       noMatch: list.length === 0,
       showToggle: !filtered,
-      allLabel: s.showAll ? 'Show top ' + topN : 'Show all 41 skills',
+      allLabel: 'Show all ' + all.length + ' skills',
       toggleAll: () => this.setState({ showAll: !s.showAll }),
       skillCount: filtered ? list.length + ' of 41' : (s.showAll ? '41 skills' : 'Top ' + topN + ' of 41'),
       setExpTrk: this.setExpTrk,

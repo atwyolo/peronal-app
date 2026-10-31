@@ -16,6 +16,8 @@ export type Skill = {
   level: number;
   /** lower = shown first among equal levels */
   sort: number;
+  /** shown in "My top skills" on the home page (1–20 skills are marked) */
+  featured: boolean;
 };
 
 export type Experience = {
@@ -76,7 +78,7 @@ export const experience: Experience[] = [
       "Built an AI-powered chat for user support and set up frontend monitoring. Introduced unit testing that cut production defects by 23%. Shipped an offline mode that increased average session time by 17%.",
     tags: ["Next.js", "TypeScript", "Mantine", "React Hook Form", "Jest"], // TODO(owner): confirm
     image: null,
-    href: "/about#glovo",
+    href: "/projects#glovo",
   },
   {
     company: "Sony PlayStation",
@@ -86,7 +88,7 @@ export const experience: Experience[] = [
       "Helped build the in-game notification system from scratch. Hired and onboarded 3 developers to the team. Brought test coverage to 95%.",
     tags: ["React", "TypeScript", "Redux Toolkit", "WebSocket", "Jest"], // TODO(owner): confirm
     image: null,
-    href: "/about#sony",
+    href: "/projects#sony",
   },
   {
     company: "EPAM",
@@ -96,7 +98,7 @@ export const experience: Experience[] = [
       "Migrated an e-commerce store from PHP to Next.js without losing SEO. The migration raised conversion by 12.4%. Pages started loading 37% faster.",
     tags: ["Next.js", "React", "Redux", "GraphQL"], // TODO(owner): confirm
     image: null,
-    href: "/about#epam",
+    href: "/projects#epam",
   },
   {
     company: "Omega-R",
@@ -105,7 +107,7 @@ export const experience: Experience[] = [
     description: "TODO(owner): up to three sentences about the role: product, what you built and the result.",
     tags: ["React", "React Native", "Redux", "Material UI"], // TODO(owner): confirm
     image: null,
-    href: "/about#omega-r",
+    href: "/projects#omega-r",
   },
 ];
 
@@ -164,12 +166,20 @@ const levels: Record<string, number> = {
 };
 const pinned = Object.keys(levels);
 
+/** Marked for the home page. TODO(owner): pick your own set (1–20). */
+const featured = ["React", "Next.js", "TypeScript", "Redux Toolkit", "Nest.js", "GraphQL", "Jest", "Tailwind"];
+
 export const skills: Skill[] = (Object.keys(byCategory) as SkillCategory[]).flatMap((category) =>
   byCategory[category].map((name) => ({
     name,
     category,
     level: levels[name] ?? 6,
     sort: pinned.includes(name) ? pinned.indexOf(name) : 100,
+    featured: featured.includes(name),
   })),
 );
 // 41 skills: core 5 · frameworks 4 · frontend 19 · tools 13
+
+export const topSkills = skills
+  .filter((s) => s.featured)
+  .sort((a, b) => b.level - a.level || a.sort - b.sort || a.name.localeCompare(b.name));

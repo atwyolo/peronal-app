@@ -1,7 +1,7 @@
 ---
 tags: [design, handoff, home]
 status: approved
-updated: 2026-10-28
+updated: 2026-10-31
 ---
 
 # Home Page Handoff
@@ -9,6 +9,12 @@ updated: 2026-10-28
 Approved design of the home page (`/[locale]`), ready to implement. Mobile-first, two themes, eight locales. The design was iterated in a Claude Design canvas; this note is the implementation contract.
 
 Related: [[Roadmap]], [[Rendering Strategy]], [[Localization]], [[Data Model]], [[ADR-0005 UI Library]].
+
+## Changes since 2026-10-28
+
+- The Skills block became **My top skills**: no search, filter or counter; it shows only skills marked `featured`; "Show all N skills" links to the new `/skills` page.
+- The nav gained **Skills** (between Projects and Blog).
+- Experience links now point to the Projects page: `/projects#<company>` and `/projects`.
 
 ## Files in `docs/design/home/`
 
@@ -28,7 +34,7 @@ This touches Roadmap stages 1 and 2. Suggested order, each step ending green (`l
 2. Header: sticky bar, nav, locale menu, theme menu, mobile menu trigger.
 3. Hero + photo + contacts + About (static, server components).
 4. Experience: desktop grid, mobile carousel.
-5. Skills explorer (client).
+5. Top skills block (static, server component).
 6. Blog preview: desktop grid, mobile carousel.
 7. Reveal animation, reduced-motion check, accessibility pass.
 8. i18n wiring (`[locale]` segment, `generateStaticParams`), locale switcher navigation.
@@ -45,11 +51,11 @@ Rendering: home is **static** per locale (see [[Rendering Strategy]]). Everythin
 
 - Surface `bg-card`, bottom border `card-border`. Height 64 px mobile, 72 px desktop. `position: sticky; top: 0`.
 - Left: full name "Mikhail Aleksandrov", 600 weight, 17 px mobile / 20 px desktop, links to `/[locale]`.
-- Desktop: nav Home · About · Projects · Blog · Contact (15 px, gap 28 px). Active item: `text-brand`, 600, underline in `deco`, 3 px thick, offset 8 px.
+- Desktop: nav Home · About · Projects · Skills · Blog · Contact (15 px, gap 28 px). Active item: `text-brand`, 600, underline in `deco`, 3 px thick, offset 8 px.
 - Right controls, all in `text-brand`:
   - **Locale menu.** Mobile: 44 px round icon button showing the code ("EN"). Desktop: pill button, code + chevron-down.
   - **Theme menu.** Mobile: 44 px round button. Desktop: pill, icon + chevron. The icon shows the *resolved* theme: moon for dark, sun for light.
-  - Mobile only: hamburger (44 px round, `text-foreground`). **The open menu was not designed** — use a shadcn Sheet from the right with the same nav items, active item styled as on desktop.
+  - Mobile only: hamburger (44 px round, `text-foreground`). **The open menu was not designed** — use a shadcn Sheet from the right with the same six nav items, active item styled as on desktop.
 - Menus (both): popover anchored bottom-right, 8 px gap, min-width 210 px, padding 6 px, radius 16 px, `bg-popover`, border `card-border`, soft shadow. Items 40 px tall, radius 10 px, hover `bg-accent`. Selected item: `text-brand` + check icon at the end.
   - Theme items: Dark, Light, System. System shows a mono hint "now dark/light" (`text-muted-foreground`, 11 px).
   - Locale items: native names (English, Русский, Português, Español, Deutsch, Français, 日本語, Polski) with the code as a mono hint.
@@ -59,9 +65,9 @@ Rendering: home is **static** per locale (see [[Rendering Strategy]]). Everythin
 
 ## Section order
 
-**Mobile:** hero → photo → contacts → About → Experience (carousel) → Skills → Blog (carousel) → footer.
+**Mobile:** hero → photo → contacts → About → Experience (carousel) → My top skills → Blog (carousel) → footer.
 
-**Desktop:** a 4-column row with the photo and contacts in column 1 and the hero plus About in columns 2–4. Below it: Experience (4 cards), Skills (full width), Blog (featured card spanning 2 columns plus 2 cards), footer.
+**Desktop:** a 4-column row with the photo and contacts in column 1 and the hero plus About in columns 2–4. Below it: Experience (4 cards), My top skills (full width), Blog (featured card spanning 2 columns plus 2 cards), footer.
 
 Section headers: a mono label (`Geist Mono`, 11 px mobile / 12 px desktop, uppercase, letter-spacing .08em, `text-muted-foreground`), with a count on the right where shown. Header padding is 12 px on top for mobile and 32 px for desktop.
 
@@ -109,29 +115,20 @@ Each button has an arrow-up-right icon on the right (CV: the "PDF" mark) and an 
   - 3–5 skill tags as chips;
   - "Learn more →" link at the bottom (`mt-auto`).
 - Link style, shared with "Read more →" in the blog: `text-brand`, 600 weight, underline in `deco`, 2 px thick, offset 5 px.
-- Desktop: a 4-column grid with equal-height cards, then a primary pill "All experience" aligned right below the grid.
+- Desktop: a 4-column grid with equal-height cards, then a primary pill "All experience" aligned right below the grid. "Learn more" links go to `/[locale]/projects#<company-id>` (the Projects page holds the full story of every job); "All experience" goes to `/[locale]/projects`.
 - Mobile: a **carousel** (see below), then a full-width primary pill "All experience". The section header has no link.
 
-### Skills (client component `SkillsExplorer`)
+### My top skills (static)
 
-- Data comes from `skills` (41 items).
-  - Default order: level descending, then the `sort` order, then name.
-  - Default view shows the top 5 on mobile and the top 14 on desktop (two full columns of 7).
-  - Header count reads "Top 5 of 41" or "Top 14 of 41"; "41 skills" when expanded; "N of 41" when filtered.
-- Controls:
-  - Search: pill input with a search icon, 44 px, `bg-background`, border `card-border`. Focus ring: `brand` border plus a 3 px glow at 25%. Visually hidden label "Search skills". Matching is a case-insensitive substring.
-  - Domain chips: All · Core · Frameworks · Frontend · Tools, each followed by its count in mono at 70% opacity ("All 41", "Core 5", …). It is a single-select toggle group; use the Base UI toggle group from shadcn. Chips are pills, 36 px tall, wrapping onto new lines. The active chip uses `bg-selected text-selected-foreground`.
-  - Toggle: a primary pill "Show all 41 skills" / "Show top N", hidden while a search or domain filter is active.
-  - Empty state: "No skills match “{query}”."
-- Skill row:
-  - name: 500 weight;
-  - 10-segment bar: segments filled up to the level in `brand`, the rest in `placeholder`; 8 px tall with 3 px gaps on mobile, 10 px tall with 4 px gaps on desktop;
-  - mono "n/10" in `muted-foreground`;
-  - `role="meter"` with `aria-valuenow`, or an `aria-label` from messages.
-- Mobile layout: one tile containing the search, then the chips, then rows (name and value on one line, the bar below), then the toggle.
-- Desktop layout: one tile, padding 28 px, grid `280px | 1fr`, gap 40 px.
-  - Left: the search, a "Domain" label, the chips (wrapping), the toggle. A 1 px `card-border` divider separates it from the right side.
-  - Right: rows in two columns, gap 18 × 40 px. Each row is a grid `150px | 1fr | 44px`.
+A short list of skills marked `featured` in the main skills list (1–20 items). No search, no domain filter and no "Top N of M" counter on the home page: the full explorer lives on the separate `/skills` page (designed separately).
+
+- Section header: the mono label "My top skills", no count on the right.
+- Data: `topSkills` from `content.ts` (skills with `featured: true`, sorted by level desc, then `sort`, then name). Later: a `featured boolean` column on `skills`.
+- One tile.
+  - Mobile: one column; each row has the name (500 weight) and a mono "n/10" on one line, with the 10-segment bar below (8 px tall, 3 px gaps).
+  - Desktop: padding 28 × 32 px; grid `repeat(auto-fill, minmax(320px, 1fr))` with gaps of 18 × 48 px, so 1–2 skills fill one row and 20 spread over three columns. Each row is a grid `150px | 1fr | 44px`: name, bar (10 px tall, 4 px gaps), "n/10".
+- Bar segments are filled in `brand` up to the level; the rest use `placeholder`. Each row has `role="meter"` with `aria-valuenow` or an `aria-label` from messages.
+- Button below the tile: a primary pill reading "Show all {total} skills", where the total is counted from the full list. It is a link to `/[locale]/skills`. Desktop: right-aligned, like "All experience". Mobile: full width.
 
 ### Blog preview
 
@@ -173,7 +170,7 @@ Each button has an arrow-up-right icon on the right (CV: the "PDF" mark) and an 
 
 ## Accessibility checklist
 
-- Touch targets ≥ 44 px (all buttons, chips 36 px tall inside a tile are acceptable with 6 px gaps).
+- Touch targets ≥ 44 px for all buttons and carousel arrows.
 - Visible focus: `ring` color, 3 px.
 - Icon-only buttons have labels; decorative icons `aria-hidden`.
 - Contrast checked: `brand` on card is 6.7:1 in light and 12.7:1 in dark. Muted text is ≥ 5.5:1. Text on the contact buttons is ≥ 4.7:1. Yellow is never used for text.
@@ -185,13 +182,13 @@ Each button has an arrow-up-right icon on the right (CV: the "PDF" mark) and an 
 - The Data Model needs these additions; record them in [[Data Model]] when Stage 3 starts:
   - `experience`: `image`, a tag relation to `skills` (many-to-many), and `description` limited to 3 sentences (plain text is enough on the home page).
   - `posts`: `cover`, `tags` (a `tags` table plus `post_tags`).
-- Owner TODOs (marked in `content.ts`): the photo file, the CV PDF, the Omega-R description, the experience tag lists, real skill levels (currently only 5 are set; the rest are placeholder 6), and real posts.
+  - `skills`: `featured boolean default false` (drives "My top skills").
+- Owner TODOs (marked in `content.ts`): the photo file, the CV PDF, the Omega-R description, the experience tag lists, real skill levels (currently only 5 are set; the rest are placeholder 6), which skills are `featured`, and real posts.
 
 ## Open questions (add to [[Open Questions]])
 
 - The mobile menu (Sheet) contents and the tablet layout were not designed. Proposed defaults are above.
-- What the "Learn more" links on experience cards point to: an `/about` anchor or per-company pages?
-- Should the hero chips come from `skills` (top N) or stay a hand-picked list?
+- Should the hero chips come from `topSkills` or stay a hand-picked list?
 
 ## Kickoff prompt for the Claude Code session
 

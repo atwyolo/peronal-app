@@ -4,6 +4,7 @@
       "home": "Home",
       "about": "About",
       "projects": "Projects",
+      "skills": "Skills",
       "blog": "Blog",
       "contact": "Contact"
     },
@@ -53,23 +54,10 @@
       "all": "All experience"
     },
     "skills": {
-      "label": "Skills",
-      "countTop": "Top {shown} of {total}",
-      "countAll": "{total} skills",
-      "countFiltered": "{shown} of {total}",
-      "search": "Search skills",
-      "domain": "Domain",
-      "categories": {
-        "all": "All",
-        "core": "Core",
-        "frameworks": "Frameworks",
-        "frontend": "Frontend",
-        "tools": "Tools"
-      },
+      "label": "My top skills",
       "showAll": "Show all {total} skills",
-      "showTop": "Show top {shown}",
-      "noMatch": "No skills match “{query}”.",
-      "levelAria": "{name}: level {level} of 10"
+      "levelAria": "{name}: level {level} of 10",
+      "level": "{level}/10"
     },
     "blog": {
       "label": "Blog",
