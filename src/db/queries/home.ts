@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, asc, desc, eq } from "drizzle-orm";
+import { and, asc, count, desc, eq } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { cacheLife, cacheTag } from "next/cache";
@@ -193,6 +193,30 @@ export async function getSkills(locale: Locale): Promise<HomeSkills> {
     })),
     skills: skillRows,
   };
+}
+
+export type HomeTopSkills = {
+  skills: { name: string; level: number }[];
+  /** Every skill on the site, not only the marked ones. */
+  total: number;
+};
+
+/** Tech names are not translated, so there is no locale and one cache entry for all languages. */
+export async function getTopSkills(): Promise<HomeTopSkills> {
+  "use cache";
+  cacheLife("max");
+  cacheTag(homeCacheTags.skills);
+
+  const [topSkills, totals] = await db.batch([
+    db
+      .select({ name: skills.name, level: skills.level })
+      .from(skills)
+      .where(eq(skills.top, true))
+      .orderBy(desc(skills.level), asc(skills.sort), asc(skills.name)),
+    db.select({ total: count() }).from(skills),
+  ]);
+
+  return { skills: topSkills, total: totals[0].total };
 }
 
 export type HomePost = {

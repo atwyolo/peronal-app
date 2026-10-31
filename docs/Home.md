@@ -1,6 +1,6 @@
 ---
 tags: [moc]
-updated: 2026-10-31
+updated: 2026-11-01
 ---
 
 # Home
@@ -34,7 +34,7 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 
 ## Plans
 - [[2026-10-30-home-experience]] — Experience block, done; deferred items listed there
-- [[2026-10-30-home-skills]] — My top skills block, in progress
+- [[2026-10-30-home-skills]] — My top skills block, done, waiting for the owner's review
 - [[2026-10-30-home-blog]] — Blog block and clean-up, draft
 - [[2026-10-30-home-motion]] — accent wipe and verification pass, draft
 
@@ -43,6 +43,7 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[2026-10-28]] — database layer for the home page
 - [[2026-10-29]] — home page architecture, step 1: structure move and boundaries lint
 - [[2026-10-30]] — home page: photo, Blob store, image optimization
+- [[2026-11-01]] — home page: My top skills block
 - [[2026-10-31]] — home page: Experience block closed
 
 ## Templates

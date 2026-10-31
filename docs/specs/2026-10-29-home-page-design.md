@@ -32,7 +32,7 @@ src/
 ├─ app/        Next routes only: page/layout/loading/error/not-found, metadata, generateStaticParams; providers in app/_providers
 ├─ views/      page compositions ("pages" layer, renamed: src/pages would be picked up by the Next Pages Router)
 ├─ widgets/    large page blocks: header, hero, contacts, about, experience, skills, blog
-├─ features/   concrete business UI: experience card, post card, skills explorer, locale menu, theme menu
+├─ features/   concrete business UI: experience card, skill row, post card, locale menu, theme menu
 ├─ shared/
 │  ├─ ui/      our components and adapters over shadcn (own API)
 │  ├─ shadcn/  generated shadcn components (moved from src/components/ui), private to shared/ui
@@ -46,7 +46,7 @@ src/
 - No `entities` layer: business cards live in features (owner's choice).
 - **Import rule:** a layer imports only from layers below it. No feature → feature, no widget → widget imports.
 - **No barrel `index.ts` files.** Import directly from component files. Reason: a barrel pulls every re-exported module into the importer's module graph, so a client component importing one helper from a barrel drags server-only/DB code with it (build error on `server-only`, or DB code in the browser bundle without it); `next dev` has no tree-shaking, so barrels also slow HMR.
-- **Public files rule:** only files in a slice's root are importable from outside (e.g. `features/skills-explorer/SkillsExplorer.tsx`). Internals live in `lib/`, `model/`, `ui/` subfolders and are importable only from inside the slice.
+- **Public files rule:** only files in a slice's root are importable from outside (e.g. `features/experience-card/ExperienceCard.tsx`). Internals live in `lib/`, `model/`, `ui/` subfolders and are importable only from inside the slice.
 - **Enforcement:** `eslint-plugin-boundaries` v7 in `npm run lint` (Claude's call; Steiger is the official FSD alternative): layer order, public files rule, and `@/shared/shadcn/*` importable only from `shared/ui`. Also: `@base-ui/*` importable only from `shared/shadcn`; features may import `db` only with `import type`; every file in `src/` must belong to a layer (`no-unknown-files`).
 - **Naming and code style:** JSX files are PascalCase, components are `FC` arrow functions with props destructured on the first line; see `CLAUDE.md` → Code style (owner's rule, 2026-10-29).
 - **Data access:** only views and widgets (Server Components) call `src/db/queries`. Features receive data as serializable props, so they stay testable in Vitest without a database.
@@ -55,27 +55,24 @@ src/
 
 ### Server and client components
 
-- Views and widgets are Server Components. `"use client"` only on interactive leaves: skills explorer, carousel, locale menu, theme menu, mobile drawer, and `shared/ui/Image` for its `onError`.
+- Views and widgets are Server Components. `"use client"` only on interactive leaves: carousel, locale menu, theme menu, mobile drawer, and `shared/ui/Image` for its `onError`.
 - `"use client"` does not mean client-only rendering: client components are prerendered to HTML on the server and hydrated in the browser. Indexing does not depend on the server/client split.
 - Server-rendered content goes into client components through `children` (interleaving), e.g. the carousel receives server-rendered cards.
 - File-level rules from Next remain: a `"use client"` file must not export server code; a client component never imports a server component (pass it as `children`/props instead).
 - **Deterministic first render:** never choose markup from `window` (width, storage) during render; it causes hydration mismatches. Breakpoint differences are CSS.
 
-### Example: Skills block
+### Example: My top skills block
 
 ```
-widgets/skills/SkillsSection.tsx            server: getSkills(locale)
+widgets/top-skills/TopSkills.tsx            server: getTopSkills()
 ├─ shared/ui/SectionHeader.tsx               server
-└─ shared/ui/Tile.tsx                        server, reveal animation
-   └─ features/skills-explorer/SkillsExplorer.tsx   "use client": query, domain, show-all state
-      ├─ shared/ui/SearchInput.tsx           adapter
-      ├─ shared/ui/ToggleGroup.tsx           adapter
-      └─ features/skills-explorer/ui/SkillRow.tsx
+├─ shared/ui/Tile.tsx                        server
+│  └─ features/skill-row/SkillRow.tsx        synchronous, gets a skill as a prop
+└─ shared/ui/ButtonLink.tsx                  server
 ```
 
-- HTML contains the default top 14 rows (desktop default). On mobile, rows 6–14 are hidden with CSS; both header counts ("Top 5 of N" / "Top 14 of N") are rendered and toggled by breakpoint.
-- Indexing the default top is enough; the remaining skills need not be in the HTML (owner's decision).
-- Filtering happens in memory on the client. Server-side filtering via `searchParams` was rejected: it would make the page dynamic.
+- The block has no state, so it adds no client JavaScript. Search and domain filters belong to the `/skills` page, designed separately; `getSkills` waits there (owner's decision).
+- It shows every skill with `top = true` without a limit (owner's decision). The link counts all skills. No marked skill, no block.
 
 ### Rendering, SEO and animation
 
@@ -138,11 +135,12 @@ Small steps, **one step per commit** (owner's decision). Working order: structur
    3. **Full-width desktop layout — done 2026-10-30** (owner's decision, see Scope). The earlier 1200 px cap was border-box, so the site had 1120 px of content while the content-box prototype has 1200. Columns are now 288 px at 1280 and grow with the screen, so the photo's desktop `sizes` is `max(360px, 25vw)`: the fixed 360px loaded a blurred file above about 1440. Tests: `e2e/site-layout.spec.ts`, wide-screen case in `e2e/home-photo.spec.ts`, new numbers in the first-screen specs.
    4. **Card image — done 2026-10-31.** `ExperienceCard` has a 140/180 px image area above the text, `alt` is the company name. `Image` gets a `framed` prop: 14 px radius on the image and the placeholder, a dashed border and the prototype's 1 px lines on the placeholder only. The prop lives on `Image` because the parent cannot tell a failed load from a working image. The photo's placeholder keeps its 8 px stripes: on a framed one they hide the dashes, since both use the `placeholder` color. Deviation from the prototype (Claude's call): no "COMPANY IMAGE" text. `sizes` is the rendered image width: the column minus the card's border and padding (258 px at 1280), at least 320 px on desktop, because `object-cover` scales a 16:9 file by the 180 px height. Card images: a 1600×900 opaque master, the logo centered in about 760×250 px. The box goes from 1.08:1 at 1024 to 4.7:1 between 720 and 1023, so only the central 60% of the width and 38% of the height is always visible. Files go to Blob by hand, the URL to `experience.image_url` and the seed data; the page shows it after the next build. A replaced file needs a new name: Blob serves it with a 30-day `max-age`. Tests: `Image.test.tsx`, `ExperienceCard.test.tsx`, placeholder and file-width cases in `e2e/home-experience.spec.ts`.
    5. **Carousel — done 2026-10-31.** `shared/ui/Carousel.tsx` (client leaf, takes the server-rendered cards as `children`) with `shared/lib/carousel-index.ts`. One DOM: a scroll-snap row below `lg`, a grid from `lg`, and the caller passes the columns (`lg:grid-cols-4`). Below `lg` includes the tablet range, where the card fills 688 px. The position comes only from the scroll offset and is clamped for the iOS overscroll bounce. It is read through `useSyncExternalStore`: scroll-snap works before hydration, so a `useState` starting at 0 would show "1 / 4" on the second card. A `ResizeObserver` in the same subscription returns the track to its slide when the width changes, because iOS Safari keeps the old offset after a rotation (see [[2026-10-30-home-experience]]). Arrows only scroll, because setting the index on click makes the counter jump back during a smooth scroll. `role="group"`, not `region` (see the plan), `aria-live="polite"` on the position so an arrow press is announced, `aria-disabled` on the arrows so the focus survives the last slide, without the 35% dimming while the keyboard focus is there. The controls disappear when there is at most one slide. `Button` gets the `outline` tone. Messages moved to the top-level `Carousel` namespace. Tests: `carousel-index.test.ts`, `Carousel.test.tsx`, real arrows, a real touch swipe through CDP and reduced motion in `e2e/home-experience.spec.ts`.
+   6. **My top skills — done 2026-11-01.** Replaces the planned explorer, following the design of 2026-10-31. `skills.top`, `getTopSkills`, `features/skill-row/SkillRow.tsx`, `widgets/top-skills/TopSkills.tsx`, a Skills item in the navigation. The meter runs from 1 to 10 and the bar and the value always share a line (owner's decisions). Tests: `SkillRow.test.tsx`, `TopSkills.test.tsx`, `e2e/home-skills.spec.ts`. Detail: [[2026-10-30-home-skills]].
 
 ## Open (resume here)
 
 1. **i18n:** client messages scope is all messages for now (Claude's call); measured again in [[2026-10-30-home-motion]].
-2. **Plans:** [[2026-10-30-home-skills]], [[2026-10-30-home-blog]] and [[2026-10-30-home-motion]] are drafts until the owner approves them; the spec stays a draft until the motion pass closes the page.
+2. **Plans:** [[2026-10-30-home-blog]] and [[2026-10-30-home-motion]] are drafts until the owner approves them; the spec stays a draft until the motion pass closes the page.
 3. "Learn more" on experience cards goes to `/projects` for now (owner's decision, 2026-10-30), to be revisited when that page exists.
 
 ## Calls made by Claude (to confirm on approval)

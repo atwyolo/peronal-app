@@ -1,22 +1,22 @@
-// The home page is being built block by block: the first screen and Experience are real, the rest is still the
+// The home page is being built block by block: the first screen, Experience and My top skills are real, the rest is still the
 // TEMPORARY plain dump of the database layer, replaced section by section (see docs/specs/2026-10-29-home-page-design.md).
 import { getLocale } from "next-intl/server";
 import type { FC } from "react";
 
-import { getLatestPosts, getSkills } from "@/db/queries/home";
+import { getLatestPosts } from "@/db/queries/home";
 import { toPlainText } from "@/shared/lib/rich-text";
 import { About } from "@/widgets/about/About";
 import { Contacts } from "@/widgets/contacts/Contacts";
 import { Experience } from "@/widgets/experience/Experience";
 import { Hero } from "@/widgets/hero/Hero";
 import { ProfilePhoto } from "@/widgets/profile-photo/ProfilePhoto";
+import { TopSkills } from "@/widgets/top-skills/TopSkills";
 
 export const HomePage: FC = async () => {
   // The locale of the current [locale] segment; the queries fall back to English for untranslated rows.
   const locale = await getLocale();
 
-  // Two independent cached reads, started together instead of one after another.
-  const [skills, posts] = await Promise.all([getSkills(locale), getLatestPosts(locale)]);
+  const posts = await getLatestPosts(locale);
 
   return (
     <main className="mx-auto flex w-full max-w-[720px] flex-col gap-3 px-4 pt-4 pb-8 lg:max-w-none lg:gap-4 lg:pr-15 lg:pl-5 lg:pt-6 lg:pb-12">
@@ -38,19 +38,7 @@ export const HomePage: FC = async () => {
 
       <Experience />
 
-      <section className="flex flex-col gap-2">
-        <h2 className="text-2xl font-semibold">Skills ({skills.skills.length})</h2>
-        <p className="font-mono text-sm">
-          {skills.domains.map((d) => `${d.label} ${d.count}`).join(" · ")}
-        </p>
-        <ol className="columns-2 text-sm">
-          {skills.skills.map((skill) => (
-            <li key={skill.name}>
-              {skill.name} — {skill.level}/10 ({skill.domain})
-            </li>
-          ))}
-        </ol>
-      </section>
+      <TopSkills />
 
       <section className="flex flex-col gap-4">
         <h2 className="text-2xl font-semibold">Latest posts ({posts.length})</h2>

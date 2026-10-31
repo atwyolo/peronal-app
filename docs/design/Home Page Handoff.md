@@ -12,7 +12,7 @@ Related: [[Roadmap]], [[Rendering Strategy]], [[Localization]], [[Data Model]], 
 
 ## Changes since 2026-10-28
 
-- The Skills block became **My top skills**: no search, filter or counter; it shows only skills marked `featured`; "Show all N skills" links to the new `/skills` page.
+- The Skills block became **My top skills**: no search, filter or counter; it shows only skills marked `top`; "Show all N skills" links to the new `/skills` page.
 - The nav gained **Skills** (between Projects and Blog).
 - Experience links now point to the Projects page: `/projects#<company>` and `/projects`.
 
@@ -120,10 +120,10 @@ Each button has an arrow-up-right icon on the right (CV: the "PDF" mark) and an 
 
 ### My top skills (static)
 
-A short list of skills marked `featured` in the main skills list (1–20 items). No search, no domain filter and no "Top N of M" counter on the home page: the full explorer lives on the separate `/skills` page (designed separately).
+A short list of skills marked `top` in the main skills list, without a limit (owner's decision, 2026-11-01; the layout is drawn for 1–20). No search, no domain filter and no "Top N of M" counter on the home page: the full explorer lives on the separate `/skills` page (designed separately).
 
 - Section header: the mono label "My top skills", no count on the right.
-- Data: `topSkills` from `content.ts` (skills with `featured: true`, sorted by level desc, then `sort`, then name). Later: a `featured boolean` column on `skills`.
+- Data: `getTopSkills`, the `top boolean` column on `skills`, sorted by level desc, then `sort`, then name. `content.ts` and the prototype still call the flag `featured`.
 - One tile.
   - Mobile: one column; each row has the name (500 weight) on its own line, then the 10-segment bar (8 px tall, 3 px gaps) and a mono "n/10" on one line (owner's decision, 2026-11-01; the prototype and the screens still show the value next to the name).
   - Desktop: padding 28 × 32 px; grid `repeat(auto-fill, minmax(320px, 1fr))` with gaps of 18 × 48 px, so 1–2 skills fill one row and 20 spread over three columns. Each row is a grid `150px | 1fr | 44px`: name, bar (10 px tall, 4 px gaps), "n/10".
@@ -182,8 +182,8 @@ A short list of skills marked `featured` in the main skills list (1–20 items).
 - The Data Model needs these additions; record them in [[Data Model]] when Stage 3 starts:
   - `experience`: `image`, a tag relation to `skills` (many-to-many), and `description` limited to 3 sentences (plain text is enough on the home page).
   - `posts`: `cover`, `tags` (a `tags` table plus `post_tags`).
-  - `skills`: `featured boolean default false` (drives "My top skills").
-- Owner TODOs (marked in `content.ts`): the photo file, the CV PDF, the Omega-R description, the experience tag lists, real skill levels (currently only 5 are set; the rest are placeholder 6), which skills are `featured`, and real posts.
+  - `skills`: `top boolean default false` (drives "My top skills", done 2026-11-01).
+- Owner TODOs (marked in `content.ts`): the photo file, the CV PDF, the Omega-R description, the experience tag lists, real skill levels (currently only 5 are set; the rest are placeholder 6), which skills are `top`, and real posts.
 
 ## Open questions (add to [[Open Questions]])
 

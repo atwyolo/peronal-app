@@ -24,6 +24,7 @@ Related: [[2026-10-29-home-page-design]], [[Home Page Handoff]], [[Data Model]].
 - **The total comes from the database** (Claude's call). The design shows 41, the database has 42.
 - **No block without marked skills** (Claude's call). An empty tile reads as a broken page.
 - **The explorer's messages leave `Home.skills`** (Claude's call), matching `docs/design/home/messages.en.json`. `/skills` gets its own namespace from its own design.
+- **The value is right-aligned below `lg`** (Claude's call), so the list ends at the padding of the tile. From `lg` it stays left-aligned in its column, like the prototype.
 - **Server only** (Claude's call). The block has no state, so it adds no client JavaScript.
 
 ## Tasks
@@ -33,9 +34,9 @@ Related: [[2026-10-29-home-page-design]], [[Home Page Handoff]], [[Data Model]].
 `features/skill-row/SkillRow.tsx`, synchronous, gets `skill: { name, level }` as a prop. One DOM on every breakpoint, in the order name, bar, value.
 
 - [x] The row has `role="meter"`, `aria-valuenow`, `aria-valuemin={1}`, `aria-valuemax={10}` and the `levelAria` label.
-- [x] Ten segments: filled up to the level in `brand`, the rest in `placeholder`. Levels 1 and 10 are covered.
-- [ ] Below `lg`: the name on its own line, 15 px, then the bar and "n/10" on one line, 6 px between the lines. Bar 8 px tall, 3 px gaps.
-- [ ] From `lg`: grid `150px | 1fr | 44px`, gap 14 px. Bar 10 px tall, 4 px gaps.
+- [x] Ten segments: filled up to the level in `brand`, the rest in `placeholder`. Levels 1 and 10 are covered. `aria-valuetext` is "n/10", so no screen reader turns the 1–10 range into a percentage.
+- [x] Below `lg`: the name on its own line, 15 px, then the bar and "n/10" on one line, 6 px between the lines. Bar 8 px tall, 3 px gaps.
+- [x] From `lg`: grid `150px | 1fr | 44px`, gap 14 px. Bar 10 px tall, 4 px gaps.
 
 Verify: `SkillRow.test.tsx`, test first. Depends on: nothing. `Home.skills` messages change here.
 
@@ -52,9 +53,9 @@ Verify: `MobileNav.test.tsx` and `e2e/header.spec.ts`, updated first. Depends on
 `src/db/schema/skills.ts`, `src/db/seed/data.ts`, [[Data Model]].
 
 - [x] The schema and the seed mark the eight skills.
-- [ ] **Production database, confirmed by the owner first:** the column, then the eight rows. There is one database, and the seed never runs on it again.
+- [x] **Production database, confirmed by the owner first:** the column, then the eight rows, in one transaction (2026-11-01). There is one database, and the seed never runs on it again.
 
-Verify: a read-only query shows 8 of 42 rows marked. Depends on: nothing.
+Verify: a read-only query shows 8 of 42 rows marked (done). Depends on: nothing.
 
 ### Task 4: The block replaces the dump (M)
 
@@ -62,18 +63,18 @@ Verify: a read-only query shows 8 of 42 rows marked. Depends on: nothing.
 
 `getTopSkills(): Promise<{ skills: { name: string; level: number }[]; total: number }>`, cached with `cacheLife("max")` and the `skills` tag. No locale: tech names are not translated. Order: level desc, `sort`, `name`. Rows and total come in one `db.batch`.
 
-- [ ] A section labelled by `SectionHeader` "My top skills", no count.
-- [ ] One tile with a list. Below `lg`: 20 px padding, 14 px gap. From `lg`: 28 × 32 px padding, `repeat(auto-fill, minmax(320px, 1fr))`, gaps 18 × 48 px.
-- [ ] A primary pill "Show all {total} skills" to `/skills`, right-aligned from `lg`, full width below it.
-- [ ] Without marked skills the section is not rendered.
+- [x] A section labelled by `SectionHeader` "My top skills", no count.
+- [x] One tile with a list. Below `lg`: 20 px padding, 14 px gap. From `lg`: 28 × 32 px padding, `repeat(auto-fill, minmax(320px, 1fr))`, gaps 18 × 48 px.
+- [x] A primary pill "Show all {total} skills" to `/skills`, right-aligned from `lg`, full width below it.
+- [x] Without marked skills the section is not rendered.
 
 Verify: `e2e/home-skills.spec.ts` against the database (order, levels, the total matches the database, three columns at 1280, one on mobile, the bar and the value on one line on mobile, the link keeps the locale, the page does not widen at 390, 720, 1024 and 1280). Screenshots in both themes. Depends on: tasks 1 and 3.
 
 ## Checkpoint
 
 - [ ] Definition of done from `CLAUDE.md` is green.
-- [ ] Mobile and desktop screenshots in both themes match the handoff.
-- [ ] Spec, Data Model, handoff and journal updated.
+- [x] Mobile and desktop screenshots in both themes match the handoff.
+- [x] Spec, Data Model, handoff and journal updated.
 - [ ] The owner reviewed the block before Blog starts.
 
 ## Risks
@@ -81,6 +82,6 @@ Verify: `e2e/home-skills.spec.ts` against the database (order, levels, the total
 | Risk | Impact | Mitigation |
 |---|---|---|
 | Code reading `top` reaches production before the column | High, the build fails | Task 3 runs before task 4; the column is additive, so the deployed code keeps working |
-| A long name, such as "React Testing Library", does not fit the 150 px column | Low | It wraps inside the column; no marked skill has such a name yet, checked by hand with a temporary change |
+| A long name, such as "React Testing Library", does not fit the 150 px column | Low | It wraps inside the column: measured at 48 px tall, no overflow, on both breakpoints |
 | `role="meter"` hides the text inside the row from a screen reader | Low | Intended: the label carries both the name and the level |
 | The owner's cached home page shows the old block after a deploy | Low | The tag and the build refresh the cached data; a browser reload is enough |

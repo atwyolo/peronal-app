@@ -27,6 +27,7 @@ describe("SkillRow", () => {
     expect(meter).toHaveAttribute("aria-valuenow", "9");
     expect(meter).toHaveAttribute("aria-valuemin", "1");
     expect(meter).toHaveAttribute("aria-valuemax", "10");
+    expect(meter).toHaveAttribute("aria-valuetext", "9/10");
   });
 
   it.each([1, 7, 10])("fills %i of ten segments", (level) => {
