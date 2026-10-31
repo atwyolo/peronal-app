@@ -10,6 +10,8 @@ import {
   experience,
   experienceSkills,
   experienceTranslations,
+  postTopicTranslations,
+  postTopics,
   postTranslations,
   posts,
   profile,
@@ -18,6 +20,7 @@ import {
   skillDomains,
   skills,
 } from "../schema";
+import { locales } from "@/shared/lib/locales";
 import { doc, paragraph } from "@/shared/lib/rich-text";
 import * as data from "./data";
 
@@ -31,12 +34,19 @@ async function main() {
     return;
   }
 
-  // Round trip 1: domains, because skills need their ids.
-  const domainRows = await db
-    .insert(skillDomains)
-    .values(data.domains.map((d, index) => ({ key: d.key, sort: index })))
-    .returning({ id: skillDomains.id, key: skillDomains.key });
+  // Round trip 1: domains and topics, because skills and posts need their ids.
+  const [domainRows, topicRows] = await db.batch([
+    db
+      .insert(skillDomains)
+      .values(data.domains.map((d, index) => ({ key: d.key, sort: index })))
+      .returning({ id: skillDomains.id, key: skillDomains.key }),
+    db
+      .insert(postTopics)
+      .values(data.postTopics.map((t, index) => ({ key: t.key, sort: index })))
+      .returning({ id: postTopics.id, key: postTopics.key }),
+  ]);
   const domainId = new Map(domainRows.map((row) => [row.key, row.id]));
+  const topicId = new Map(topicRows.map((row) => [row.key, row.id]));
 
   // Round trip 2: base rows that do not depend on each other, in one batch.
   const [skillRows, experienceRows, postRows] = await db.batch([
@@ -69,7 +79,12 @@ async function main() {
     db
       .insert(posts)
       .values(
-        data.posts.map((p) => ({ slug: p.slug, status: "published" as const, publishedAt: new Date(p.publishedAt) })),
+        data.posts.map((p) => ({
+          slug: p.slug,
+          topicId: topicId.get(p.topic)!,
+          status: "published" as const,
+          publishedAt: new Date(p.publishedAt),
+        })),
       )
       .returning({ id: posts.id, slug: posts.slug }),
   ]);
@@ -81,6 +96,11 @@ async function main() {
   await db.batch([
     db.insert(skillDomainTranslations).values(
       data.domains.map((d) => ({ domainId: domainId.get(d.key)!, locale: "en" as const, label: d.label })),
+    ),
+    db.insert(postTopicTranslations).values(
+      data.postTopics.flatMap((t) =>
+        locales.map((locale) => ({ topicId: topicId.get(t.key)!, locale, label: t.labels[locale] })),
+      ),
     ),
     db.insert(profile).values({
       photoUrl: data.profile.photoUrl,
@@ -117,7 +137,7 @@ async function main() {
   ]);
 
   console.log(
-    `Seeded: ${domainRows.length} domains, ${skillRows.length} skills, ${experienceRows.length} jobs, ${postRows.length} posts, 1 profile.`,
+    `Seeded: ${domainRows.length} domains, ${skillRows.length} skills, ${experienceRows.length} jobs, ${topicRows.length} topics, ${postRows.length} posts, 1 profile.`,
   );
 }
 

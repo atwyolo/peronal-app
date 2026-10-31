@@ -16,7 +16,7 @@ Part of the site handoff, see [[README]] in this folder. Related: [[Roadmap]], [
 
 - Blog preview cards show the post **topic** (Technical / Software / Hobby) as a badge before the date, same as on the Blog page.
 
-- The Skills block became **My top skills**: no search, filter or counter; it shows only skills marked `featured`; "Show all N skills" links to the new `/skills` page.
+- The Skills block became **My top skills**: no search, filter or counter; it shows only skills marked `top`; "Show all N skills" links to the new `/skills` page.
 - The nav gained **Skills** (between Projects and Blog).
 - Experience links now point to the Projects page: `/projects#<company>` and `/projects`.
 
@@ -124,12 +124,12 @@ Each button has an arrow-up-right icon on the right (CV: the "PDF" mark) and an 
 
 ### My top skills (static)
 
-A short list of skills marked `featured` in the main skills list (1–20 items). No search, no domain filter and no "Top N of M" counter on the home page: the full explorer lives on the separate `/skills` page (designed separately).
+A short list of skills marked `top` in the main skills list, without a limit (owner's decision, 2026-11-01; the layout is drawn for 1–20). No search, no domain filter and no "Top N of M" counter on the home page: the full explorer lives on the separate `/skills` page (designed separately).
 
 - Section header: the mono label "My top skills", no count on the right.
-- Data: `topSkills` from `content.ts` (skills with `featured: true`, sorted by level desc, then `sort`, then name). Later: a `featured boolean` column on `skills`.
+- Data: `getTopSkills`, the `top boolean` column on `skills`, sorted by level desc, then `sort`, then name. `content.ts` and the prototype still call the flag `featured`.
 - One tile.
-  - Mobile: one column; each row has the name (500 weight) and a mono "n/10" on one line, with the 10-segment bar below (8 px tall, 3 px gaps).
+  - Mobile: one column; each row has the name (500 weight) on its own line, then the 10-segment bar (8 px tall, 3 px gaps) and a mono "n/10" on one line (owner's decision, 2026-11-01; the prototype and the screens still show the value next to the name).
   - Desktop: padding 28 × 32 px; grid `repeat(auto-fill, minmax(320px, 1fr))` with gaps of 18 × 48 px, so 1–2 skills fill one row and 20 spread over three columns. Each row is a grid `150px | 1fr | 44px`: name, bar (10 px tall, 4 px gaps), "n/10".
 - Bar segments are filled in `brand` up to the level; the rest use `placeholder`. Each row has `role="meter"` with `aria-valuenow` or an `aria-label` from messages.
 - Button below the tile: a primary pill reading "Show all {total} skills", where the total is counted from the full list. It is a link to `/[locale]/skills`. Desktop: right-aligned, like "All experience". Mobile: full width.
@@ -138,7 +138,7 @@ A short list of skills marked `featured` in the main skills list (1–20 items).
 
 - Shows the 3 latest posts. The section header has no controls.
 - Post card:
-  - meta row: topic badge (mono 11 px, uppercase, `brand` text on `brand` at 14% opacity, radius 6 px, padding 5 × 8 px), then the date as a mono label formatted with next-intl `format.dateTime`;
+  - meta row: topic badge (mono 11 px, uppercase, `brand` text on `brand` at 14% opacity, radius 6 px, padding 5 × 8 px), then the date as a mono label formatted with next-intl `format.dateTime`. The label comes from `post_topic_translations`, not from messages (owner's decision, 2026-11-01);
   - title (h3): 17–19 px mobile, 18 px desktop; the featured card uses 22 px;
   - excerpt: 2–3 sentences, 15 px / 1.55, `foreground-soft`;
   - tag chips **under the text** (several per post);
@@ -182,8 +182,9 @@ A short list of skills marked `featured` in the main skills list (1–20 items).
 - The Data Model needs these additions; record them in [[Data Model]] when Stage 3 starts:
   - `experience`: `image`, a tag relation to `skills` (many-to-many), and `description` limited to 3 sentences (plain text is enough on the home page).
   - `posts`: `cover`, `tags` (a `tags` table plus `post_tags`).
-  - `skills`: `featured boolean default false` (drives "My top skills").
-- Owner TODOs (marked in `content.ts`): the photo file, the CV PDF, the Omega-R description, the experience tag lists, real skill levels (currently only 5 are set; the rest are placeholder 6), which skills are `featured`, and real posts.
+  - `skills`: `top boolean default false` (drives "My top skills", done 2026-11-01).
+  - `posts`: `topic_id`, see [[Data Model]] (done 2026-11-01).
+- Owner TODOs (marked in `content.ts`): the photo file, the CV PDF, the Omega-R description, the experience tag lists, real skill levels (currently only 5 are set; the rest are placeholder 6), which skills are `top`, and real posts.
 
 ## Open questions (add to [[Open Questions]])
 

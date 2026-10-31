@@ -28,5 +28,6 @@ export default getRequestConfig(async (params) => {
   const fallback = await loadMessages(routing.defaultLocale);
   const messages = locale === routing.defaultLocale ? fallback : mergeMessages(fallback, await loadMessages(locale));
 
-  return { locale, messages };
+  // Without a zone next-intl uses the machine's, so a local and a Vercel build could print different dates.
+  return { locale, messages, timeZone: "UTC" };
 });

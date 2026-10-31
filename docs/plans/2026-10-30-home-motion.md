@@ -12,7 +12,7 @@ Related: [[2026-10-29-home-page-design]] ("Rendering, SEO and animation", "Verif
 
 ## Decisions
 
-- **CSS only, as in the spec.** The rules come from `docs/design/home/tokens.css`. Content is never hidden by JavaScript, so crawlers and visitors without JS see everything.
+- **CSS only, as in the spec.** The rules come from `docs/design/shared/tokens.css`. Content is never hidden by JavaScript, so crawlers and visitors without JS see everything.
 - **`Tile` gets an optional reveal API** (`reveal`: `load` or `scroll`, plus `index`) and maps it to the classes, `data-dir` and `--i`, so the direction is set on the server from the render index.
 - **A carousel animates as one block on every breakpoint** (Claude's call): with one DOM the desktop grid is the same element.
 - **i18n messages stay whole unless the numbers change.** Measured 2026-10-30: all messages are 808 bytes gzipped, those used by client components 340 bytes, about 580 with Skills and the Carousel. Task 4 measures again.

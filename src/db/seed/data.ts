@@ -1,7 +1,8 @@
 /**
- * Initial content, taken from docs/design/home/content.ts (English only; other locales fall back).
+ * Initial content, taken from docs/design/shared/content.ts (English only, other locales fall back; topics are translated).
  * Values marked TODO(owner) are design placeholders, not facts. Edit them later in the admin.
  */
+import type { Locale } from "@/shared/lib/locales";
 import { boldParagraph, bulletList, doc, paragraph } from "@/shared/lib/rich-text";
 
 export const domains = [
@@ -122,10 +123,54 @@ export const experience = [
   },
 ];
 
+/** Blog topics in display order. The only seed content translated into every locale. */
+export const postTopics: { key: string; labels: Record<Locale, string> }[] = [
+  {
+    key: "technical",
+    labels: {
+      en: "Technical",
+      ru: "Технологии",
+      pt: "Técnico",
+      es: "Técnico",
+      de: "Technik",
+      fr: "Technique",
+      ja: "技術",
+      pl: "Techniczne",
+    },
+  },
+  {
+    key: "software",
+    labels: {
+      en: "Software",
+      ru: "Разработка",
+      pt: "Software",
+      es: "Software",
+      de: "Software",
+      fr: "Logiciel",
+      ja: "ソフトウェア",
+      pl: "Oprogramowanie",
+    },
+  },
+  {
+    key: "hobby",
+    labels: {
+      en: "Hobby",
+      ru: "Хобби",
+      pt: "Hobby",
+      es: "Aficiones",
+      de: "Hobby",
+      fr: "Loisirs",
+      ja: "趣味",
+      pl: "Hobby",
+    },
+  },
+];
+
 /** Demo posts from the design. TODO(owner): replace with real posts. */
 export const posts = [
   {
     slug: "php-to-nextjs-without-losing-seo",
+    topic: "technical",
     publishedAt: "2026-10-12",
     title: "Moving an e-commerce store from PHP to Next.js without losing SEO",
     excerpt:
@@ -134,6 +179,7 @@ export const posts = [
   },
   {
     slug: "offline-mode-in-react",
+    topic: "technical",
     publishedAt: "2026-09-28",
     title: "Offline mode in a React app: what actually matters",
     excerpt:
@@ -142,6 +188,7 @@ export const posts = [
   },
   {
     slug: "unit-tests-a-team-keeps-writing",
+    topic: "software",
     publishedAt: "2026-09-09",
     title: "Unit tests a team keeps writing",
     excerpt:

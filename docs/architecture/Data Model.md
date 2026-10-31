@@ -1,6 +1,6 @@
 ---
 tags: [architecture, database]
-updated: 2026-10-28
+updated: 2026-11-01
 ---
 
 # Data Model
@@ -74,8 +74,12 @@ Agreed for the home page on 2026-10-28; the rest stays a draft until its stage. 
 |---|---|---|
 | `slug` | text unique | One English slug for all locales. |
 | `status` | enum `draft` / `published` | |
+| `topic_id` | fk → `post_topics`, `on delete restrict` | Exactly one topic per post, drafts included. Indexed. |
 | `published_at` | timestamptz, nullable | Set on publish; shown on cards. |
 | `cover_url` | text, nullable | Blob URL. Alt = translated `title`. |
+
+### `post_topics` + `post_topic_translations`
+`post_topics`: `key` (unique, e.g. `technical`, used in URLs and filters), `sort`. Translations: `label`, filled for all eight locales. The number of posts in a topic is not stored: it comes from a left join with published `posts`, so a topic with no posts counts as 0. Replaces the enum and the topic labels in messages from the [[Blog Page Handoff]]; the filter's "All" stays in messages, it is not a topic (owner's decision, 2026-11-01).
 
 ### `post_translations`
 | Column | Type | Notes |

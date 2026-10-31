@@ -82,7 +82,7 @@ See [[README]] for shared rules and files. Data: `latestPosts` and `postTopics` 
 
 ## Data notes
 
-- Add `posts.topic`: an enum `technical | software | hobby`, extensible. Add tags as a `tags` table plus `post_tags`, so counts come from a join.
-- Topic labels live in messages (`Blog.topics.*`), not in the DB, until topics need to be editable in the admin.
+- Topics are tables, not an enum (owner's decision, 2026-11-01): `post_topics`, `post_topic_translations` and `posts.topic_id`, see [[Data Model]]. Labels are read from the database, so `Blog.topics.*` keeps only `all`; topic counts come from a join, a topic with no posts counts as 0.
+- Add tags as a `tags` table plus `post_tags`, so counts come from a join. Open: today tags are a per-locale array in `post_translations`; decided with this page.
 
 Owner TODOs: real posts. Confirm how Technical and Software differ: currently Technical means hands-on technical deep dives, and Software means team process and engineering practice.

@@ -30,12 +30,12 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[ADR-0010 Superpowers Workflow]]
 
 ## Specs
-- [[2026-10-29-home-page-design]] — home page architecture, draft; steps 1–8 done, up to the Experience block; Skills next
+- [[2026-10-29-home-page-design]] — home page architecture, draft; all blocks done, the motion pass is next
 
 ## Plans
 - [[2026-10-30-home-experience]] — Experience block, done; deferred items listed there
 - [[2026-10-30-home-skills]] — My top skills block, done, waiting for the owner's review
-- [[2026-10-30-home-blog]] — Blog block and clean-up, draft
+- [[2026-10-30-home-blog]] — Blog block with translated topics and clean-up, done, waiting for the owner's review
 - [[2026-10-30-home-motion]] — accent wipe and verification pass, draft
 
 ## Journal

@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design tokens: docs/design/home/tokens.css (approved handoff, docs/design/Home Page Handoff.md).
+ * Design tokens: docs/design/shared/tokens.css (approved handoff, docs/design/Home Page Handoff.md).
  * shadcn variable names keep their shadcn meaning, so generated components pick up the palette.
  * Extra tokens (card-border, foreground-soft, brand, deco, shutter, selected, placeholder, contact brands)
  * cover what the design needs beyond shadcn's set.

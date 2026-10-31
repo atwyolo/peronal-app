@@ -7,7 +7,7 @@ interface SiteLayoutProps {
 }
 
 /**
- * Frame shared by every public page (header now, footer later). Rendered by the root layout, so it stays mounted
+ * Frame shared by every public page (the header; the site has no footer). Rendered by the root layout, so it stays mounted
  * across navigations; a view because `src/app` may only compose views.
  */
 export const SiteLayout: FC<SiteLayoutProps> = (props) => {

@@ -23,7 +23,7 @@ Related: [[2026-10-29-home-page-design]], [[Home Page Handoff]], [[Data Model]].
 - **The meter runs from 1 to 10 (owner's decision),** like the `skills_level_range` check: level 0 does not exist.
 - **The total comes from the database** (Claude's call). The design shows 41, the database has 42.
 - **No block without marked skills** (Claude's call). An empty tile reads as a broken page.
-- **The explorer's messages leave `Home.skills`** (Claude's call), matching `docs/design/home/messages.en.json`. `/skills` gets its own namespace from its own design.
+- **The explorer's messages leave `Home.skills`** (Claude's call), matching `docs/design/shared/messages.en.json`. `/skills` gets its own namespace from its own design.
 - **The value is right-aligned below `lg`** (Claude's call), so the list ends at the padding of the tile. From `lg` it stays left-aligned in its column, like the prototype.
 - **Server only** (Claude's call). The block has no state, so it adds no client JavaScript.
 

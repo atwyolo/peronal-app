@@ -9,6 +9,7 @@ import {
   experience,
   experienceSkills,
   experienceTranslations,
+  postTopicTranslations,
   postTranslations,
   posts,
   profile,
@@ -33,6 +34,7 @@ export const homeCacheTags = {
   experience: "experience",
   skills: "skills",
   posts: "posts",
+  postTopics: "post-topics",
 } as const;
 
 export type HomeProfile = {
@@ -224,6 +226,8 @@ export type HomePost = {
   /** ISO timestamp; formatted in the UI with next-intl. */
   publishedAt: string;
   coverUrl: string | null;
+  /** The topic's label in the requested locale. */
+  topic: string;
   title: string;
   excerpt: RichTextDoc;
   tags: string[];
@@ -232,16 +236,19 @@ export type HomePost = {
 export async function getLatestPosts(locale: Locale, limit = 3): Promise<HomePost[]> {
   "use cache";
   cacheLife("max");
-  cacheTag(homeCacheTags.posts);
+  cacheTag(homeCacheTags.posts, homeCacheTags.postTopics);
 
   const tr = alias(postTranslations, "tr");
   const en = alias(postTranslations, "en");
+  const topicTr = alias(postTopicTranslations, "topic_tr");
+  const topicEn = alias(postTopicTranslations, "topic_en");
 
   const rows = await db
     .select({
       slug: posts.slug,
       publishedAt: posts.publishedAt,
       coverUrl: posts.coverUrl,
+      topic: localized(topicTr.label, topicEn.label),
       title: localized(tr.title, en.title),
       excerpt: localized(tr.excerpt, en.excerpt),
       tags: localized(tr.tags, en.tags),
@@ -249,6 +256,8 @@ export async function getLatestPosts(locale: Locale, limit = 3): Promise<HomePos
     .from(posts)
     .innerJoin(en, and(eq(en.postId, posts.id), eq(en.locale, "en")))
     .leftJoin(tr, and(eq(tr.postId, posts.id), eq(tr.locale, locale)))
+    .innerJoin(topicEn, and(eq(topicEn.topicId, posts.topicId), eq(topicEn.locale, "en")))
+    .leftJoin(topicTr, and(eq(topicTr.topicId, posts.topicId), eq(topicTr.locale, locale)))
     .where(eq(posts.status, "published"))
     .orderBy(desc(posts.publishedAt))
     .limit(limit);
