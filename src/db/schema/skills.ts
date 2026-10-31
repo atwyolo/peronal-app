@@ -37,6 +37,8 @@ export const skills = pgTable(
       .references(() => skillDomains.id, { onDelete: "restrict" }),
     /** Shown as a hero chip on the home page. */
     main: boolean().notNull().default(false),
+    /** Shown in "My top skills" on the home page. */
+    top: boolean().notNull().default(false),
     sort: integer().notNull().default(0),
     ...timestamps,
   },

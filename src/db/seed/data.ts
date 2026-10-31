@@ -30,6 +30,9 @@ const byDomain: Record<DomainKey, string[]> = {
 /** Hero chips, in display order. Their position here becomes their `sort`. */
 const mainSkills = ["React", "Redux", "Next.js", "Nest.js", "TypeScript", "Express"];
 
+/** "My top skills" on the home page. */
+const topSkills = ["React", "Next.js", "TypeScript", "Redux Toolkit", "Nest.js", "GraphQL", "Jest", "Tailwind"];
+
 /** Known levels from the design. Every other skill is 6. TODO(owner): set real levels. */
 const levels: Record<string, number> = {
   React: 9,
@@ -48,6 +51,7 @@ export const skills = (Object.keys(byDomain) as DomainKey[]).flatMap((domain) =>
     domain,
     level: levels[name] ?? 6,
     main: mainSkills.includes(name),
+    top: topSkills.includes(name),
     sort: pinned.includes(name) ? pinned.indexOf(name) : 100,
   })),
 );

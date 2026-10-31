@@ -1,82 +1,86 @@
 ---
 tags: [plan, home]
-status: draft
+status: active
 date: 2026-10-30
+updated: 2026-11-01
 ---
 
-# Plan: Home Skills block
+# Plan: Home top skills block
 
-Replace the temporary Skills dump with the `SkillsExplorer`: search, domain chips, top-N list, show-all toggle.
+Replace the temporary Skills dump with "My top skills", the block from the design of 2026-10-31: a static list of the skills marked `top`, and a link to the future `/skills` page. This replaces the earlier `SkillsExplorer` plan: search, domain chips and the "Top N of M" counter move to `/skills`, which is designed separately.
 
-Related: [[2026-10-29-home-page-design]] (section "Example: Skills block"), [[Home Page Handoff]]. Previous: [[2026-10-30-home-experience]]. Next: [[2026-10-30-home-blog]].
+Related: [[2026-10-29-home-page-design]], [[Home Page Handoff]], [[Data Model]]. Previous: [[2026-10-30-home-experience]]. Next: [[2026-10-30-home-blog]].
 
 ## Decisions
 
-- **Filtering stays in client memory.** `searchParams` would make the page dynamic (spec). The HTML holds the default top 14 rows.
-- **Top 5 / top 14 is CSS.** Rows 6–14 are hidden below `lg`, and both header counts are rendered and toggled by breakpoint, so the first render does not read the width.
-- **Numbers and labels come from the data.** The handoff says 41 skills, the database has 42; nothing is hard-coded. Domain labels come translated from `getSkills`, so only `all` stays in `Home.skills.categories`, and the other keys are removed.
-- **New shadcn components:** `input` and `toggle-group`, through `npx shadcn add`. They sit on Base UI, which is already installed; if the command wants a new package, stop and discuss it first.
+- **Column `top` (owner's decision).** `boolean NOT NULL DEFAULT false` on `skills`. The handoff calls it `featured`; the owner's name wins and the handoff is corrected. `main` stays: it drives the hero chips.
+- **No limit (owner's decision).** Every skill marked `top` is shown. The "1–20" in the handoff describes the layout, not a rule.
+- **Starting set (owner's decision).** The eight skills from the design with their current levels: React, Next.js, TypeScript, Redux Toolkit, Nest.js, GraphQL, Jest, Tailwind. The owner corrects the data in the admin. GraphQL, Jest and Tailwind show the placeholder level 6 until then.
+- **`getSkills` stays as it is (owner's decision).** The `/skills` page needs it. The home page gets a new `getTopSkills`, so `getSkills` has no caller until that page exists.
+- **Experience links stay on `/projects` (owner's decision).** The design's `/projects#<company>` comes with the Projects page.
+- **The `/skills` link leads to the 404 page until the page exists,** as `site-nav.ts` already says for other pages (owner's earlier decision). Applies to the nav item and to the button.
+- **The bar and the value always share a line (owner's decision).** Below `lg` the handoff put the value on the name's line; the handoff is corrected. The value column is 44 px wide on every breakpoint, so all bars are equally long.
+- **The meter runs from 1 to 10 (owner's decision),** like the `skills_level_range` check: level 0 does not exist.
+- **The total comes from the database** (Claude's call). The design shows 41, the database has 42.
+- **No block without marked skills** (Claude's call). An empty tile reads as a broken page.
+- **The explorer's messages leave `Home.skills`** (Claude's call), matching `docs/design/home/messages.en.json`. `/skills` gets its own namespace from its own design.
+- **Server only** (Claude's call). The block has no state, so it adds no client JavaScript.
 
 ## Tasks
 
-### Task 1: Filter logic (S)
+### Task 1: Skill row (S)
 
-`features/skills-explorer/lib/filter-skills.ts`, pure functions, test first.
+`features/skill-row/SkillRow.tsx`, synchronous, gets `skill: { name, level }` as a prop. One DOM on every breakpoint, in the order name, bar, value.
 
-- [ ] Search is a case-insensitive substring match, combined with the selected domain.
-- [ ] The order from `getSkills` is kept.
-- [ ] A function picks the header state: top N, all, filtered, and the show-all toggle is hidden while a filter is active.
+- [x] The row has `role="meter"`, `aria-valuenow`, `aria-valuemin={1}`, `aria-valuemax={10}` and the `levelAria` label.
+- [x] Ten segments: filled up to the level in `brand`, the rest in `placeholder`. Levels 1 and 10 are covered.
+- [ ] Below `lg`: the name on its own line, 15 px, then the bar and "n/10" on one line, 6 px between the lines. Bar 8 px tall, 3 px gaps.
+- [ ] From `lg`: grid `150px | 1fr | 44px`, gap 14 px. Bar 10 px tall, 4 px gaps.
 
-Verify: Vitest. Depends on: nothing.
+Verify: `SkillRow.test.tsx`, test first. Depends on: nothing. `Home.skills` messages change here.
 
-### Task 2: Skill row (S)
+### Task 2: Skills in the navigation (XS)
 
-`features/skills-explorer/ui/SkillRow.tsx`: name, 10-segment bar, mono `n/10`.
+`shared/lib/site-nav.ts`, `Header.nav.skills`, between Projects and Blog. The header and the mobile menu share the list.
 
-- [ ] Segments up to the level use `brand`, the rest `placeholder`.
-- [ ] `role="meter"` with `aria-valuenow`, `aria-valuemax` and the `levelAria` label.
-- [ ] Levels 0 and 10 render correctly.
+- [x] Six items in the header and in the mobile menu.
 
-Verify: `SkillRow.test.tsx`, test first. Depends on: nothing.
+Verify: `MobileNav.test.tsx` and `e2e/header.spec.ts`, updated first. Depends on: nothing.
 
-### Task 3: Search and toggle adapters (S)
+### Task 3: The `top` column (S)
 
-`shared/ui/SearchInput.tsx`, `shared/ui/ToggleGroup.tsx` with data-style props, no Base UI types in their API.
+`src/db/schema/skills.ts`, `src/db/seed/data.ts`, [[Data Model]].
 
-- [ ] `SearchInput` has a visually hidden label, the icon, and the focus ring from the handoff.
-- [ ] `ToggleGroup` is single-select with `items`, `value`, `onValueChange`, and each item shows a count in mono. A press on the active chip does not leave the group empty.
+- [x] The schema and the seed mark the eight skills.
+- [ ] **Production database, confirmed by the owner first:** the column, then the eight rows. There is one database, and the seed never runs on it again.
 
-Verify: Vitest for both. Depends on: nothing.
+Verify: a read-only query shows 8 of 42 rows marked. Depends on: nothing.
 
-### Task 4: Explorer replaces the dump (M)
+### Task 4: The block replaces the dump (M)
 
-`features/skills-explorer/SkillsExplorer.tsx` ("use client"), `widgets/skills/SkillsSection.tsx`, wired into `HomePage`; the dump's Skills section goes away. Mobile layout first.
+`getTopSkills` in `src/db/queries/home.ts`, `widgets/top-skills/TopSkills.tsx`, wired into `HomePage`; the dump's Skills section goes away.
 
-- [ ] Search, chips, the toggle and the empty state work together; the header count follows them.
-- [ ] Default view: 5 rows on mobile, 14 on desktop, all 14 in the HTML.
-- [ ] The count line is `aria-live="polite"`, so a screen reader hears the result of a search.
+`getTopSkills(): Promise<{ skills: { name: string; level: number }[]; total: number }>`, cached with `cacheLife("max")` and the `skills` tag. No locale: tech names are not translated. Order: level desc, `sort`, `name`. Rows and total come in one `db.batch`.
 
-Verify: `SkillsExplorer.test.tsx` for state, test first; `e2e/home-skills.spec.ts` for CSS visibility at both widths and for the database-backed counts. Depends on: tasks 1–3.
+- [ ] A section labelled by `SectionHeader` "My top skills", no count.
+- [ ] One tile with a list. Below `lg`: 20 px padding, 14 px gap. From `lg`: 28 × 32 px padding, `repeat(auto-fill, minmax(320px, 1fr))`, gaps 18 × 48 px.
+- [ ] A primary pill "Show all {total} skills" to `/skills`, right-aligned from `lg`, full width below it.
+- [ ] Without marked skills the section is not rendered.
 
-Files: `src/features/skills-explorer/SkillsExplorer.tsx`, `src/widgets/skills/SkillsSection.tsx`, `src/views/home/HomePage.tsx`, `messages/en.json`, `e2e/home-skills.spec.ts`.
-
-### Task 5: Desktop layout (S)
-
-- [ ] One tile, 28 px padding, grid `280px | 1fr`, gap 40 px, a divider between the sides.
-- [ ] Rows in two columns, gap 18 × 40 px, each row `150px | 1fr | 44px`.
-- [ ] Long skill names do not overflow the 150 px column in any seeded row.
-
-Verify: Playwright at 1280 and 1024; screenshot in both themes. Depends on: task 4.
+Verify: `e2e/home-skills.spec.ts` against the database (order, levels, the total matches the database, three columns at 1280, one on mobile, the bar and the value on one line on mobile, the link keeps the locale, the page does not widen at 390, 720, 1024 and 1280). Screenshots in both themes. Depends on: tasks 1 and 3.
 
 ## Checkpoint
 
 - [ ] Definition of done from `CLAUDE.md` is green.
-- [ ] Keyboard pass: search, chips and the toggle work without a mouse.
+- [ ] Mobile and desktop screenshots in both themes match the handoff.
+- [ ] Spec, Data Model, handoff and journal updated.
 - [ ] The owner reviewed the block before Blog starts.
 
 ## Risks
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Hidden rows and the two counts confuse screen readers | Medium | CSS `display: none` removes them from the accessibility tree; assert with `getByRole` in both projects |
-| A filtered list on mobile still applies the "hide rows 6–14" rule | Medium | The rule applies only to the default view; covered in `e2e/home-skills.spec.ts` |
+| Code reading `top` reaches production before the column | High, the build fails | Task 3 runs before task 4; the column is additive, so the deployed code keeps working |
+| A long name, such as "React Testing Library", does not fit the 150 px column | Low | It wraps inside the column; no marked skill has such a name yet, checked by hand with a temporary change |
+| `role="meter"` hides the text inside the row from a screen reader | Low | Intended: the label carries both the name and the level |
+| The owner's cached home page shows the old block after a deploy | Low | The tag and the build refresh the cached data; a browser reload is enough |

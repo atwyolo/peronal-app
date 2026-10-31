@@ -125,7 +125,7 @@ A short list of skills marked `featured` in the main skills list (1–20 items).
 - Section header: the mono label "My top skills", no count on the right.
 - Data: `topSkills` from `content.ts` (skills with `featured: true`, sorted by level desc, then `sort`, then name). Later: a `featured boolean` column on `skills`.
 - One tile.
-  - Mobile: one column; each row has the name (500 weight) and a mono "n/10" on one line, with the 10-segment bar below (8 px tall, 3 px gaps).
+  - Mobile: one column; each row has the name (500 weight) on its own line, then the 10-segment bar (8 px tall, 3 px gaps) and a mono "n/10" on one line (owner's decision, 2026-11-01; the prototype and the screens still show the value next to the name).
   - Desktop: padding 28 × 32 px; grid `repeat(auto-fill, minmax(320px, 1fr))` with gaps of 18 × 48 px, so 1–2 skills fill one row and 20 spread over three columns. Each row is a grid `150px | 1fr | 44px`: name, bar (10 px tall, 4 px gaps), "n/10".
 - Bar segments are filled in `brand` up to the level; the rest use `placeholder`. Each row has `role="meter"` with `aria-valuenow` or an `aria-label` from messages.
 - Button below the tile: a primary pill reading "Show all {total} skills", where the total is counted from the full list. It is a link to `/[locale]/skills`. Desktop: right-aligned, like "All experience". Mobile: full width.

@@ -34,7 +34,7 @@ describe("MobileNav", () => {
     const dialog = await open(user);
 
     const links = Array.from(dialog.querySelectorAll("a"));
-    expect(links.map((link) => link.textContent)).toEqual(["Home", "About", "Projects", "Blog", "Contact"]);
+    expect(links.map((link) => link.textContent)).toEqual(["Home", "About", "Projects", "Skills", "Blog", "Contact"]);
     expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("aria-current", "page");
   });
 

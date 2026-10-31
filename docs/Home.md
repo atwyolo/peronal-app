@@ -34,7 +34,7 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 
 ## Plans
 - [[2026-10-30-home-experience]] — Experience block, done; deferred items listed there
-- [[2026-10-30-home-skills]] — Skills block, draft
+- [[2026-10-30-home-skills]] — My top skills block, in progress
 - [[2026-10-30-home-blog]] — Blog block and clean-up, draft
 - [[2026-10-30-home-motion]] — accent wipe and verification pass, draft
 

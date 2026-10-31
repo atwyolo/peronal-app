@@ -48,6 +48,7 @@ async function main() {
           level: s.level,
           domainId: domainId.get(s.domain)!,
           main: s.main,
+          top: s.top,
           sort: s.sort,
         })),
       )
