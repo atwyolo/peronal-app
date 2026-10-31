@@ -1,30 +1,34 @@
 ---
 tags: [design, handoff, home]
 status: approved
-updated: 2026-10-31
+updated: 2026-11-01
 ---
 
 # Home Page Handoff
 
 Approved design of the home page (`/[locale]`), ready to implement. Mobile-first, two themes, eight locales. The design was iterated in a Claude Design canvas; this note is the implementation contract.
 
-Related: [[Roadmap]], [[Rendering Strategy]], [[Localization]], [[Data Model]], [[ADR-0005 UI Library]].
+Part of the site handoff, see [[README]] in this folder. Related: [[Roadmap]], [[Rendering Strategy]], [[Localization]], [[Data Model]], [[ADR-0005 UI Library]].
 
 ## Changes since 2026-10-28
 
-- The Skills block became **My top skills**: no search, filter or counter; it shows only skills marked `top`; "Show all N skills" links to the new `/skills` page.
+- **No footer.** The site has no footer on any page; the mobile prototype's footer line was removed.
+
+- Blog preview cards show the post **topic** (Technical / Software / Hobby) as a badge before the date, same as on the Blog page.
+
+- The Skills block became **My top skills**: no search, filter or counter; it shows only skills marked `featured`; "Show all N skills" links to the new `/skills` page.
 - The nav gained **Skills** (between Projects and Blog).
 - Experience links now point to the Projects page: `/projects#<company>` and `/projects`.
 
-## Files in `docs/design/home/`
+## Files
 
 | File | What it is | Use |
 |---|---|---|
-| `screens/home-{mobile,desktop}-{dark,light}.png` | Full-page renders of the approved design (390 px and 1280 px) | Visual reference. The photo tile is blank only because the image did not load in the renderer. |
-| `prototype.dc.html` | Source of the interactive prototype | Exact values (sizes, spacing, colors) when a screenshot is ambiguous. Not runnable outside the design tool; the top toolbar (device / theme / replay) is prototype-only. |
-| `tokens.css` | Color, radius and font tokens for both themes + the reveal animation | Merge into `src/app/globals.css`. |
-| `content.ts` | All copy and data shown on the page, typed | Move to `src/content/home.ts` as the static source until Stage 3. |
-| `messages.en.json` | UI strings for next-intl | Merge into `messages/en.json`; other locales start as copies (fallback to `en`). |
+| `home/screens/home-{mobile,desktop}-{dark,light}.png` | Full-page renders of the approved design (390 px and 1280 px) | Visual reference. The photo tile is blank only because the image did not load in the renderer. |
+| `home/prototype.dc.html` | Source of the interactive prototype | Exact values (sizes, spacing, colors) when a screenshot is ambiguous. Not runnable outside the design tool; the top toolbar (device / theme / replay) is prototype-only. |
+| `shared/tokens.css` | Color, radius and font tokens for both themes + the reveal animation | Merge into `src/app/globals.css`. |
+| `shared/content.ts` | All copy and data shown on the page, typed | Move to `src/content/site.ts` as the static source until Stage 3 (shared by all pages). |
+| `shared/messages.en.json` | UI strings for next-intl | Merge into `messages/en.json`; other locales start as copies (fallback to `en`). |
 
 ## Scope and order
 
@@ -65,9 +69,9 @@ Rendering: home is **static** per locale (see [[Rendering Strategy]]). Everythin
 
 ## Section order
 
-**Mobile:** hero → photo → contacts → About → Experience (carousel) → My top skills → Blog (carousel) → footer.
+**Mobile:** hero → photo → contacts → About → Experience (carousel) → My top skills → Blog (carousel).
 
-**Desktop:** a 4-column row with the photo and contacts in column 1 and the hero plus About in columns 2–4. Below it: Experience (4 cards), My top skills (full width), Blog (featured card spanning 2 columns plus 2 cards), footer.
+**Desktop:** a 4-column row with the photo and contacts in column 1 and the hero plus About in columns 2–4. Below it: Experience (4 cards), My top skills (full width), Blog (featured card spanning 2 columns plus 2 cards).
 
 Section headers: a mono label (`Geist Mono`, 11 px mobile / 12 px desktop, uppercase, letter-spacing .08em, `text-muted-foreground`), with a count on the right where shown. Header padding is 12 px on top for mobile and 32 px for desktop.
 
@@ -120,12 +124,12 @@ Each button has an arrow-up-right icon on the right (CV: the "PDF" mark) and an 
 
 ### My top skills (static)
 
-A short list of skills marked `top` in the main skills list, without a limit (owner's decision, 2026-11-01; the layout is drawn for 1–20). No search, no domain filter and no "Top N of M" counter on the home page: the full explorer lives on the separate `/skills` page (designed separately).
+A short list of skills marked `featured` in the main skills list (1–20 items). No search, no domain filter and no "Top N of M" counter on the home page: the full explorer lives on the separate `/skills` page (designed separately).
 
 - Section header: the mono label "My top skills", no count on the right.
-- Data: `getTopSkills`, the `top boolean` column on `skills`, sorted by level desc, then `sort`, then name. `content.ts` and the prototype still call the flag `featured`.
+- Data: `topSkills` from `content.ts` (skills with `featured: true`, sorted by level desc, then `sort`, then name). Later: a `featured boolean` column on `skills`.
 - One tile.
-  - Mobile: one column; each row has the name (500 weight) on its own line, then the 10-segment bar (8 px tall, 3 px gaps) and a mono "n/10" on one line (owner's decision, 2026-11-01; the prototype and the screens still show the value next to the name).
+  - Mobile: one column; each row has the name (500 weight) and a mono "n/10" on one line, with the 10-segment bar below (8 px tall, 3 px gaps).
   - Desktop: padding 28 × 32 px; grid `repeat(auto-fill, minmax(320px, 1fr))` with gaps of 18 × 48 px, so 1–2 skills fill one row and 20 spread over three columns. Each row is a grid `150px | 1fr | 44px`: name, bar (10 px tall, 4 px gaps), "n/10".
 - Bar segments are filled in `brand` up to the level; the rest use `placeholder`. Each row has `role="meter"` with `aria-valuenow` or an `aria-label` from messages.
 - Button below the tile: a primary pill reading "Show all {total} skills", where the total is counted from the full list. It is a link to `/[locale]/skills`. Desktop: right-aligned, like "All experience". Mobile: full width.
@@ -134,7 +138,7 @@ A short list of skills marked `top` in the main skills list, without a limit (ow
 
 - Shows the 3 latest posts. The section header has no controls.
 - Post card:
-  - date: mono label, formatted with next-intl `format.dateTime`;
+  - meta row: topic badge (mono 11 px, uppercase, `brand` text on `brand` at 14% opacity, radius 6 px, padding 5 × 8 px), then the date as a mono label formatted with next-intl `format.dateTime`;
   - title (h3): 17–19 px mobile, 18 px desktop; the featured card uses 22 px;
   - excerpt: 2–3 sentences, 15 px / 1.55, `foreground-soft`;
   - tag chips **under the text** (several per post);
@@ -155,10 +159,6 @@ A short list of skills marked `top` in the main skills list, without a limit (ow
 - Accessibility: the region gets `aria-roledescription="carousel"` and a label; each slide gets `aria-label="{n} of {total}"`; arrows have `aria-label`s from messages.
 - It is a small `"use client"` component taking server-rendered children.
 
-### Footer
-
-`© Mikhail Aleksandrov` on the left and the locale codes in mono on the right (`EN · RU · PT · ES · DE · FR · JA · PL`), 13 px, `muted-foreground`. The codes may link to the same page in each locale, which also helps crawlers.
-
 ## Motion: accent wipe
 
 - Every tile and carousel reveals with a full-cover shutter in `shutter` that slides off, with `transform: scaleX(1 → 0)` on `::after`.
@@ -178,12 +178,12 @@ A short list of skills marked `top` in the main skills list, without a limit (ow
 
 ## Data and content
 
-- Until Stage 3, read from `src/content/home.ts`. Keep component props in the shapes defined there, so swapping in Drizzle queries later doesn't touch the UI.
+- Until Stage 3, read from `src/content/site.ts`. Keep component props in the shapes defined there, so swapping in Drizzle queries later doesn't touch the UI.
 - The Data Model needs these additions; record them in [[Data Model]] when Stage 3 starts:
   - `experience`: `image`, a tag relation to `skills` (many-to-many), and `description` limited to 3 sentences (plain text is enough on the home page).
   - `posts`: `cover`, `tags` (a `tags` table plus `post_tags`).
-  - `skills`: `top boolean default false` (drives "My top skills", done 2026-11-01).
-- Owner TODOs (marked in `content.ts`): the photo file, the CV PDF, the Omega-R description, the experience tag lists, real skill levels (currently only 5 are set; the rest are placeholder 6), which skills are `top`, and real posts.
+  - `skills`: `featured boolean default false` (drives "My top skills").
+- Owner TODOs (marked in `content.ts`): the photo file, the CV PDF, the Omega-R description, the experience tag lists, real skill levels (currently only 5 are set; the rest are placeholder 6), which skills are `featured`, and real posts.
 
 ## Open questions (add to [[Open Questions]])
 
@@ -192,4 +192,4 @@ A short list of skills marked `top` in the main skills list, without a limit (ow
 
 ## Kickoff prompt for the Claude Code session
 
-> Read `CLAUDE.md`, `docs/Home.md` and `docs/design/Home Page Handoff.md`, then look at the screenshots in `docs/design/home/screens/`. Implement the home page following the "Scope and order" section, one step at a time. Before each step, briefly explain the approach and the Next.js concepts involved, and wait for my OK. Use `tokens.css`, `content.ts` and `messages.en.json` from `docs/design/home/` as the sources of truth. Use `prototype.dc.html` only to look up exact values. Don't commit.
+> Read `CLAUDE.md`, `docs/Home.md` and `docs/design/Home Page Handoff.md`, then look at the screenshots in `docs/design/home/screens/`. Implement the home page following the "Scope and order" section, one step at a time. Before each step, briefly explain the approach and the Next.js concepts involved, and wait for my OK. Use `tokens.css`, `content.ts` and `messages.en.json` from `docs/design/shared/` as the sources of truth. Use `docs/design/home/prototype.dc.html` only to look up exact values. Don't commit.
