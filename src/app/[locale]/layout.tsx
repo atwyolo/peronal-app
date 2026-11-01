@@ -14,16 +14,18 @@ import { ThemeProvider } from "../_providers/ThemeProvider";
 import "../globals.css";
 
 // next/font self-hosts the font at build time (no runtime requests to Google) and adds a metric-matched fallback.
-// `subsets` only controls preloading: latin + cyrillic (en, ru) are preloaded; other glyphs (latin-ext for pl, de, fr...)
-// still come from the same font, loaded on demand through unicode-range.
+// `subsets` only controls preloading: other glyphs (cyrillic, latin-ext for pl, de, fr...) still come from the same font,
+// loaded on demand through unicode-range. Only one file is preloaded: a preloaded font takes the bandwidth from the photo,
+// which is the LCP element, because both have High priority.
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin", "cyrillic"],
+  subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  preload: false,
 });
 
 // Makes relative metadata URLs (canonical, hreflang, Open Graph) absolute. Pages set their own title and description.

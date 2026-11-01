@@ -30,7 +30,7 @@ Chosen for job-market relevance: markets where the local language matters in hir
 - Config lives in `src/shared/lib/i18n/`: `routing.ts`, `request.ts`, `navigation.ts` (locale-aware `Link`, `useRouter`), `app-config.d.ts` (typed locales and message keys).
 
 ## Fonts
-- Geist / Geist Mono cover latin, latin-ext and cyrillic: every locale except `ja`. Preloaded subsets: latin + cyrillic; the rest load on demand via `unicode-range`.
+- Geist / Geist Mono cover latin, latin-ext and cyrillic: every locale except `ja`. Preloaded: the Latin file of Geist only; Geist Mono is not preloaded, and cyrillic and the rest load on demand through `unicode-range`.
 - `ja` uses the platform's Japanese UI font through a system stack (`--font-ja-system` in `src/app/globals.css`): Hiragino on Apple, Yu Gothic / Meiryo on Windows, Noto Sans CJK on Android. Chosen over Noto Sans JP via `next/font` to avoid a heavy CJK webfont (owner's decision, 2026-10-29).
 
 Related: [[ADR-0003 Content Localization]]
