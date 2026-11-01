@@ -12,8 +12,8 @@ interface ImageProps {
   alt: string;
   /** Rendered image width per breakpoint, see `sizes` in the next/image docs. */
   sizes: string;
-  /** For the LCP image only. */
-  preload?: boolean;
+  /** For the LCP image only: fetched first. React's server render adds the preload link for a non-lazy image. */
+  priority?: boolean;
   /** Applied to the image, e.g. `object-cover`. */
   className?: string;
   /** For an image inset in a padded tile: 14px radius; the placeholder gets a dashed border and thin stripes. */
@@ -26,7 +26,7 @@ interface ImageProps {
  * A client component because `onError` is a browser event; the image is still in the prerendered HTML.
  */
 export const Image: FC<ImageProps> = (props) => {
-  const { src, alt, sizes, preload, className, framed } = props;
+  const { src, alt, sizes, priority, className, framed } = props;
   // The failed URL rather than a flag: a new `src` gets its own chance without resetting state in an effect.
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
@@ -51,7 +51,8 @@ export const Image: FC<ImageProps> = (props) => {
       alt={alt}
       fill
       sizes={sizes}
-      preload={preload}
+      loading={priority ? "eager" : undefined}
+      fetchPriority={priority ? "high" : undefined}
       className={cn(framed && "rounded-[14px]", className)}
       onError={() => setFailedSrc(src)}
     />

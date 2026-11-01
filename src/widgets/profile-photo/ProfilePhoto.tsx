@@ -29,7 +29,7 @@ export const ProfilePhoto: FC<ProfilePhotoProps> = async (props) => {
         src={photoUrl}
         alt={name}
         sizes="(min-width: 1024px) max(360px, 25vw), (min-width: 720px) 688px, calc(100vw - 32px)"
-        preload
+        priority
         className="object-cover object-[0_0]"
       />
     </Tile>

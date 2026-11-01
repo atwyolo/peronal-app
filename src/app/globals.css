@@ -55,7 +55,7 @@
   --color-placeholder: var(--placeholder);
 
   /* Contact brand colors are the same in both themes. */
-  --color-whatsapp: #25d366;
+  --color-whatsapp: #188842; /* The brand's hue, darkened for 4.5:1 with white; the official #25d366 gives 1.98:1. */
   --color-whatsapp-foreground: #ffffff;
   --color-gmail: #d93025;
   --color-gmail-foreground: #ffffff;
@@ -157,6 +157,13 @@
   }
   html {
     @apply font-sans;
+  }
+  /*
+   * The handoff's focus ring. Buttons, including ButtonLink, get the same one as a box shadow from shadcn:
+   * their `outline-` utility sits in a later layer and wins over this rule, so they never show two rings.
+   */
+  a:focus-visible {
+    @apply outline-3 outline-offset-2 outline-ring;
   }
 }
 

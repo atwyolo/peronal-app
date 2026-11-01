@@ -41,18 +41,44 @@ Verify: `e2e/home-motion.spec.ts`, screenshots in both themes. Depends on: nothi
 
 ### Task 2: Verification (M)
 
-- [ ] Lighthouse on the production build. LCP does not see the shutter, so the time the photo is fully open is recorded as well.
-- [ ] Bundle analyzer: client JS with and without an adapter on the same component.
-- [ ] Message payload measured again; narrow it with `pick` only if it became a noticeable share of the page.
-- [ ] Playwright mobile project fails on hydration errors (already true through `e2e/fixtures.ts`; confirm it covers the new client leaves).
-- [ ] Handoff accessibility checklist: touch targets, focus ring, labels, contrast. Contrast runs after the wipe: `axe-core` counts an opaque `::after` over the text and ignores its `transform`.
+- [x] Lighthouse on the production build. LCP does not see the shutter, so the time the photo is fully open is recorded as well.
+- [x] Client JS with and without an adapter on the same component.
+- [x] Message payload measured again; narrow it with `pick` only if it became a noticeable share of the page.
+- [x] Playwright mobile project fails on hydration errors (already true through `e2e/fixtures.ts`; confirm it covers the new client leaves).
+- [x] Handoff accessibility checklist: touch targets, focus ring, labels, contrast. Contrast runs after the wipe: `axe-core` counts an opaque `::after` over the text and ignores its `transform`.
 - [ ] iOS simulator: the wipe plays, swipes and rotation still work.
 
 Verify: numbers recorded in the spec and the journal. Depends on: Task 1.
 
+**Results (2026-11-01, production build on localhost, median of three Lighthouse 13.6 runs):**
+
+| | Mobile | Desktop |
+|---|---|---|
+| Performance | 95 | 100 |
+| Accessibility | 100 | 100 |
+| Best practices | 100 | 100 |
+| SEO | 100 | 100 |
+| FCP | 788 ms | 211 ms |
+| LCP | 2987 ms | 622 ms |
+| TBT | 3 ms | 0 ms |
+| CLS | 0 | 0 |
+
+- **SEO:** a run on a port other than the build's reports 92, because the canonical URL carries the port. A build for that port gives 100, so this is a local artifact.
+- **LCP:** the mobile figure is Lighthouse's simulation. A hundred needs about 1850 ms there. With real throttling (`--throttling-method=devtools`) the page scored 99 with an LCP of 1636 ms, and Chromium on Slow 4G with a 4× slower CPU reports 760 ms. The local server speaks HTTP/1.1. Repeat Lighthouse on Vercel, where HTTP/2, the CDN and the image optimizer are real.
+- **`inlineCss` (owner's decision, 2026-11-01, to be checked on Vercel):** FCP went from 904 to 788 ms in every run. LCP stayed within the noise of the simulation: 2562, 2835 and 2987 ms against 2910 to 3136 ms without it. The HTML grew from 17.2 to 39.3 KB gzip, because the CSS is sent twice, in `<style>` and in the RSC payload. Turn it off if Vercel shows no clear gain.
+- **Base UI out of the first load** was tried and rejected: 53 KB less JS, LCP 2910 ms, Performance 95, within the same noise.
+- **The photo is fully visible** at 890 ms, and at 1610 ms on Slow 4G with the slower CPU.
+- **Client JS on `/en`:** 225.6 KB gzip in 9 files: React DOM 70, Base UI with the icons about 87, the Next runtime about 45. The own code of every module in `shared/ui` is about 5 KB, 2.2% of it, so the adapters add no meaningful weight. Measured with esbuild instead of the interactive `next analyze`: an adapter's own code is exactly the difference, because the shadcn component under it ships either way.
+- **Messages:** 727 bytes gzip in total, 411 used by client components. `pick` would save 316 bytes of the HTML, so messages stay whole.
+- **Hydration:** a deliberate mismatch in `RevealOnce` failed the suite with React error #418, so the fixture covers the new leaf.
+- **Accessibility:** axe in `en` and `ru`, both themes, 390 and 1280 px: no violations. The WhatsApp button moved from the official `#25d366` (1.98:1) to `#188842` with the same hue, 4.53:1 with white (owner's decision, 2026-11-01). Buttons and carousel arrows are at least 44 px; the handoff does not ask that of text links, the smallest being the desktop navigation at 23 px high with 28 px between items. The keyboard order is logical, and no ring is clipped or hidden under the sticky header.
+
+**Fixed by this task:** one 3 px ring in the solid `ring` color on every link and button, where the site had three kinds, two of them weak; buttons keep an outline in forced colors mode, where the browser drops box shadows; the visible text is now part of the accessible name of the language button and the CV link; the photo is fetched with `fetchPriority="high"`. That raises its priority from Low to High and passes the Lighthouse check, but Lighthouse's LCP did not change (2985 and 3061 ms are noise).
+
 ## Checkpoint
 
-- [ ] Definition of done from `CLAUDE.md` is green.
+- [x] Definition of done from `CLAUDE.md` is green (2026-11-01: 124 unit, 237 e2e).
+- [ ] Lighthouse repeated on Vercel; `inlineCss` kept or turned off by the result.
 - [ ] Spec status changes from draft, and [[Roadmap]] is updated.
 
 ## Deferred (from the review of Task 1)

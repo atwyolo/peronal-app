@@ -24,25 +24,25 @@ describe("ContactList", () => {
   it("renders a button per contact, the CV last", () => {
     renderList();
 
-    expect(buttons()).toEqual(["WhatsApp: +1", "Mail: a.b@c.d", "LinkedIn profile", "Download CV, PDF"]);
+    expect(buttons()).toEqual(["WhatsApp: +1", "Mail: a.b@c.d", "LinkedIn profile", "Download CV PDF"]);
   });
 
   it("skips the WhatsApp button without a phone", () => {
     renderList({ contacts: { ...contacts, whatsapp: null } });
 
-    expect(buttons()).toEqual(["Mail: a.b@c.d", "LinkedIn profile", "Download CV, PDF"]);
+    expect(buttons()).toEqual(["Mail: a.b@c.d", "LinkedIn profile", "Download CV PDF"]);
   });
 
   it("skips the mail button without an email", () => {
     renderList({ contacts: { ...contacts, email: null } });
 
-    expect(buttons()).toEqual(["WhatsApp: +1", "LinkedIn profile", "Download CV, PDF"]);
+    expect(buttons()).toEqual(["WhatsApp: +1", "LinkedIn profile", "Download CV PDF"]);
   });
 
   it("skips the LinkedIn button without a profile URL", () => {
     renderList({ contacts: { ...contacts, linkedin: null } });
 
-    expect(buttons()).toEqual(["WhatsApp: +1", "Mail: a.b@c.d", "Download CV, PDF"]);
+    expect(buttons()).toEqual(["WhatsApp: +1", "Mail: a.b@c.d", "Download CV PDF"]);
   });
 
   it("skips the CV button without a file", () => {
@@ -54,7 +54,7 @@ describe("ContactList", () => {
   it("skips a contact whose value is empty", () => {
     renderList({ contacts: { ...contacts, email: { href: "mailto:", display: "", mailbox: "" } } });
 
-    expect(buttons()).toEqual(["WhatsApp: +1", "LinkedIn profile", "Download CV, PDF"]);
+    expect(buttons()).toEqual(["WhatsApp: +1", "LinkedIn profile", "Download CV PDF"]);
   });
 
   it("renders no empty list when there is nothing to show", () => {

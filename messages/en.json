@@ -14,6 +14,7 @@
   },
   "LocaleMenu": {
     "label": "Language",
+    "triggerAria": "Language: {code}",
     "names": {
       "en": "English",
       "ru": "Русский",
@@ -40,7 +41,7 @@
     "linkedin": "LinkedIn",
     "linkedinAria": "LinkedIn profile",
     "downloadCv": "Download CV",
-    "downloadCvAria": "Download CV, PDF",
+    "downloadCvAria": "Download CV PDF",
     "pdf": "PDF"
   },
   "Home": {

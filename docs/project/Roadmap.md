@@ -7,7 +7,7 @@ updated: 2026-11-01
 
 Each stage ends with a working build.
 
-**Home page** ([[2026-10-29-home-page-design]]): it spans stages 1–3 and borrows blocks from later ones. All blocks and the accent wipe are done and reviewed by the owner (2026-11-01). The verification pass of [[2026-10-30-home-motion]] closes the page.
+**Home page** ([[2026-10-29-home-page-design]]): it spans stages 1–3 and borrows blocks from later ones. All blocks and the accent wipe are done and reviewed by the owner, and the local verification passed (2026-11-01). The iOS simulator check and the measurement on Vercel from [[2026-10-30-home-motion]] close the page.
 
 - [x] **Stage 0 — Scaffold** (2026-10-26): `create-next-app`, shadcn init, lint/type/build green, docs vault, `CLAUDE.md`.
 - [x] **Stage 1 — Skeleton & theme** (2026-10-29): root layout, sticky header with desktop and mobile navigation, `next-themes` dark mode, base shadcn components, metadata API. No placeholder routes: links to missing pages go to the 404 page until those pages exist (owner's decision).

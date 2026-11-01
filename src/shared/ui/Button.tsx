@@ -35,7 +35,9 @@ export const getButtonClasses = (look: ButtonLookProps): string => {
   const { tone = "default", shape = "pill", className } = look;
 
   return cn(
-    "gap-2 rounded-full text-[15px] font-medium [&_svg:not([class*='size-'])]:size-[18px]",
+    // The solid `ring` color: the 50% of the shadcn default falls under 3:1 on a light surface.
+    // `outline-hidden`, not shadcn's `outline-none`: forced colors drop the box-shadow ring and show this outline instead.
+    "gap-2 rounded-full text-[15px] font-medium outline-hidden focus-visible:ring-ring [&_svg:not([class*='size-'])]:size-[18px]",
     tones[tone],
     shapes[shape],
     className,

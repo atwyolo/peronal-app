@@ -30,13 +30,13 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[ADR-0010 Superpowers Workflow]]
 
 ## Specs
-- [[2026-10-29-home-page-design]] — home page architecture, draft; all blocks and the accent wipe done, the verification pass is next
+- [[2026-10-29-home-page-design]] — home page architecture, draft; everything done except the iOS simulator check and the measurement on Vercel
 
 ## Plans
 - [[2026-10-30-home-experience]] — Experience block, done; deferred items listed there
 - [[2026-10-30-home-skills]] — My top skills block, done, reviewed by the owner
 - [[2026-10-30-home-blog]] — Blog block with translated topics and clean-up, done, reviewed by the owner
-- [[2026-10-30-home-motion]] — accent wipe done, verification pass next
+- [[2026-10-30-home-motion]] — accent wipe and local verification done; iOS simulator and Vercel left
 
 ## Journal
 - [[2026-10-26]] — kickoff: decisions, scaffold
@@ -44,7 +44,7 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[2026-10-29]] — home page architecture, step 1: structure move and boundaries lint
 - [[2026-10-30]] — home page: photo, Blob store, image optimization
 - [[2026-10-31]] — home page: Experience block closed
-- [[2026-11-01]] — home page: My top skills and Blog blocks, accent wipe
+- [[2026-11-01]] — home page: My top skills and Blog blocks, accent wipe, verification
 
 ## Templates
 - [[ADR Template]] · [[Journal Template]]

@@ -43,13 +43,13 @@ export const ContactLink: FC<ContactLinkProps> = (props) => {
       target={external ? "_blank" : undefined}
       rel={external ? "noopener noreferrer" : undefined}
       className={cn(
-        "flex min-h-14 min-w-0 items-center gap-3 rounded-[16px] pr-4 pl-2.5 text-[17px] font-bold tracking-[-0.01em] hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        "flex min-h-14 min-w-0 items-center gap-3 rounded-[16px] pr-4 pl-2.5 text-[17px] font-bold tracking-[-0.01em] hover:brightness-95",
         tones[tone],
         className,
       )}
     >
       {mark}
-      <span className="min-w-0 grow [overflow-wrap:anywhere]">{children}</span>
+      <span className="min-w-0 grow [overflow-wrap:anywhere]">{children}</span>{" "}
       {trailing}
     </a>
   );

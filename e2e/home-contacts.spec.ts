@@ -36,18 +36,18 @@ test("opens WhatsApp and LinkedIn in a new tab, safely", async ({ page }) => {
   }
 });
 
-test("styles the WhatsApp button like the brand's own: white on WhatsApp green", async ({ page }) => {
+test("styles the WhatsApp button like the brand's own: white on a darker WhatsApp green", async ({ page }) => {
   await page.goto("/en");
 
   const whatsapp = page.getByRole("link", { name: "WhatsApp: +374 93 310039" });
-  await expect(whatsapp).toHaveCSS("background-color", "rgb(37, 211, 102)");
+  await expect(whatsapp).toHaveCSS("background-color", "rgb(24, 136, 66)");
   await expect(whatsapp).toHaveCSS("color", "rgb(255, 255, 255)");
 });
 
 test("points the CV button at the blob download URL", async ({ page }) => {
   await page.goto("/en");
 
-  const cv = page.getByRole("link", { name: "Download CV, PDF" });
+  const cv = page.getByRole("link", { name: "Download CV PDF" });
   await expect(cv).toHaveAttribute("href", /\.vercel-storage\.com\/.+\.pdf\?download=1$/);
   await expect(cv).not.toHaveAttribute("target");
 });

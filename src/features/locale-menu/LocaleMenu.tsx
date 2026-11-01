@@ -26,6 +26,8 @@ export const LocaleMenu: FC = () => {
     hint: code.toUpperCase(),
   }));
 
+  const currentCode = locale.toUpperCase();
+
   const switchLocale = (next: string) => {
     if (next === locale || !hasLocale(locales, next)) return;
     router.replace(pathname, { locale: next });
@@ -35,8 +37,9 @@ export const LocaleMenu: FC = () => {
     <Menu
       label={t("label")}
       trigger={
-        <Button tone="brand" shape="circle-to-pill" aria-label={t("label")}>
-          <span className="font-mono text-[13px]">{locale.toUpperCase()}</span>
+        // The name has to contain the visible code, for voice control.
+        <Button tone="brand" shape="circle-to-pill" aria-label={t("triggerAria", { code: currentCode })}>
+          <span className="font-mono text-[13px]">{currentCode}</span>
           <ChevronDownIcon aria-hidden className="hidden size-3.5 lg:block" />
         </Button>
       }

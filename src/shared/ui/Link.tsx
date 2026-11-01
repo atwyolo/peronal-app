@@ -22,7 +22,7 @@ interface LinkProps extends Omit<ComponentPropsWithoutRef<"a">, "href"> {
 export const Link: FC<LinkProps> = (props) => {
   const { href, showArrowIcon, className, children, ...rest } = props;
   const classes = cn(
-    "rounded-sm font-semibold text-brand underline decoration-deco decoration-2 underline-offset-[5px] transition-colors hover:decoration-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+    "rounded-sm font-semibold text-brand underline decoration-deco decoration-2 underline-offset-[5px] transition-colors hover:decoration-brand",
     className,
   );
   const content = (

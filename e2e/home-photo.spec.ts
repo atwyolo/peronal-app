@@ -16,6 +16,7 @@ test("preloads the photo, since it is the LCP element", async ({ page }) => {
   await page.goto("/en");
 
   await expect(page.locator('head link[rel="preload"][as="image"]')).toHaveCount(1);
+  await expect(page.locator("main img").first()).toHaveAttribute("fetchpriority", "high");
 });
 
 test("downloads the photo once, even with the error replay of next/image", async ({ page }) => {

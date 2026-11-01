@@ -95,7 +95,7 @@ Compact brand buttons, 56 px tall, radius 16 px, label 17 px / 700:
 
 | Button | Background / text | Left mark | Label | Link |
 |---|---|---|---|---|
-| WhatsApp | `whatsapp` / `whatsapp-foreground` | 36 px white rounded plate, chat glyph in `whatsapp-icon` | "WhatsApp" | `https://wa.me/37493310039`, title = phone |
+| WhatsApp | `whatsapp` / `whatsapp-foreground`, `#188842` with white text (owner's decisions, 2026-10-30 and 2026-11-01; the tokens below keep the design's values) | white logo, no plate | "WhatsApp" | `https://wa.me/37493310039`, title = phone |
 | Mail | `gmail` / white | 40 px envelope, red fill, white 2.5 px outline | mailbox name "mikhail.aleksandrov.job" (part before `@`, may wrap at dots on desktop) | `mailto:` |
 | LinkedIn | `linkedin` / white | 36 px white plate, "in" glyph in `linkedin` | "LinkedIn" | profile URL |
 | Download CV | `primary` / `primary-foreground` | download icon | "Download CV" + mono "PDF" on the right | `/cv/Mikhail_Aleksandrov_CV.pdf` with `download` |
@@ -173,9 +173,9 @@ The owner simplified the design's motion on 2026-11-01: one wipe on load, all at
 ## Accessibility checklist
 
 - Touch targets ≥ 44 px for all buttons and carousel arrows.
-- Visible focus: `ring` color, 3 px.
+- Visible focus: `ring` color, 3 px, as an outline on links and a box shadow on buttons, which keep an outline in forced colors mode.
 - Icon-only buttons have labels; decorative icons `aria-hidden`.
-- Contrast checked: `brand` on card is 6.7:1 in light and 12.7:1 in dark. Muted text is ≥ 5.5:1. Text on the contact buttons is ≥ 4.7:1. Yellow is never used for text.
+- Contrast checked: `brand` on card is 6.7:1 in light and 12.7:1 in dark. Muted text is ≥ 5.5:1. Text on the contact buttons is ≥ 4.5:1. Yellow is never used for text.
 - `lang` and `hreflang` come from the locale segment. Mobile menus trap focus (Sheet / Menu do this).
 
 ## Data and content

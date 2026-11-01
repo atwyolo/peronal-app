@@ -24,14 +24,14 @@ describe("LocaleMenu", () => {
   it("shows the current locale code on the trigger", () => {
     renderMenu();
 
-    expect(screen.getByRole("button", { name: "Language" })).toHaveTextContent("EN");
+    expect(screen.getByRole("button", { name: "Language: EN" })).toHaveTextContent("EN");
   });
 
   it("lists every locale by its native name with the code as a hint", async () => {
     const user = userEvent.setup();
     renderMenu();
 
-    await user.click(screen.getByRole("button", { name: "Language" }));
+    await user.click(screen.getByRole("button", { name: "Language: EN" }));
 
     const items = await screen.findAllByRole("menuitemradio");
     expect(items.map((item) => item.textContent)).toEqual([
@@ -51,7 +51,7 @@ describe("LocaleMenu", () => {
     const user = userEvent.setup();
     renderMenu();
 
-    await user.click(screen.getByRole("button", { name: "Language" }));
+    await user.click(screen.getByRole("button", { name: "Language: EN" }));
     await user.click(await screen.findByRole("menuitemradio", { name: /Русский/ }));
 
     expect(replace).toHaveBeenCalledWith("/blog", { locale: "ru" });
