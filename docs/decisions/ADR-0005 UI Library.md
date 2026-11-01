@@ -20,5 +20,5 @@ shadcn/ui 4.x on Base UI (default since July 2026), style `base-nova`, base colo
 - MUI 9 (~6M): Material design, CSS-in-JS runtime; wrong fit for a Tailwind project.
 
 ## Consequences
-- Components are copied into `src/components/ui` and owned; updates are manual via the shadcn CLI.
+- Components are copied into `src/shared/shadcn/ui` (moved from `src/components/ui` on 2026-10-29) and owned; updates are manual via the shadcn CLI. App code uses them only through adapters in `src/shared/ui`.
 - Base UI, not Radix: use `render` prop instead of `asChild`; check shadcn docs for Base UI variants when adding components.

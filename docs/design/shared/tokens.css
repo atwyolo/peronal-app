@@ -1,0 +1,150 @@
+/*
+ * Design tokens for the home page (and the rest of the public site).
+ * Drop-in for src/app/globals.css: replace the existing :root and .dark blocks,
+ * and merge the @theme additions into the existing `@theme inline` block.
+ *
+ * shadcn variable names keep their shadcn meaning (so generated components keep working).
+ * Extra tokens (card-border, foreground-soft, brand, deco, shutter, selected, contact brands)
+ * cover what the design needs beyond shadcn's set.
+ *
+ * Contrast (WCAG 2.x, text on its usual surface):
+ *   light: brand #2347E8 on #FFFFFF ≈ 6.7:1, muted-foreground #5B6280 on #F3F5F9 ≈ 5.5:1
+ *   dark:  brand #C6F432 on #181E3B ≈ 12.7:1, muted-foreground #8E96B5 on #181E3B ≈ 5.6:1
+ *   Yellow #FFD23F is decoration only in light theme (1.4:1 on white): underlines, bullets, the wipe.
+ */
+
+@theme inline {
+  /* fonts: layout.tsx defines --font-geist-sans / --font-geist-mono via next/font */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
+
+  --color-card-border: var(--card-border);
+  --color-foreground-soft: var(--foreground-soft);
+  --color-brand: var(--brand);
+  --color-deco: var(--deco);
+  --color-shutter: var(--shutter);
+  --color-selected: var(--selected);
+  --color-selected-foreground: var(--selected-foreground);
+  --color-placeholder: var(--placeholder);
+
+  --color-whatsapp: #25d366;
+  --color-whatsapp-foreground: #10142a;
+  --color-whatsapp-icon: #128c7e;
+  --color-gmail: #d93025;
+  --color-gmail-foreground: #ffffff;
+  --color-linkedin: #0a66c2;
+  --color-linkedin-foreground: #ffffff;
+
+  /* tiles: 20px on mobile, 24px from lg */
+  --radius-tile: 1.25rem;
+  --radius-tile-lg: 1.5rem;
+}
+
+/* Light theme — palette 5: light grey + blue, yellow as decoration */
+:root {
+  --background: #f3f5f9;
+  --foreground: #10142a;
+  --foreground-soft: #454b66;
+  --card: #ffffff;
+  --card-foreground: #10142a;
+  --card-border: #bfcbf4;
+  --popover: #ffffff;
+  --popover-foreground: #10142a;
+  --primary: #2347e8;
+  --primary-foreground: #ffffff;
+  --secondary: #e1e5ee;
+  --secondary-foreground: #10142a;
+  --muted: #e1e5ee;
+  --muted-foreground: #5b6280;
+  --accent: #eef1f8; /* shadcn meaning: hover/active surface */
+  --accent-foreground: #10142a;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: #e1e5ee;
+  --input: #bfcbf4;
+  --ring: #2347e8;
+  --radius: 0.625rem;
+
+  --brand: #2347e8;    /* accent text, active nav, skill bars, chip text */
+  --deco: #ffd23f;     /* underlines, bullets */
+  --shutter: #ffd23f;  /* reveal wipe */
+  --selected: #10142a; /* active filter chip */
+  --selected-foreground: #ffffff;
+  --placeholder: #e1e5ee; /* striped image placeholders, empty skill segments */
+}
+
+/* Dark theme — LinkedIn banner: navy + lime */
+.dark {
+  --background: #10142a;
+  --foreground: #edeff7;
+  --foreground-soft: #b4bad2;
+  --card: #181e3b;
+  --card-foreground: #edeff7;
+  --card-border: #2a3360;
+  --popover: #181e3b;
+  --popover-foreground: #edeff7;
+  --primary: #c6f432;
+  --primary-foreground: #10142a;
+  --secondary: #2a3360;
+  --secondary-foreground: #edeff7;
+  --muted: #2a3360;
+  --muted-foreground: #8e96b5;
+  --accent: #222a50;
+  --accent-foreground: #edeff7;
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: #2a3360;
+  --input: #2a3360;
+  --ring: #c6f432;
+
+  --brand: #c6f432;
+  --deco: #c6f432;
+  --shutter: #c6f432;
+  --selected: #edeff7;
+  --selected-foreground: #10142a;
+  --placeholder: #2a3360;
+}
+
+/*
+ * Reveal animation ("accent wipe").
+ * .reveal-load — first screen, time-based, staggered by --i (set inline from the tile index).
+ * .reveal      — everything below, scroll-driven where supported; otherwise simply visible.
+ * data-dir="l" flips the direction; alternate it by tile index (even → "r", odd → "l"), server-side.
+ */
+@keyframes wipe {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal,
+  .reveal-load {
+    position: relative;
+    overflow: hidden;
+  }
+  .reveal::after,
+  .reveal-load::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: 1;
+    pointer-events: none;
+    background: var(--shutter);
+    transform-origin: 100% 50%;
+    transform: scaleX(0);
+  }
+  .reveal[data-dir="l"]::after,
+  .reveal-load[data-dir="l"]::after {
+    transform-origin: 0 50%;
+  }
+  .reveal-load::after {
+    animation: wipe 0.7s cubic-bezier(0.75, 0, 0.2, 1) both;
+    animation-delay: calc(var(--i, 0) * 110ms + 150ms);
+  }
+  @supports (animation-timeline: view()) {
+    .reveal::after {
+      animation: wipe cubic-bezier(0.6, 0, 0.3, 1) both;
+      animation-timeline: view();
+      animation-range: entry 15% entry 100%;
+    }
+  }
+}

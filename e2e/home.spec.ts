@@ -1,0 +1,22 @@
+import { expect, test } from "./fixtures";
+
+test("sends the CSS inside the document, so a first visit has no render-blocking request", async ({ page }) => {
+  await page.goto("/en");
+
+  await expect(page.locator('head link[rel="stylesheet"]')).toHaveCount(0);
+
+  const inlined = await page
+    .locator("head style")
+    .evaluateAll((styles) => styles.some((style) => style.textContent?.includes(".reveal")));
+
+  expect(inlined).toBe(true);
+});
+
+// Smoke test: the home page renders content that comes from the database.
+test("home page shows the profile from the database", async ({ page }) => {
+  await page.goto("/en");
+
+  await expect(page.getByRole("heading", { level: 1, name: "Mikhail Aleksandrov" })).toBeVisible();
+  await expect(page.getByText("Senior Frontend Software Engineer, 8+ years")).toBeVisible();
+  await expect(page.getByRole("link", { name: /\+374/ })).toHaveAttribute("href", "https://wa.me/37493310039");
+});

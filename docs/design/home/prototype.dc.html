@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home — interactive prototype</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}a:hover{opacity:.85}
+/* prototype toolbar */
+.bar{display:flex;align-items:center;gap:16px;height:64px;padding:0 24px;box-sizing:border-box;background:#FFFFFF;border-bottom:1px solid #DADDE6;font-family:'Geist',system-ui,sans-serif;color:#1E2230}
+.grp{display:inline-flex;padding:4px;border-radius:12px;background:#EEF0F5;gap:4px}
+.sb{min-height:36px;padding:0 14px;border:0;border-radius:9px;background:transparent;color:#454B66;font:500 14px/1 'Geist',sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.sb.on{background:#FFFFFF;color:#10142A;box-shadow:0 1px 2px rgba(16,20,42,.12)}
+.play{min-height:44px;padding:0 18px;border:0;border-radius:12px;background:#10142A;color:#FFFFFF;font:600 14px/1 'Geist',sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.scr{overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
+/* page */
+.lbl{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.t{background:var(--tile);border:1px solid var(--tile-line);border-radius:20px;padding:16px;box-sizing:border-box;display:flex;flex-direction:column;gap:8px;min-width:0}
+.d .t{border-radius:24px;padding:24px;gap:10px}
+.d .lbl{font-size:12px}
+.ph{background:repeating-linear-gradient(135deg,var(--line) 0 1px,transparent 1px 10px);border:1px dashed var(--line);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:11px;color:var(--mute)}
+.photo{border-radius:20px;overflow:hidden;background:var(--tile);border:1px solid var(--tile-line);box-sizing:border-box;min-width:0}
+.d .photo{border-radius:24px}
+.photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 12%}
+.chip{font-family:'Geist Mono',monospace;font-size:12px;line-height:1;padding:7px 10px;border:1px solid var(--line);border-radius:999px;color:var(--ink2)}
+.d .chip{font-size:13px;padding:8px 12px}
+.chip.sk{color:var(--accent);border-color:var(--tile-line);font-weight:500}
+.btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;border-radius:999px;border:1px solid var(--tile-line);background:var(--tile);color:var(--ink);font:500 15px/1 'Geist',sans-serif;text-decoration:none;box-sizing:border-box;cursor:pointer}
+.btn.pri{background:var(--pri-bg);border-color:var(--pri-bg);color:var(--pri-ink)}
+.ibtn{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;border:1px solid var(--tile-line);background:transparent;color:var(--ink);padding:0;flex-shrink:0;cursor:pointer}
+.seg{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px}
+.seg i{height:8px;border-radius:2px;background:var(--line)}
+.d .seg{gap:4px}.d .seg i{height:10px}
+.seg i.on{background:var(--accent)}
+.sec{display:flex;align-items:center;justify-content:space-between;padding:12px 4px 0}
+.d .sec{padding:32px 4px 4px}
+.ct{display:flex;align-items:center;gap:12px;min-height:56px;padding:0 16px 0 10px;border-radius:16px;text-decoration:none;font-size:17px;font-weight:700;letter-spacing:-.01em;box-sizing:border-box;min-width:0}
+.ct .logo{width:36px;height:36px;border-radius:10px;background:#FFFFFF;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.ct .nm{flex-grow:1;min-width:0;overflow-wrap:anywhere}
+.ct .go{flex-shrink:0;opacity:.8}
+.wa{background:#25D366;color:#10142A}.wa .logo{color:#128C7E}
+.em{background:#D93025;color:#FFFFFF}
+.em .env{flex-shrink:0;display:block}
+.li{background:#0A66C2;color:#FFFFFF}.li .logo{color:#0A66C2}
+.cv{background:var(--pri-bg);color:var(--pri-ink)}
+.cv .ico{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.res{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.res li{display:flex;gap:10px;font-size:15px;line-height:1.5;color:var(--ink2)}
+.d .res li{font-size:16px;line-height:1.55;gap:12px}
+.res li::before{content:'';flex:0 0 8px;height:8px;margin-top:8px;border-radius:2px;background:var(--deco)}
+nav a{text-decoration:none}
+/* skills search and domain filters */
+.search{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 16px;border:1px solid var(--tile-line);border-radius:999px;background:var(--bg);color:var(--mute);box-sizing:border-box;cursor:text}
+.search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
+.search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--ink);font:400 15px/1.2 'Geist',sans-serif}
+.search input::placeholder{color:var(--mute)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+button.chip{min-height:36px;padding:0 14px;background:transparent;cursor:pointer;font-family:'Geist Mono',monospace}
+button.chip.on{background:var(--all-bg);color:var(--all-ink);border-color:var(--all-bg)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.sw{display:flex;flex-direction:column;gap:12px;overflow:hidden}
+.trk{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.trk::-webkit-scrollbar{display:none}
+.trk>.sl{flex:0 0 100%;scroll-snap-align:start}
+.swnav{display:flex;justify-content:space-between;align-items:center;padding:0 2px}
+.swnav .lbl{color:var(--accent);font-weight:600}
+.swnav .ibtn{color:var(--accent);border-color:var(--accent)}
+.ibtn.dis{opacity:.35;pointer-events:none}
+.dd{position:relative;display:inline-flex}
+.ddbg{position:fixed;inset:0;z-index:40}
+.ddm{position:absolute;top:calc(100% + 8px);right:0;z-index:41;min-width:210px;padding:6px;border-radius:16px;background:var(--tile);border:1px solid var(--tile-line);box-shadow:0 18px 40px -12px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:2px}
+.ddi{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:var(--ink);font:500 15px/1 'Geist',sans-serif;text-align:left;cursor:pointer}
+.ddi:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
+.ddi span:first-child{flex-grow:1}
+.ddx{font-family:'Geist Mono',monospace;font-size:11px;color:var(--mute);letter-spacing:.04em}
+.ddi .ck{visibility:hidden;color:var(--accent)}
+.ddi.on{color:var(--accent)}
+.ddi.on .ck{visibility:visible}
+.acc{color:var(--accent)}
+.cnt{margin-left:7px;font-family:'Geist Mono',monospace;font-size:12px;opacity:.7}
+.fl{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:42px;padding:0 14px;border:0;border-radius:12px;background:transparent;color:var(--ink2);font:500 15px/1 'Geist',sans-serif;cursor:pointer;text-align:left}
+.fl:hover{background:color-mix(in srgb,var(--ink) 6%,transparent)}
+.fl.on{background:var(--all-bg);color:var(--all-ink)}
+/* post previews */
+.pmeta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.topic{font:600 11px/1 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);padding:5px 8px;border-radius:6px;background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.pv{margin:0;font-size:15px;line-height:1.55;color:var(--ink2)}
+.more{align-self:flex-start;margin-top:auto;font-size:15px;font-weight:600;color:var(--accent);text-decoration:underline;text-decoration-color:var(--deco);text-decoration-thickness:2px;text-underline-offset:5px}
+nav a.on{color:var(--accent);font-weight:600;text-decoration:underline;text-decoration-color:var(--deco);text-decoration-thickness:3px;text-underline-offset:8px}
+/* Accent wipe: first screen on load, the rest on scroll; .replay re-runs it in place for the tiles in view */
+@keyframes wipe{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+@keyframes wipeA{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+@keyframes wipeB{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+@media (prefers-reduced-motion: no-preference){
+  .rv0,.rv{position:relative;overflow:hidden}
+  .rv0::after,.rv::after{content:'';position:absolute;inset:-1px;background:var(--shutter);transform-origin:100% 50%;transform:scaleX(0);pointer-events:none;z-index:1}
+  /* two directions, alternating tile by tile: "r" slides off to the right, "l" to the left */
+  .rv0[data-dir="l"]::after,.rv[data-dir="l"]::after{transform-origin:0 50%}
+  .rv0::after{animation:wipe .7s cubic-bezier(.75,0,.2,1) both;animation-delay:calc(var(--i) * 110ms + 150ms)}
+  @supports (animation-timeline: view()){
+    .rv::after{animation:wipe cubic-bezier(.6,0,.3,1) both;animation-timeline:view();animation-range:entry 15% entry 100%}
+  }
+  /* replay: the tiles in view get data-rp="a" or "b" (alternating per click), so the animation name changes and the browser restarts it */
+  .rv0[data-rp="a"]::after,.rv[data-rp="a"]::after{animation:wipeA .7s cubic-bezier(.75,0,.2,1) both;animation-delay:var(--d, 0ms)}
+  .rv0[data-rp="b"]::after,.rv[data-rp="b"]::after{animation:wipeB .7s cubic-bezier(.75,0,.2,1) both;animation-delay:var(--d, 0ms)}
+}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1010px; box-sizing: border-box; background: #E3E6EE; display: flex; flex-direction: column; font-family: 'Geist', system-ui, sans-serif">
+
+<div class="bar">
+<strong style="font-size: 15px; margin-right: 8px">Главная · прототип</strong>
+<div class="grp" role="group" aria-label="Устройство">
+<button class="{{mobCls}}" onClick="{{toMobile}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"></rect><path d="M11 18h2"></path></svg>Телефон</button>
+<button class="{{deskCls}}" onClick="{{toDesktop}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>Десктоп</button>
+</div>
+<div class="grp" role="group" aria-label="Тема">
+<button class="{{darkCls}}" onClick="{{toDark}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>Тёмная</button>
+<button class="{{lightCls}}" onClick="{{toLight}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>Светлая</button>
+</div>
+<button class="play" onClick="{{replay}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5v14l12-7z"></path></svg>Запустить анимацию</button>
+<span style="margin-left: auto; font-size: 13px; color: #5B6280">Прокрутите страницу и нажмите — анимация пройдёт там, где вы сейчас</span>
+</div>
+
+<div style="flex-grow: 1; min-height: 0; display: flex; justify-content: center; align-items: flex-start; padding: 16px 0">
+
+<sc-if value="{{isMobile}}" hint-placeholder-val="{{true}}">
+<div style="width: 390px; height: 900px; border-radius: 32px; overflow: hidden; border: 1px solid #C9CEDB; background: #000000; box-sizing: border-box">
+<div class="scr {{replayCls}}" ref="{{setScroller}}" style="--bg: {{t.bg}}; --tile: {{t.tile}}; --line: {{t.line}}; --tile-line: {{t.tileLine}}; --ink: {{t.ink}}; --ink2: {{t.ink2}}; --mute: {{t.mute}}; --accent: {{t.accent}}; --deco: {{t.deco}}; --shutter: {{t.shutter}}; --pri-bg: {{t.priBg}}; --pri-ink: {{t.priInk}}; --all-bg: {{t.allBg}}; --all-ink: {{t.allInk}}; height: 898px; background: var(--bg); color: var(--ink)">
+
+<header style="position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 8px; height: 64px; padding: 0 12px 0 16px; box-sizing: border-box; background: var(--tile); border-bottom: 1px solid var(--tile-line)">
+<a href="#" style="flex-grow: 1; min-width: 0; font-size: 17px; font-weight: 600; letter-spacing: -.02em; text-decoration: none; white-space: nowrap">Mikhail Aleksandrov</a>
+<span class="dd"><button class="ibtn acc" style="font-family: 'Geist Mono', monospace; font-size: 13px" aria-label="Language" aria-haspopup="menu" onClick="{{openLang}}">{{langCode}}</button><sc-if value="{{langOpen}}" hint-placeholder-val="{{false}}"><div class="ddbg" onClick="{{closeMenu}}"></div><div class="ddm" role="menu"><sc-for list="{{langOpts}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" role="menuitemradio" onClick="{{o.pick}}"><span>{{o.label}}</span><span class="ddx">{{o.hint}}</span><svg class="ck" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></button></sc-for></div></sc-if></span>
+<span class="dd"><button class="ibtn acc" onClick="{{openTheme}}" aria-label="Theme" aria-haspopup="menu"><sc-if value="{{isDark}}" hint-placeholder-val="{{true}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if><sc-if value="{{isLight}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></sc-if></button><sc-if value="{{themeOpen}}" hint-placeholder-val="{{false}}"><div class="ddbg" onClick="{{closeMenu}}"></div><div class="ddm" role="menu"><sc-for list="{{themeOpts}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" role="menuitemradio" onClick="{{o.pick}}"><span>{{o.label}}</span><span class="ddx">{{o.hint}}</span><svg class="ck" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></button></sc-for></div></sc-if></span>
+<button class="ibtn" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button>
+</header>
+
+<div style="padding: 16px 16px 32px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<div class="t rv0" style="--i: 0; grid-column: span 2; padding: 20px; gap: 12px">
+<h1 style="margin: 0; font-size: 36px; line-height: 1; font-weight: 700; letter-spacing: -.04em">Mikhail Aleksandrov</h1>
+<p style="margin: 0; font-size: 16px; line-height: 1.4; color: var(--ink2)">Senior Frontend Software Engineer, 8+ years</p>
+<div style="display: flex; flex-wrap: wrap; gap: 6px"><span class="chip sk">React.js</span><span class="chip sk">Redux</span><span class="chip sk">Next.js</span><span class="chip sk">NestJS</span><span class="chip sk">TypeScript</span><span class="chip sk">Express</span></div>
+</div>
+<div class="photo rv0" style="--i: 1; grid-column: span 2; aspect-ratio: 1 / 1"><img src="/_blob/5e5ea13dac0069ec7e6de49777e8c75c" alt="Mikhail Aleksandrov"></div>
+<a class="ct wa rv0" href="https://wa.me/37493310039" title="+374 93 310 039" aria-label="WhatsApp: +374 93 310 039" style="--i: 2; grid-column: span 2"><span class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l1.6-4.8A8.5 8.5 0 1 1 7.8 19.4z"></path><path d="M9 9.5c.5 2.2 2.3 4 4.5 4.5l1-1.2 2 .8-.3 1.6c-3.8.2-7.6-3.6-7.4-7.4l1.6-.3.8 2z"></path></svg></span><span class="nm">WhatsApp</span><svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></a>
+<a class="ct em rv0" href="mailto:mikhail.aleksandrov.job@gmail.com" title="mikhail.aleksandrov.job@gmail.com" aria-label="Mail: mikhail.aleksandrov.job@gmail.com" style="--i: 3; grid-column: span 2; padding-left: 8px"><svg class="env" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="8" width="34" height="24" rx="5" fill="#D93025" stroke="#FFFFFF" stroke-width="2.5"></rect><path d="M5 11.5 20 22l15-10.5" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="nm" style="font-size: 16px">mikhail.aleksandrov.job</span><svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></a>
+<a class="ct li rv0" href="https://www.linkedin.com/in/mikhail-aleksandrov-job" title="linkedin.com/in/mikhail-aleksandrov-job" aria-label="LinkedIn profile" style="--i: 4; grid-column: span 2"><span class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 10v7M8 7v.01M12 17v-7M12 13a3 3 0 0 1 6 0v4"></path></svg></span><span class="nm">LinkedIn</span><svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></a>
+<a class="ct cv rv0" href="/cv/Mikhail_Aleksandrov_CV.pdf" download="Mikhail_Aleksandrov_CV.pdf" aria-label="Download CV, PDF" style="--i: 5; grid-column: span 2"><span class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"></path><path d="m7 10 5 5 5-5"></path><path d="M5 20h14"></path></svg></span><span class="nm">Download CV</span><span style="font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .06em; opacity: .85">PDF</span></a>
+
+<div class="t rv" style="grid-column: span 2; padding: 20px; gap: 14px">
+<span class="lbl">About</span>
+<p style="margin: 0; font-size: 17px; line-height: 1.45">I'm a Senior Frontend Engineer with 8+ years of commercial experience in React and Next.js, most recently at Glovo, Sony PlayStation and EPAM.</p>
+<p style="margin: 0; font-size: 15px; font-weight: 600">A few results I'm proud of:</p>
+<ul class="res">
+<li>At EPAM, I helped migrate an e-commerce store from PHP to Next.js, which raised conversion by 12.4% and made pages load 37% faster.</li>
+<li>At Glovo, I introduced unit testing that cut production defects by 23%, and shipped an offline mode that increased average session time by 17%.</li>
+<li>At Sony PlayStation, I helped build an in-game notification system from scratch, hired and onboarded 3 developers, and brought test coverage to 95%.</li>
+</ul>
+<button class="btn" style="align-self: flex-start">Read more</button>
+</div>
+
+<div class="sec" style="grid-column: span 2"><span class="lbl">Experience</span></div>
+<div class="sw rv" style="grid-column: span 2"><div class="swnav"><span class="lbl">{{expPos}}</span><span style="display: flex; gap: 8px"><button class="{{expPrevCls}}" aria-label="Previous" onClick="{{expPrev}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button><button class="{{expNextCls}}" aria-label="Next" onClick="{{expNext}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button></span></div><div class="trk" ref="{{setExpTrk}}">
+<div class="t sl" style="padding: 12px"><div class="ph" style="height: 140px">COMPANY IMAGE</div><div style="padding: 4px 4px 2px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1"><strong style="font-size: 18px">Glovo</strong><span class="lbl">11/2024 – 10/2026 · 2 years</span><span style="font-size: 14px; line-height: 1.5; color: var(--ink2)">Built an AI-powered chat for user support and set up frontend monitoring. Introduced unit testing that cut production defects by 23%. Shipped an offline mode that increased average session time by 17%.</span><div class="tags"><span class="chip sk">Next.js</span><span class="chip sk">TypeScript</span><span class="chip sk">Mantine</span><span class="chip sk">React Hook Form</span><span class="chip sk">Jest</span></div><a class="more" href="#">Learn more <span aria-hidden="true">→</span></a></div></div>
+<div class="t sl" style="padding: 12px"><div class="ph" style="height: 140px">COMPANY IMAGE</div><div style="padding: 4px 4px 2px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1"><strong style="font-size: 18px">Sony PlayStation</strong><span class="lbl">08/2023 – 11/2024 · 1.3 years</span><span style="font-size: 14px; line-height: 1.5; color: var(--ink2)">Helped build the in-game notification system from scratch. Hired and onboarded 3 developers to the team. Brought test coverage to 95%.</span><div class="tags"><span class="chip sk">React</span><span class="chip sk">TypeScript</span><span class="chip sk">Redux Toolkit</span><span class="chip sk">WebSocket</span><span class="chip sk">Jest</span></div><a class="more" href="#">Learn more <span aria-hidden="true">→</span></a></div></div>
+<div class="t sl" style="padding: 12px"><div class="ph" style="height: 140px">COMPANY IMAGE</div><div style="padding: 4px 4px 2px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1"><strong style="font-size: 18px">EPAM</strong><span class="lbl">07/2021 – 08/2023 · 2.2 years</span><span style="font-size: 14px; line-height: 1.5; color: var(--ink2)">Migrated an e-commerce store from PHP to Next.js without losing SEO. The migration raised conversion by 12.4%. Pages started loading 37% faster.</span><div class="tags"><span class="chip sk">Next.js</span><span class="chip sk">React</span><span class="chip sk">Redux</span><span class="chip sk">GraphQL</span></div><a class="more" href="#">Learn more <span aria-hidden="true">→</span></a></div></div>
+<div class="t sl" style="padding: 12px"><div class="ph" style="height: 140px">COMPANY IMAGE</div><div style="padding: 4px 4px 2px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1"><strong style="font-size: 18px">Omega-R</strong><span class="lbl">05/2019 – 06/2021 · 2.1 years</span><span style="font-size: 14px; line-height: 1.5; color: var(--ink2)">[Up to three sentences about the role: product, what you built and the result.]</span><div class="tags"><span class="chip sk">React</span><span class="chip sk">React Native</span><span class="chip sk">Redux</span><span class="chip sk">Material UI</span></div><a class="more" href="#">Learn more <span aria-hidden="true">→</span></a></div></div>
+</div></div>
+<a class="btn pri" href="#" style="grid-column: span 2">All experience</a>
+
+<div class="sec" style="grid-column: span 2"><span class="lbl">My top skills</span></div>
+<div class="t rv" style="grid-column: span 2; padding: 20px; gap: 14px">
+<sc-for list="{{skills}}" as="s" hint-placeholder-count="5"><div style="display: flex; flex-direction: column; gap: 6px"><div style="display: flex; justify-content: space-between; font-size: 15px"><span style="font-weight: 500">{{s.name}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--mute)">{{s.lv}}/10</span></div><div class="seg"><sc-for list="{{s.segs}}" as="g" hint-placeholder-count="10"><i class="{{g.cls}}"></i></sc-for></div></div></sc-for>
+</div>
+<a class="btn pri" href="#" style="grid-column: span 2">{{allLabel}}</a>
+
+<div class="sec" style="grid-column: span 2"><span class="lbl">Blog</span></div>
+<div class="sw rv" style="grid-column: span 2"><div class="swnav"><span class="lbl">{{postPos}}</span><span style="display: flex; gap: 8px"><button class="{{postPrevCls}}" aria-label="Previous" onClick="{{postPrev}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button><button class="{{postNextCls}}" aria-label="Next" onClick="{{postNext}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button></span></div><div class="trk" ref="{{setPostTrk}}">
+<article class="t sl" style="padding: 12px; gap: 10px"><div class="ph" style="height: 150px">COVER</div><div style="padding: 4px 4px 2px; display: flex; flex-direction: column; gap: 8px"><span class="pmeta"><span class="topic">Technical</span><span class="lbl">Oct 12, 2026</span></span><h3 style="margin: 0; font-size: 19px; line-height: 1.3">Moving an e-commerce store from PHP to Next.js without losing SEO</h3><p class="pv">How we migrated page by page behind a proxy, kept every URL and sitemap entry intact, and measured each step. The result was a 12.4% lift in conversion and pages 37% faster.</p><div class="tags"><span class="chip sk">Next.js</span><span class="chip sk">SEO</span><span class="chip sk">Migration</span></div><a class="more" href="#">Read more <span aria-hidden="true">→</span></a></div></article>
+<article class="t sl" style="padding: 18px; gap: 8px"><span class="pmeta"><span class="topic">Technical</span><span class="lbl">Sep 28, 2026</span></span><h3 style="margin: 0; font-size: 17px; line-height: 1.3">Offline mode in a React app: what actually matters</h3><p class="pv">A service worker is only half the story. Here is how we queued actions made offline, resolved conflicts when the connection came back, and told users what was happening without alarming them.</p><div class="tags"><span class="chip sk">React</span><span class="chip sk">PWA</span><span class="chip sk">Offline</span></div><a class="more" href="#">Read more <span aria-hidden="true">→</span></a></article>
+<article class="t sl" style="padding: 18px; gap: 8px"><span class="pmeta"><span class="topic">Software</span><span class="lbl">Sep 9, 2026</span></span><h3 style="margin: 0; font-size: 17px; line-height: 1.3">Unit tests a team keeps writing</h3><p class="pv">Coverage targets alone don't change habits. This is the policy that took a team to 95% coverage: what we test first, what we skip on purpose, and how code review keeps it honest.</p><div class="tags"><span class="chip sk">Testing</span><span class="chip sk">Jest</span><span class="chip sk">Team process</span></div><a class="more" href="#">Read more <span aria-hidden="true">→</span></a></article>
+</div></div>
+<a class="btn pri" href="#" style="grid-column: span 2">All posts</a>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isDesktop}}" hint-placeholder-val="{{false}}">
+<div style="width: 1280px; height: 900px; border-radius: 14px; overflow: hidden; border: 1px solid #C9CEDB; box-sizing: border-box">
+<div class="scr d {{replayCls}}" ref="{{setScroller}}" style="--bg: {{t.bg}}; --tile: {{t.tile}}; --line: {{t.line}}; --tile-line: {{t.tileLine}}; --ink: {{t.ink}}; --ink2: {{t.ink2}}; --mute: {{t.mute}}; --accent: {{t.accent}}; --deco: {{t.deco}}; --shutter: {{t.shutter}}; --pri-bg: {{t.priBg}}; --pri-ink: {{t.priInk}}; --all-bg: {{t.allBg}}; --all-ink: {{t.allInk}}; height: 898px; background: var(--bg); color: var(--ink)">
+
+<header style="position: sticky; top: 0; z-index: 10; background: var(--tile); border-bottom: 1px solid var(--tile-line)">
+<div style="max-width: 1200px; margin: 0 auto; padding: 0 40px; height: 72px; display: flex; align-items: center; gap: 32px">
+<a href="#" style="flex-grow: 1; font-size: 20px; font-weight: 600; letter-spacing: -.02em; text-decoration: none; white-space: nowrap">Mikhail Aleksandrov</a>
+<nav style="display: flex; gap: 28px; font-size: 15px"><a href="#" class="on">Home</a><a href="#">About</a><a href="#">Projects</a><a href="#">Skills</a><a href="#">Blog</a><a href="#">Contact</a></nav>
+<div style="display: flex; gap: 8px">
+<span class="dd"><button class="btn acc" style="padding: 0 14px; font-family: 'Geist Mono', monospace; font-size: 13px" aria-label="Language" aria-haspopup="menu" onClick="{{openLang}}">{{langCode}}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><sc-if value="{{langOpen}}" hint-placeholder-val="{{false}}"><div class="ddbg" onClick="{{closeMenu}}"></div><div class="ddm" role="menu"><sc-for list="{{langOpts}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" role="menuitemradio" onClick="{{o.pick}}"><span>{{o.label}}</span><span class="ddx">{{o.hint}}</span><svg class="ck" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></button></sc-for></div></sc-if></span>
+<span class="dd"><button class="btn acc" style="padding: 0 14px" onClick="{{openTheme}}" aria-label="Theme" aria-haspopup="menu"><sc-if value="{{isDark}}" hint-placeholder-val="{{true}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if><sc-if value="{{isLight}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></sc-if><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><sc-if value="{{themeOpen}}" hint-placeholder-val="{{false}}"><div class="ddbg" onClick="{{closeMenu}}"></div><div class="ddm" role="menu"><sc-for list="{{themeOpts}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" role="menuitemradio" onClick="{{o.pick}}"><span>{{o.label}}</span><span class="ddx">{{o.hint}}</span><svg class="ck" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></button></sc-for></div></sc-if></span>
+</div>
+</div>
+</header>
+
+<div style="max-width: 1200px; margin: 0 auto; padding: 24px 40px 48px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px">
+<div style="grid-column: 1; display: flex; flex-direction: column; gap: 12px; min-width: 0">
+<div class="photo rv0" style="--i: 0; flex: 1 1 auto; min-height: 380px"><img src="/_blob/5e5ea13dac0069ec7e6de49777e8c75c" alt="Mikhail Aleksandrov"></div>
+<a class="ct wa rv0" href="https://wa.me/37493310039" title="+374 93 310 039" aria-label="WhatsApp: +374 93 310 039" style="--i: 1"><span class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l1.6-4.8A8.5 8.5 0 1 1 7.8 19.4z"></path><path d="M9 9.5c.5 2.2 2.3 4 4.5 4.5l1-1.2 2 .8-.3 1.6c-3.8.2-7.6-3.6-7.4-7.4l1.6-.3.8 2z"></path></svg></span><span class="nm">WhatsApp</span><svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></a>
+<a class="ct em rv0" href="mailto:mikhail.aleksandrov.job@gmail.com" title="mikhail.aleksandrov.job@gmail.com" aria-label="Mail: mikhail.aleksandrov.job@gmail.com" style="--i: 2; padding-left: 8px; padding-top: 8px; padding-bottom: 8px"><svg class="env" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="8" width="34" height="24" rx="5" fill="#D93025" stroke="#FFFFFF" stroke-width="2.5"></rect><path d="M5 11.5 20 22l15-10.5" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="nm" style="font-size: 15px; line-height: 1.25">mikhail.<wbr>aleksandrov.<wbr>job</span><svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></a>
+<a class="ct li rv0" href="https://www.linkedin.com/in/mikhail-aleksandrov-job" title="linkedin.com/in/mikhail-aleksandrov-job" aria-label="LinkedIn profile" style="--i: 3"><span class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 10v7M8 7v.01M12 17v-7M12 13a3 3 0 0 1 6 0v4"></path></svg></span><span class="nm">LinkedIn</span><svg class="go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></a>
+<a class="ct cv rv0" href="/cv/Mikhail_Aleksandrov_CV.pdf" download="Mikhail_Aleksandrov_CV.pdf" aria-label="Download CV, PDF" style="--i: 4"><span class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"></path><path d="m7 10 5 5 5-5"></path><path d="M5 20h14"></path></svg></span><span class="nm">Download CV</span><span style="font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .06em; opacity: .85">PDF</span></a>
+</div>
+<div style="grid-column: 2 / 5; display: flex; flex-direction: column; gap: 16px; min-width: 0">
+<div class="t rv0" style="--i: 1; padding: 36px; gap: 14px">
+<h1 style="margin: 0; font-size: 64px; line-height: .95; font-weight: 700; letter-spacing: -.045em">Mikhail Aleksandrov</h1>
+<p style="margin: 0; font-size: 20px; line-height: 1.4; color: var(--ink2)">Senior Frontend Software Engineer, 8+ years</p>
+<div style="display: flex; flex-wrap: wrap; gap: 6px; padding-top: 4px"><span class="chip sk">React.js</span><span class="chip sk">Redux</span><span class="chip sk">Next.js</span><span class="chip sk">NestJS</span><span class="chip sk">TypeScript</span><span class="chip sk">Express</span></div>
+</div>
+<div class="t rv0" style="--i: 2; flex-grow: 1; padding: 36px; gap: 16px">
+<span class="lbl">About</span>
+<p style="margin: 0; font-size: 20px; line-height: 1.45">I'm a Senior Frontend Engineer with 8+ years of commercial experience in React and Next.js, most recently at Glovo, Sony PlayStation and EPAM.</p>
+<p style="margin: 0; font-size: 16px; font-weight: 600">A few results I'm proud of:</p>
+<ul class="res">
+<li>At EPAM, I helped migrate an e-commerce store from PHP to Next.js, which raised conversion by 12.4% and made pages load 37% faster.</li>
+<li>At Glovo, I introduced unit testing that cut production defects by 23%, and shipped an offline mode that increased average session time by 17%.</li>
+<li>At Sony PlayStation, I helped build an in-game notification system from scratch, hired and onboarded 3 developers, and brought test coverage to 95%.</li>
+</ul>
+<p style="margin: 0; font-size: 16px; line-height: 1.6; color: var(--ink2)">Beyond writing code, I have 2 years of team leadership experience, managing the full development cycle: from gathering requirements with the product owner to setting up a fully automated release process with high test coverage, detailed analytics and CI/CD. I've worked in small teams of 2–10 people and on large products with 1M+ users and teams of up to 60 engineers, so I'm comfortable with both startup speed and enterprise process.</p>
+</div>
+</div>
+</div>
+
+<div class="sec"><span class="lbl">Experience</span></div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px">
+<div class="t rv" style="padding: 14px"><div class="ph" style="height: 180px">COMPANY IMAGE</div><div style="padding: 6px 6px 4px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1"><strong style="font-size: 20px">Glovo</strong><span class="lbl">11/2024 – 10/2026 · 2 years</span><span style="font-size: 14px; line-height: 1.5; color: var(--ink2)">Built an AI-powered chat for user support and set up frontend monitoring. Introduced unit testing that cut production defects by 23%. Shipped an offline mode that increased average session time by 17%.</span><div class="tags"><span class="chip sk">Next.js</span><span class="chip sk">TypeScript</span><span class="chip sk">Mantine</span><span class="chip sk">React Hook Form</span><span class="chip sk">Jest</span></div><a class="more" href="#">Learn more <span aria-hidden="true">→</span></a></div></div>
+<div class="t rv" style="padding: 14px"><div class="ph" style="height: 180px">COMPANY IMAGE</div><div style="padding: 6px 6px 4px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1"><strong style="font-size: 20px">Sony PlayStation</strong><span class="lbl">08/2023 – 11/2024 · 1.3 years</span><span style="font-size: 14px; line-height: 1.5; color: var(--ink2)">Helped build the in-game notification system from scratch. Hired and onboarded 3 developers to the team. Brought test coverage to 95%.</span><div class="tags"><span class="chip sk">React</span><span class="chip sk">TypeScript</span><span class="chip sk">Redux Toolkit</span><span class="chip sk">WebSocket</span><span class="chip sk">Jest</span></div><a class="more" href="#">Learn more <span aria-hidden="true">→</span></a></div></div>
+<div class="t rv" style="padding: 14px"><div class="ph" style="height: 180px">COMPANY IMAGE</div><div style="padding: 6px 6px 4px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1"><strong style="font-size: 20px">EPAM</strong><span class="lbl">07/2021 – 08/2023 · 2.2 years</span><span style="font-size: 14px; line-height: 1.5; color: var(--ink2)">Migrated an e-commerce store from PHP to Next.js without losing SEO. The migration raised conversion by 12.4%. Pages started loading 37% faster.</span><div class="tags"><span class="chip sk">Next.js</span><span class="chip sk">React</span><span class="chip sk">Redux</span><span class="chip sk">GraphQL</span></div><a class="more" href="#">Learn more <span aria-hidden="true">→</span></a></div></div>
+<div class="t rv" style="padding: 14px"><div class="ph" style="height: 180px">COMPANY IMAGE</div><div style="padding: 6px 6px 4px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1"><strong style="font-size: 20px">Omega-R</strong><span class="lbl">05/2019 – 06/2021 · 2.1 years</span><span style="font-size: 14px; line-height: 1.5; color: var(--ink2)">[Up to three sentences about the role: product, what you built and the result.]</span><div class="tags"><span class="chip sk">React</span><span class="chip sk">React Native</span><span class="chip sk">Redux</span><span class="chip sk">Material UI</span></div><a class="more" href="#">Learn more <span aria-hidden="true">→</span></a></div></div>
+</div>
+<div style="display: flex; justify-content: flex-end"><a class="btn pri" href="#">All experience</a></div>
+
+<div class="sec"><span class="lbl">My top skills</span></div>
+<div class="t rv" style="padding: 28px 32px">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px 48px">
+<sc-for list="{{skills}}" as="s" hint-placeholder-count="5"><div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) 44px; gap: 14px; align-items: center"><span style="font-weight: 500">{{s.name}}</span><div class="seg"><sc-for list="{{s.segs}}" as="g" hint-placeholder-count="10"><i class="{{g.cls}}"></i></sc-for></div><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--mute)">{{s.lv}}/10</span></div></sc-for>
+</div>
+</div>
+<div style="display: flex; justify-content: flex-end"><a class="btn pri" href="#">{{allLabel}}</a></div>
+
+<div class="sec"><span class="lbl">Blog</span></div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px">
+<article class="t rv" style="grid-column: span 2; padding: 14px; flex-direction: row; gap: 20px"><div class="ph" style="width: 220px; min-height: 240px; flex-shrink: 0">COVER</div><div style="display: flex; flex-direction: column; gap: 10px; padding: 8px 8px 6px 0; min-width: 0"><span class="pmeta"><span class="topic">Technical</span><span class="lbl">Oct 12, 2026</span></span><h3 style="margin: 0; font-size: 22px; line-height: 1.25; letter-spacing: -.01em">Moving an e-commerce store from PHP to Next.js without losing SEO</h3><p class="pv">How we migrated page by page behind a proxy, kept every URL and sitemap entry intact, and measured each step. The result was a 12.4% lift in conversion and pages 37% faster. Plus the three mistakes I would avoid next time.</p><div class="tags"><span class="chip sk">Next.js</span><span class="chip sk">SEO</span><span class="chip sk">Migration</span></div><a class="more" href="#">Read more <span aria-hidden="true">→</span></a></div></article>
+<article class="t rv" style="padding: 20px; gap: 10px"><span class="pmeta"><span class="topic">Technical</span><span class="lbl">Sep 28, 2026</span></span><h3 style="margin: 0; font-size: 18px; line-height: 1.3">Offline mode in a React app: what actually matters</h3><p class="pv">A service worker is only half the story. Here is how we queued actions made offline, resolved conflicts when the connection came back, and told users what was happening without alarming them.</p><div class="tags"><span class="chip sk">React</span><span class="chip sk">PWA</span><span class="chip sk">Offline</span></div><a class="more" href="#">Read more <span aria-hidden="true">→</span></a></article>
+<article class="t rv" style="padding: 20px; gap: 10px"><span class="pmeta"><span class="topic">Software</span><span class="lbl">Sep 9, 2026</span></span><h3 style="margin: 0; font-size: 18px; line-height: 1.3">Unit tests a team keeps writing</h3><p class="pv">Coverage targets alone don't change habits. This is the policy that took a team to 95% coverage: what we test first, what we skip on purpose, and how code review keeps it honest.</p><div class="tags"><span class="chip sk">Testing</span><span class="chip sk">Jest</span><span class="chip sk">Team process</span></div><a class="more" href="#">Read more <span aria-hidden="true">→</span></a></article>
+</div>
+<div style="display: flex; justify-content: flex-end"><a class="btn pri" href="#">All posts</a></div>
+</div>
+</div>
+</div>
+</sc-if>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1010}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { device: 'mobile', theme: 'dark' };
+    this.flip = 'b';
+    this.scroller = null;
+    this.timer = null;
+    this.setScroller = (el) => { this.scroller = el; };
+    this.trk = {};
+    this.hooked = typeof WeakSet !== 'undefined' ? new WeakSet() : null;
+    const mk = (key) => (el) => {
+      this.trk[key] = el;
+      if (!el || (this.hooked && this.hooked.has(el))) return;
+      if (this.hooked) this.hooked.add(el);
+      el.addEventListener('scroll', () => {
+        const i = Math.round(el.scrollLeft / (el.clientWidth + 12));
+        if ((this.state[key] || 0) !== i) this.setState({ [key]: i });
+      }, { passive: true });
+    };
+    this.setExpTrk = mk('expI');
+    this.setPostTrk = mk('postI');
+    this.go = (key, d, n) => {
+      const el = this.trk[key];
+      const i = Math.max(0, Math.min(n - 1, (this.state[key] || 0) + d));
+      if (el && el.children[i]) el.scrollTo({ left: el.children[i].offsetLeft - el.children[0].offsetLeft, behavior: 'smooth' });
+      this.setState({ [key]: i });
+    };
+  }
+  componentWillUnmount() { if (this.timer) clearTimeout(this.timer); }
+  componentDidMount() { this.markDirs(); }
+  componentDidUpdate() { this.markDirs(); }
+  markDirs() {
+    const box = this.scroller || document.querySelector('.scr');
+    if (!box) return;
+    Array.prototype.slice.call(box.querySelectorAll('.rv, .rv0')).forEach((el, k) => {
+      if (!el.hasAttribute('data-dir')) el.setAttribute('data-dir', k % 2 ? 'l' : 'r');
+    });
+  }
+  runReplay() {
+    const box = this.scroller || document.querySelector('.scr');
+    if (!box) return;
+    this.flip = this.flip === 'a' ? 'b' : 'a';
+    const tag = this.flip;
+    const r = box.getBoundingClientRect();
+    const vis = [];
+    Array.prototype.slice.call(box.querySelectorAll('.rv, .rv0')).forEach((el) => {
+      const b = el.getBoundingClientRect();
+      if (b.bottom > r.top && b.top < r.bottom) vis.push({ el, top: Math.round(b.top), left: b.left });
+    });
+    vis.sort((a, b) => (a.top - b.top) || (a.left - b.left));
+    vis.forEach((v, k) => {
+      v.el.style.setProperty('--d', (k * 100) + 'ms');
+      v.el.setAttribute('data-rp', tag);
+      v.el.setAttribute('data-dir', k % 2 ? 'l' : 'r');
+    });
+  }
+  renderVals() {
+    const T = {
+      dark: { bg: '#10142A', tile: '#181E3B', line: '#2A3360', tileLine: '#2A3360', ink: '#EDEFF7', ink2: '#B4BAD2', mute: '#8E96B5', accent: '#C6F432', deco: '#C6F432', shutter: '#C6F432', priBg: '#C6F432', priInk: '#10142A', allBg: '#EDEFF7', allInk: '#10142A' },
+      light: { bg: '#F3F5F9', tile: '#FFFFFF', line: '#E1E5EE', tileLine: '#BFCBF4', ink: '#10142A', ink2: '#454B66', mute: '#5B6280', accent: '#2347E8', deco: '#FFD23F', shutter: '#FFD23F', priBg: '#2347E8', priInk: '#FFFFFF', allBg: '#10142A', allInk: '#FFFFFF' }
+    };
+    const s = this.state;
+    const sysDark = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)').matches : true;
+    // all 41 skills from the CV, by domain; levels are placeholders until real ones are set
+    const D = {
+      Core: ['JavaScript', 'TypeScript', 'HTML5', 'CSS3', 'SASS'],
+      Frameworks: ['React', 'React Native', 'Next.js', 'Nest.js'],
+      Frontend: ['Redux', 'Redux Toolkit', 'RTK Query', 'GraphQL', 'React Testing Library', 'Formik', 'React Hook Form', 'Yup', 'Zod', 'WebSocket', 'Socket.io', 'Material UI', 'Mantine', 'Tailwind', 'Lodash', 'Cypress', 'Jest', 'styled-components', 'CSS-in-JS'],
+      Tools: ['Docker', 'Docker Compose', 'Kubernetes', 'OpenLens', 'WebStorm', 'Postman', 'Git', 'Jira', 'Figma', 'Chrome DevTools', 'Swagger', 'Xcode', 'Claude Code']
+    };
+    const top = { 'React': 9, 'Next.js': 9, 'TypeScript': 8, 'Redux Toolkit': 8, 'Nest.js': 7 };
+    const all = [];
+    Object.keys(D).forEach((cat) => D[cat].forEach((name) => all.push({ name, cat, lv: top[name] || 6 })));
+    all.sort((a, b) => (b.lv - a.lv) || ((name => Object.keys(top).indexOf(name))(a.name) - (name => Object.keys(top).indexOf(name))(b.name)) || a.name.localeCompare(b.name));
+    const q = (s.q || '').trim().toLowerCase();
+    const cat = s.cat || 'All';
+    let list = all.filter((x) => (cat === 'All' || x.cat === cat) && (!q || x.name.toLowerCase().includes(q)));
+    const filtered = q || cat !== 'All';
+    const topN = s.device === 'desktop' ? 14 : 5;
+    if (!filtered && !s.showAll) list = list.slice(0, topN);
+    // featured skills, marked in the main list (1–20 items)
+    const featured = ['React', 'Next.js', 'TypeScript', 'Redux Toolkit', 'Nest.js', 'GraphQL', 'Jest', 'Tailwind'];
+    list = all.filter((x) => featured.indexOf(x.name) >= 0);
+    const skills = list.map((x) => ({ name: x.name, lv: x.lv, segs: Array.from({ length: 10 }, (_, k) => ({ cls: k < x.lv ? 'on' : '' })) }));
+    const cats = ['All', 'Core', 'Frameworks', 'Frontend', 'Tools'].map((name) => ({ name, cls: name === cat ? 'chip on' : 'chip', fcls: name === cat ? 'fl on' : 'fl', count: name === 'All' ? all.length : D[name].length, pick: () => this.setState({ cat: name }) }));
+    return {
+      t: T[s.theme],
+      skills,
+      cats,
+      q: s.q || '',
+      onSearch: (e) => this.setState({ q: e.target.value }),
+      noMatch: list.length === 0,
+      showToggle: !filtered,
+      allLabel: 'Show all ' + all.length + ' skills',
+      toggleAll: () => this.setState({ showAll: !s.showAll }),
+      skillCount: filtered ? list.length + ' of 41' : (s.showAll ? '41 skills' : 'Top ' + topN + ' of 41'),
+      setExpTrk: this.setExpTrk,
+      setPostTrk: this.setPostTrk,
+      expPos: ((s.expI || 0) + 1) + ' / 4',
+      postPos: ((s.postI || 0) + 1) + ' / 3',
+      expPrev: () => this.go('expI', -1, 4), expNext: () => this.go('expI', 1, 4),
+      postPrev: () => this.go('postI', -1, 3), postNext: () => this.go('postI', 1, 3),
+      expPrevCls: (s.expI || 0) === 0 ? 'ibtn dis' : 'ibtn', expNextCls: (s.expI || 0) >= 3 ? 'ibtn dis' : 'ibtn',
+      postPrevCls: (s.postI || 0) === 0 ? 'ibtn dis' : 'ibtn', postNextCls: (s.postI || 0) >= 2 ? 'ibtn dis' : 'ibtn',
+      langOpen: s.menu === 'lang',
+      themeOpen: s.menu === 'theme',
+      langCode: s.lang || 'EN',
+      openLang: () => this.setState({ menu: s.menu === 'lang' ? null : 'lang' }),
+      openTheme: () => this.setState({ menu: s.menu === 'theme' ? null : 'theme' }),
+      closeMenu: () => this.setState({ menu: null }),
+      langOpts: [['EN', 'English'], ['RU', 'Русский'], ['PT', 'Português'], ['ES', 'Español'], ['DE', 'Deutsch'], ['FR', 'Français'], ['JA', '日本語'], ['PL', 'Polski']].map(([c, n]) => ({ label: n, hint: c, cls: (s.lang || 'EN') === c ? 'ddi on' : 'ddi', pick: () => this.setState({ lang: c, menu: null }) })),
+      themeOpts: [['dark', 'Dark'], ['light', 'Light'], ['system', 'System']].map(([m, n]) => ({ label: n, hint: m === 'system' ? (sysDark ? 'now dark' : 'now light') : '', cls: (s.mode || s.theme) === m ? 'ddi on' : 'ddi', pick: () => this.setState({ mode: m, theme: m === 'system' ? (sysDark ? 'dark' : 'light') : m, menu: null }) })),
+      isDark: s.theme !== 'light',
+      isLight: s.theme === 'light',
+      isMobile: s.device === 'mobile',
+      isDesktop: s.device === 'desktop',
+      mobCls: s.device === 'mobile' ? 'sb on' : 'sb',
+      deskCls: s.device === 'desktop' ? 'sb on' : 'sb',
+      darkCls: s.theme === 'dark' ? 'sb on' : 'sb',
+      lightCls: s.theme === 'light' ? 'sb on' : 'sb',
+      replayCls: '',
+      setScroller: this.setScroller,
+      toMobile: () => this.setState({ device: 'mobile', expI: 0, postI: 0 }),
+      toDesktop: () => this.setState({ device: 'desktop' }),
+      toDark: () => this.setState({ theme: 'dark', mode: 'dark' }),
+      toLight: () => this.setState({ theme: 'light', mode: 'light' }),
+      toggleTheme: () => this.setState({ theme: s.theme === 'dark' ? 'light' : 'dark', mode: s.theme === 'dark' ? 'light' : 'dark' }),
+      replay: () => this.runReplay()
+    };
+  }
+}
+</script>
+</body>
+</html>

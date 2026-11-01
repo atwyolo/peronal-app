@@ -63,3 +63,12 @@ Thumbs.db
 
 # local tooling
 .claude/settings.local.json
+/.superpowers/
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+/lighthouse_results/
