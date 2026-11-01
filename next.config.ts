@@ -7,6 +7,10 @@ const withNextIntl = createNextIntlPlugin("./src/shared/lib/i18n/request.ts");
 const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
+  experimental: {
+    // A first visit gets the CSS with the document, without a render-blocking request. Most visitors of a portfolio are new.
+    inlineCss: true,
+  },
   partialPrefetching: true,
   // Dev server only: the home subnet, to open the site on a phone whatever address the router hands out.
   allowedDevOrigins: ["192.168.1.*"],
