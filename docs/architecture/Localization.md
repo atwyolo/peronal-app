@@ -1,6 +1,6 @@
 ---
 tags: [architecture, i18n]
-updated: 2026-10-29
+updated: 2026-11-01
 ---
 
 # Localization
@@ -26,6 +26,7 @@ Chosen for job-market relevance: markets where the local language matters in hir
 - `NEXT_LOCALE` is set only when the visitor picks a locale other than their browser language, and lives one year (owner's decision; see the privacy item in [[Open Questions]]).
 - `messages/en.json` is the only complete messages file. Other locales contain only translated keys; `src/shared/lib/i18n/request.ts` deep-merges them over English, empty strings count as missing.
 - The locale is read from the root `[locale]` segment through `next/root-params` (next-intl's recommended setup with Cache Components), so every locale is prerendered.
+- A language switch is client navigation with `router.replace`, not a full load: the root layout remounts, module state survives, attributes set on `<html>` by hand are cleared, and the old locale leaves no history entry (measured 2026-11-01).
 - Config lives in `src/shared/lib/i18n/`: `routing.ts`, `request.ts`, `navigation.ts` (locale-aware `Link`, `useRouter`), `app-config.d.ts` (typed locales and message keys).
 
 ## Fonts

@@ -42,6 +42,7 @@ export const ContactList: FC<ContactListProps> = (props) => {
             title={whatsapp.display}
             tone="whatsapp"
             external
+            className="reveal"
             mark={
               <span className="inline-flex size-9 shrink-0 items-center justify-center">
                 <WhatsAppIcon className="size-7" />
@@ -60,7 +61,7 @@ export const ContactList: FC<ContactListProps> = (props) => {
             title={email.display}
             tone="mail"
             mark={<EnvelopeIcon className="size-10 shrink-0" />}
-            className="py-2 pl-2"
+            className="reveal reveal-left py-2 pl-2"
           >
             {/* 14px keeps the address on one line in the 268px column; narrower ones wrap it at the dots, nowhere else. */}
             <span className="block text-base leading-tight lg:text-sm">
@@ -86,6 +87,7 @@ export const ContactList: FC<ContactListProps> = (props) => {
             title={linkedin.display}
             tone="linkedin"
             external
+            className="reveal"
             mark={
               <span className="inline-flex size-9 shrink-0 items-center justify-center">
                 <LinkedInIcon className="size-6" />
@@ -102,6 +104,7 @@ export const ContactList: FC<ContactListProps> = (props) => {
             href={cvUrl}
             label={t("downloadCvAria")}
             tone="cv"
+            className="reveal reveal-left"
             mark={
               <span className="inline-flex size-9 shrink-0 items-center justify-center">
                 <DownloadIcon aria-hidden className="size-6" />

@@ -77,8 +77,8 @@ widgets/top-skills/TopSkills.tsx            server: getTopSkills()
 ### Rendering, SEO and animation
 
 - Home stays **static** (prerendered at build, served from the CDN), which is server-rendered HTML for crawlers.
-- **All animation is CSS only** (the `tokens.css` reveal wipe). Content is never hidden by JavaScript (no `opacity: 0` until an observer fires).
-- Fallbacks from the design are kept: without scroll-timeline support tiles are simply visible; `prefers-reduced-motion` disables the wipe.
+- **Animation is CSS** (the reveal wipe in `globals.css`). Content is never hidden by JavaScript (no `opacity: 0` until an observer fires). The one client leaf, `RevealOnce`, only switches the wipe off after it has played.
+- **One wipe on load, on every block at the same time, and never again until a reload (owner's decision, 2026-11-01).** It replaces the design's stagger and scroll-driven reveal; `prefers-reduced-motion` disables it. See [[2026-10-30-home-motion]].
 
 ### shared/ui adapters over shadcn
 
@@ -94,9 +94,8 @@ widgets/top-skills/TopSkills.tsx            server: getTopSkills()
 | Button | Button | pills, round icon buttons, "Show all"; `ButtonLink` has the same look for links, so a plain button needs no router |
 | Menu | DropdownMenu + RadioGroup | locale and theme menus |
 | Drawer | Sheet | mobile navigation |
-| ToggleGroup | ToggleGroup | skill domain chips |
-| SearchInput | Input | skill search |
 
+- `ToggleGroup` and `SearchInput` left this table with the skills explorer: search and domain chips moved to the `/skills` page, which has its own design.
 - Own components in `shared/ui` without shadcn: Tile, Chip, SectionHeader, Carousel (CSS scroll-snap, no library), Image (over `next/image`, the only way to render an image on the site).
 - **`Carousel` track: never any horizontal padding (owner's rule, 2026-10-31),** neither in its classes nor through its `className`, which carries only the `lg` columns. The position and the arrows assume a slide as wide as the track. Padding goes on the parent or inside a slide.
 - `components.json` aliases point to `@/shared/shadcn/ui` and `@/shared/lib`, so `npx shadcn add` writes there.
@@ -137,11 +136,12 @@ Small steps, **one step per commit** (owner's decision). Working order: structur
    5. **Carousel — done 2026-10-31.** `shared/ui/Carousel.tsx` (client leaf, takes the server-rendered cards as `children`) with `shared/lib/carousel-index.ts`. One DOM: a scroll-snap row below `lg`, a grid from `lg`, and the caller passes the columns (`lg:grid-cols-4`). Below `lg` includes the tablet range, where the card fills 688 px. The position comes only from the scroll offset and is clamped for the iOS overscroll bounce. It is read through `useSyncExternalStore`: scroll-snap works before hydration, so a `useState` starting at 0 would show "1 / 4" on the second card. A `ResizeObserver` in the same subscription returns the track to its slide when the width changes, because iOS Safari keeps the old offset after a rotation (see [[2026-10-30-home-experience]]). Arrows only scroll, because setting the index on click makes the counter jump back during a smooth scroll. `role="group"`, not `region` (see the plan), `aria-live="polite"` on the position so an arrow press is announced, `aria-disabled` on the arrows so the focus survives the last slide, without the 35% dimming while the keyboard focus is there. The controls disappear when there is at most one slide. `Button` gets the `outline` tone. Messages moved to the top-level `Carousel` namespace. Tests: `carousel-index.test.ts`, `Carousel.test.tsx`, real arrows, a real touch swipe through CDP and reduced motion in `e2e/home-experience.spec.ts`.
    6. **My top skills — done 2026-11-01.** Replaces the planned explorer, following the design of 2026-10-31. `skills.top`, `getTopSkills`, `features/skill-row/SkillRow.tsx`, `widgets/top-skills/TopSkills.tsx`, a Skills item in the navigation. The meter runs from 1 to 10 and the bar and the value always share a line (owner's decisions). Tests: `SkillRow.test.tsx`, `TopSkills.test.tsx`, `e2e/home-skills.spec.ts`. Detail: [[2026-10-30-home-skills]].
    7. **Blog — done 2026-11-01.** Follows the design of 2026-11-01: a topic badge before the date. `post_topics`, `post_topic_translations` and a required `posts.topic_id` instead of the handoff's enum (owner's decision), all eight locales filled, `getLatestPosts` returns the translated label and carries a `postTopics` tag. `features/post-card/PostCard.tsx`, `widgets/blog/Blog.tsx` on the Carousel, `timeZone: "UTC"` in the i18n config. The last dump and `Footer.copyright` are gone, `HomePage` fetches nothing itself. Tests: `PostCard.test.tsx`, `Blog.test.tsx`, `request.test.ts`, `e2e/home-blog.spec.ts`. See [[2026-10-30-home-blog]].
+   8. **Accent wipe — done 2026-11-01.** `.reveal` and `.reveal-left` in `globals.css`, passed through `className`, one wipe on load on the header and every block at once. `shared/ui/RevealOnce.tsx`, mounted in `SiteLayout`, keeps it from playing again until a reload. Tests: `RevealOnce.test.tsx`, `e2e/home-motion.spec.ts`. The verification pass is still open. See [[2026-10-30-home-motion]].
 
 ## Open (resume here)
 
 1. **i18n:** client messages scope is all messages for now (Claude's call); measured again in [[2026-10-30-home-motion]].
-2. **Plans:** [[2026-10-30-home-motion]] is a draft until the owner approves it; the spec stays a draft until the motion pass closes the page.
+2. **Plans:** [[2026-10-30-home-motion]] is approved; the spec stays a draft until its verification pass closes the page.
 3. "Learn more" on experience cards goes to `/projects` for now (owner's decision, 2026-10-30), to be revisited when that page exists.
 
 ## Calls made by Claude (to confirm on approval)

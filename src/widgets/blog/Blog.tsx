@@ -22,7 +22,12 @@ export const Blog: FC = async () => {
       <SectionHeader id="blog-title">{t("label")}</SectionHeader>
       <Carousel label={t("label")} className="lg:grid-cols-4 lg:[&>:first-child]:col-span-2">
         {posts.map((post, index) => (
-          <PostCard key={post.slug} post={post} featured={index === 0} />
+          <PostCard
+            key={post.slug}
+            post={post}
+            featured={index === 0}
+            className={index % 2 ? "reveal reveal-left" : "reveal"}
+          />
         ))}
       </Carousel>
       <ButtonLink href="/blog" tone="primary" className="lg:self-end">

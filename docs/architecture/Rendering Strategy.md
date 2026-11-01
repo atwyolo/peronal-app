@@ -1,6 +1,6 @@
 ---
 tags: [architecture]
-updated: 2026-10-28
+updated: 2026-11-01
 ---
 
 # Rendering Strategy
@@ -18,6 +18,8 @@ Deliberately mix rendering modes so each one is learned in practice. Every page 
 | `/admin/**` | dynamic, no caching | authenticated, always fresh |
 
 The project runs with `cacheComponents: true`, so "ISR" means cached functions with tags, not a route-level `revalidate` export.
+
+`cacheComponents` also keeps a left route in the DOM: `<Activity>` hides it with `display: none`. Its state survives, and a CSS animation on it restarts when the visitor comes back, which is why [[2026-10-30-home-motion]] needs `RevealOnce`. A locator such as `h1` can match the hidden page too.
 
 Notes to expand: streaming with `Suspense` on the blog list, `loading.tsx` / `error.tsx` per segment.
 

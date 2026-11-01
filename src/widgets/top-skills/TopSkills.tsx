@@ -16,7 +16,7 @@ export const TopSkills: FC = async () => {
   return (
     <section aria-labelledby="skills-title" className="flex flex-col gap-3 lg:gap-4">
       <SectionHeader id="skills-title">{t("label")}</SectionHeader>
-      <Tile className="p-5 lg:px-8 lg:py-7">
+      <Tile className="reveal reveal-left p-5 lg:px-8 lg:py-7">
         <ul className="grid gap-3.5 lg:grid-cols-[repeat(auto-fill,minmax(320px,1fr))] lg:gap-x-12 lg:gap-y-4.5">
           {skills.map((skill) => (
             <li key={skill.name}>

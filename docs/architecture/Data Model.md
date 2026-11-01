@@ -67,7 +67,7 @@ Agreed for the home page on 2026-10-28; the rest stays a draft until its stage. 
 | `domain_id` | fk → `skill_domains` | Exactly one domain per skill. |
 | `main` | boolean, default false | `true` = shown as a hero chip. Chips are ordered by `sort`. |
 | `top` | boolean, default false | `true` = shown in "My top skills" on the home page, without a limit. Ordered by level desc, then `sort`, then `name`. |
-| `sort` | integer | Explorer order: level desc, then `sort`, then `name`. |
+| `sort` | integer | Order in skill lists: level desc, then `sort`, then `name`. |
 
 ### `posts`
 | Column | Type | Notes |

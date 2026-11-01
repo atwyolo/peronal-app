@@ -161,12 +161,14 @@ A short list of skills marked `top` in the main skills list, without a limit (ow
 
 ## Motion: accent wipe
 
-- Every tile and carousel reveals with a full-cover shutter in `shutter` that slides off, with `transform: scaleX(1 → 0)` on `::after`.
-- Directions alternate tile by tile: even index slides right (`data-dir="r"`), odd slides left (`data-dir="l"`). Set this server-side from the render index; no JS is needed.
-- First screen (`.reveal-load`): plays on load for 0.7 s with `cubic-bezier(.75,0,.2,1)`, staggered by `--i × 110 ms + 150 ms`. Covers hero, photo, contacts and About.
-- Everything below (`.reveal`): scroll-driven with `animation-timeline: view()` and range `entry 15% → entry 100%`. Browsers without support show the tiles immediately.
-- Carousels animate as one block, so the cards inside them carry no reveal class.
-- All of it is wrapped in `prefers-reduced-motion: no-preference`. CSS is in `tokens.css`.
+The owner simplified the design's motion on 2026-11-01: one wipe on load, all at once, and never again until a reload. The stagger, the scroll-driven reveal and the `.reveal-load` class of the prototype and `tokens.css` are not used. See [[2026-10-30-home-motion]].
+
+- Every block reveals with a full-cover shutter in `shutter` that slides off, with `transform: scaleX(1 → 0)` on `::after`.
+- `.reveal` plays on page load for 0.7 s with `cubic-bezier(.75,0,.2,1)` after 150 ms, on every block at the same time. Links, the back button and a language switch do not start it; a reload does.
+- It covers the header, hero, the photo, each contact button, About, each Experience card, the skills tile and each post card, on every width. Section headers, pills and carousel controls carry no class.
+- Directions alternate: `.reveal` slides right, `.reveal-left` slides left.
+- `overflow: clip`, not the `hidden` of `tokens.css`: `hidden` makes a block a scroll container, which stops any `view()` timeline inside it.
+- All of it is wrapped in `prefers-reduced-motion: no-preference`. CSS is in `src/app/globals.css`.
 
 ## Accessibility checklist
 

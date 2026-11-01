@@ -3,6 +3,7 @@ import type { FC } from "react";
 
 import type { HomeExperience } from "@/db/queries/home";
 import { toPlainText } from "@/shared/lib/rich-text";
+import { cn } from "@/shared/lib/utils";
 import { Chip } from "@/shared/ui/Chip";
 import { Image } from "@/shared/ui/Image";
 import { Link } from "@/shared/ui/Link";
@@ -12,6 +13,7 @@ import { formatMonthYear, getDurationYears } from "./lib/period";
 
 interface ExperienceCardProps {
   job: HomeExperience;
+  className?: string;
 }
 
 /**
@@ -21,7 +23,7 @@ interface ExperienceCardProps {
  * 320px. Below `lg` the box is wider than 16:9 and its width decides.
  */
 export const ExperienceCard: FC<ExperienceCardProps> = (props) => {
-  const { job } = props;
+  const { job, className } = props;
   const { company, startDate, endDate, today, imageUrl, descriptionShort, skills } = job;
   const t = useTranslations("Home.experience");
 
@@ -29,7 +31,7 @@ export const ExperienceCard: FC<ExperienceCardProps> = (props) => {
   const duration = t("duration", { years: getDurationYears(startDate, endDate, today) });
 
   return (
-    <Tile as="article" className="p-3 lg:p-3.5">
+    <Tile as="article" className={cn("p-3 lg:p-3.5", className)}>
       <div className="relative h-35 lg:h-45">
         <Image
           src={imageUrl}

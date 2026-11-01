@@ -24,7 +24,7 @@ export const ProfilePhoto: FC<ProfilePhotoProps> = async (props) => {
   const { name, photoUrl } = await getProfile(locale);
 
   return (
-    <Tile className={cn("relative aspect-square overflow-hidden p-0 lg:aspect-auto lg:min-h-[380px] lg:p-0", className)}>
+    <Tile className={cn("relative aspect-square overflow-clip p-0 lg:aspect-auto lg:min-h-[380px] lg:p-0", className)}>
       <Image
         src={photoUrl}
         alt={name}

@@ -11,8 +11,8 @@ import { Menu, type MenuItem } from "@/shared/ui/Menu";
 
 /**
  * Language switcher in the header: native names with the code as a hint. Picking a locale opens the same path
- * in that locale. The locale is the root layout's segment, so Next loads the new page fully; on that request the
- * proxy stores the choice in the NEXT_LOCALE cookie when it differs from the browser language.
+ * in that locale. The locale is the root layout's segment, so the whole tree remounts; on the request for the new page
+ * the proxy stores the choice in the NEXT_LOCALE cookie when it differs from the browser language.
  */
 export const LocaleMenu: FC = () => {
   const t = useTranslations("LocaleMenu");

@@ -22,10 +22,10 @@ export const HomePage: FC = () => {
         The photo stretches over two rows, so both desktop columns end at the same line.
       */}
       <div className="grid grid-cols-2 gap-3 [grid-template-areas:'hero_hero'_'photo_photo'_'contacts_contacts'_'about_about'] lg:grid-cols-4 lg:gap-4 lg:[grid-template-areas:'photo_hero_hero_hero'_'photo_about_about_about'_'contacts_about_about_about']">
-        <Hero className="[grid-area:hero]" />
-        <ProfilePhoto className="[grid-area:photo]" />
+        <Hero className="reveal [grid-area:hero]" />
+        <ProfilePhoto className="reveal reveal-left [grid-area:photo]" />
         <Contacts className="[grid-area:contacts]" />
-        <About className="[grid-area:about]" />
+        <About className="reveal [grid-area:about]" />
       </div>
 
       <Experience />

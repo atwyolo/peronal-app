@@ -13,6 +13,7 @@ interface PostCardProps {
   post: HomePost;
   /** The latest post: a larger title and a cover, on top below `lg`, on the left from `lg`. */
   featured?: boolean;
+  className?: string;
 }
 
 /**
@@ -21,13 +22,16 @@ interface PostCardProps {
  * height: `sizes` asks for twice the box width.
  */
 export const PostCard: FC<PostCardProps> = (props) => {
-  const { post, featured } = props;
+  const { post, featured, className } = props;
   const { slug, publishedAt, coverUrl, topic, title, excerpt, tags } = post;
   const t = useTranslations("Home.blog");
   const format = useFormatter();
 
   return (
-    <Tile as="article" className={featured ? "gap-2.5 p-3 lg:flex-row lg:gap-5 lg:p-3.5" : "p-4.5 lg:p-5"}>
+    <Tile
+      as="article"
+      className={cn(featured ? "gap-2.5 p-3 lg:flex-row lg:gap-5 lg:p-3.5" : "p-4.5 lg:p-5", className)}
+    >
       {featured && (
         <div className="relative h-37.5 shrink-0 lg:h-auto lg:min-h-60 lg:w-55">
           <Image

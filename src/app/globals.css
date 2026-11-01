@@ -159,3 +159,42 @@
     @apply font-sans;
   }
 }
+
+/*
+ * Accent wipe: the shutter covers a block when the page loads and slides off, on every block at the same time.
+ * `RevealOnce` sets `data-revealed` on <html> when it has ended, so client navigation never plays it again.
+ * `.reveal` slides off to the right, `.reveal-left` to the left. Without the motion preference blocks are simply visible.
+ * `overflow: clip`, not `hidden` as in tokens.css: `hidden` turns a block into a scroll container for nothing.
+ */
+@keyframes wipe {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@layer components {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      position: relative;
+      overflow: clip;
+    }
+    /* `:where` adds no specificity, so `.reveal-left` still wins. */
+    :where(:root:not([data-revealed])) .reveal::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      z-index: 1;
+      pointer-events: none;
+      background: var(--shutter);
+      transform-origin: 100% 50%;
+      transform: scaleX(0);
+      animation: wipe 0.7s cubic-bezier(0.75, 0, 0.2, 1) 0.15s both;
+    }
+    .reveal-left::after {
+      transform-origin: 0 50%;
+    }
+  }
+}

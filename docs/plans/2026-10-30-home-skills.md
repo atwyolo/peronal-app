@@ -1,6 +1,6 @@
 ---
 tags: [plan, home]
-status: active
+status: done
 date: 2026-10-30
 updated: 2026-11-01
 ---
@@ -72,10 +72,10 @@ Verify: `e2e/home-skills.spec.ts` against the database (order, levels, the total
 
 ## Checkpoint
 
-- [ ] Definition of done from `CLAUDE.md` is green.
+- [x] Definition of done from `CLAUDE.md` is green (run on 2026-11-01, on the commit that adds the Blog block).
 - [x] Mobile and desktop screenshots in both themes match the handoff.
 - [x] Spec, Data Model, handoff and journal updated.
-- [ ] The owner reviewed the block before Blog starts.
+- [x] The owner reviewed the block before Blog starts (accepted by the owner, 2026-11-01).
 
 ## Risks
 
