@@ -1,0 +1,147 @@
+{
+  "Header": {
+    "nav": {
+      "home": "Home",
+      "about": "About",
+      "projects": "Projects",
+      "skills": "Skills",
+      "blog": "Blog",
+      "contact": "Contact"
+    },
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "LocaleMenu": {
+    "label": "Language",
+    "names": {
+      "en": "English",
+      "ru": "Русский",
+      "pt": "Português",
+      "es": "Español",
+      "de": "Deutsch",
+      "fr": "Français",
+      "ja": "日本語",
+      "pl": "Polski"
+    }
+  },
+  "ThemeMenu": {
+    "label": "Theme",
+    "dark": "Dark",
+    "light": "Light",
+    "system": "System",
+    "systemNow": "now {theme, select, dark {dark} other {light}}"
+  },
+  "Contacts": {
+    "whatsapp": "WhatsApp",
+    "whatsappAria": "WhatsApp: {phone}",
+    "mailAria": "Mail: {email}",
+    "linkedin": "LinkedIn",
+    "linkedinAria": "LinkedIn profile",
+    "downloadCv": "Download CV",
+    "downloadCvAria": "Download CV, PDF",
+    "pdf": "PDF"
+  },
+  "Home": {
+    "about": {
+      "label": "About",
+      "readMore": "Read more"
+    },
+    "experience": {
+      "label": "Experience",
+      "duration": "{years, plural, one {# year} other {# years}}",
+      "present": "present",
+      "learnMore": "Learn more",
+      "all": "All experience"
+    },
+    "skills": {
+      "label": "My top skills",
+      "showAll": "Show all {total} skills",
+      "levelAria": "{name}: level {level} of 10",
+      "level": "{level}/10"
+    },
+    "blog": {
+      "label": "Blog",
+      "readMore": "Read more",
+      "all": "All posts",
+      "topics": {
+        "technical": "Technical",
+        "software": "Software",
+        "hobby": "Hobby"
+      }
+    },
+    "carousel": {
+      "previous": "Previous",
+      "next": "Next",
+      "position": "{current} / {total}"
+    }
+  },
+  "Projects": {
+    "metaTitle": "Projects",
+    "label": "Experience · {from} — {to}",
+    "navLabel": "Places of work",
+    "whatIDid": "What I did",
+    "stack": "Stack",
+    "duration": "{years, plural, one {# year} other {# years}}",
+    "progressAria": "{company}: {percent}% read"
+  },
+  "About": {
+    "metaTitle": "About",
+    "label": "About",
+    "title": "About me",
+    "intro": "A short interview with myself: the questions recruiters ask most, answered properly.",
+    "questionsNav": "Questions",
+    "avatarAlt": "Mikhail Aleksandrov"
+  },
+  "SkillsPage": {
+    "metaTitle": "Skills",
+    "label": "Skills",
+    "title": "Skills",
+    "intro": "Everything I work with, rated from 1 to 10. Search or filter by domain.",
+    "sectionLabel": "All skills",
+    "countAll": "{total} skills",
+    "countFiltered": "{shown} of {total}",
+    "search": "Search skills",
+    "domain": "Domain",
+    "categories": {
+      "all": "All",
+      "core": "Core",
+      "frameworks": "Frameworks",
+      "frontend": "Frontend",
+      "tools": "Tools"
+    },
+    "noMatch": "No skills match “{query}”.",
+    "levelAria": "{name}: level {level} of 10",
+    "level": "{level}/10"
+  },
+  "Blog": {
+    "metaTitle": "Blog",
+    "label": "Blog",
+    "title": "Blog",
+    "intro": "Notes on frontend engineering, software teams and things I do for fun.",
+    "topic": "Topic",
+    "topics": {
+      "all": "All",
+      "technical": "Technical",
+      "software": "Software",
+      "hobby": "Hobby"
+    },
+    "tags": "Tags",
+    "searchTags": "Search by tag",
+    "clearText": "Clear text",
+    "noMatchingTags": "No matching tags",
+    "tagPosts": "{count, plural, one {# post} other {# posts}}",
+    "selectedTags": "Selected tags",
+    "removeTag": "Remove tag {tag}",
+    "reset": "Reset",
+    "sortBy": "Sort by date",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "countAll": "{total, plural, one {# post} other {# posts}}",
+    "countFiltered": "{shown} of {total} posts",
+    "emptyTitle": "No posts here yet",
+    "emptyHint": "Try another topic or tag.",
+    "emptyHobby": "Hobby posts are coming soon.",
+    "resetFilters": "Reset filters",
+    "readMore": "Read more"
+  }
+}

@@ -1,0 +1,150 @@
+---
+tags: [spec, home, architecture]
+status: draft
+date: 2026-10-29
+---
+
+# Home Page Design (draft)
+
+Status: **draft, not formally approved; the page is being built from it step by step.** Everything under "Decided" was agreed with the owner in chat. "Steps" records what is built, "Open" what still has to be discussed.
+
+Related: [[Home Page Handoff]] (visual contract), [[Data Model]], [[Rendering Strategy]], [[ADR-0005 UI Library]], [[ADR-0007 Testing]].
+
+## Intent
+
+Implement the approved home page design on top of the existing database layer, as a learning exercise in Next.js 16. The page must be fully indexable by search engines and keep the design's reveal animation for users.
+
+## Scope
+
+- Home page (`/[locale]`) per [[Home Page Handoff]].
+- **Included now:** localization (next-intl, `[locale]` segment, 8 locales) and theme (next-themes, dark/light/system), together with the header menus.
+- **Delivery:** step by step, one functionality at a time, each step ending green (tests, lint, types, build). Not everything at once.
+- Out of scope: About, Projects, Blog, Contact pages; admin. The photo and CV were uploaded to Blob by hand in the dashboard (owner's decision, 2026-10-30), an upload UI waits for the admin.
+- **No maximum width on desktop (owner's decision, 2026-10-30):** a deviation from the handoff's 1200 px container. From `lg` the header and the page stretch across the viewport with 20 px on the left and 60 px on the right (20 px plus 40 px for the scrollbar). Below `lg` the column stays capped at 720 px.
+- **No footer (owner's decision, 2026-10-30):** a deviation from the handoff, the page ends with the Blog block. Crawlers lose nothing: the `hreflang` links already list every locale.
+
+## Decided
+
+### Folder structure (adapted Feature-Sliced Design)
+
+```
+src/
+├─ app/        Next routes only: page/layout/loading/error/not-found, metadata, generateStaticParams; providers in app/_providers
+├─ views/      page compositions ("pages" layer, renamed: src/pages would be picked up by the Next Pages Router)
+├─ widgets/    large page blocks: header, hero, contacts, about, experience, skills, blog
+├─ features/   concrete business UI: experience card, skill row, post card, locale menu, theme menu
+├─ shared/
+│  ├─ ui/      our components and adapters over shadcn (own API)
+│  ├─ shadcn/  generated shadcn components (moved from src/components/ui), private to shared/ui
+│  └─ lib/     utilities: cn, locales, rich text (moved from src/lib)
+├─ db/         schema, queries, seed: infrastructure outside the layers (unchanged)
+├─ actions/    Server Actions, outside the layers, no import-order rules
+└─ schemas/    Zod schemas shared by forms and actions, outside the layers, no import-order rules
+```
+
+- **Layer roles** (owner's definition): views = frames; widgets = large blocks (e.g. the whole Experience block: header, cards, carousel, "All experience"); features = concrete implementations of business logic (e.g. the experience card); shared = reusable, no business meaning (e.g. the tile).
+- No `entities` layer: business cards live in features (owner's choice).
+- **Import rule:** a layer imports only from layers below it. No feature → feature, no widget → widget imports.
+- **No barrel `index.ts` files.** Import directly from component files. Reason: a barrel pulls every re-exported module into the importer's module graph, so a client component importing one helper from a barrel drags server-only/DB code with it (build error on `server-only`, or DB code in the browser bundle without it); `next dev` has no tree-shaking, so barrels also slow HMR.
+- **Public files rule:** only files in a slice's root are importable from outside (e.g. `features/experience-card/ExperienceCard.tsx`). Internals live in `lib/`, `model/`, `ui/` subfolders and are importable only from inside the slice.
+- **Enforcement:** `eslint-plugin-boundaries` v7 in `npm run lint` (Claude's call; Steiger is the official FSD alternative): layer order, public files rule, and `@/shared/shadcn/*` importable only from `shared/ui`. Also: `@base-ui/*` importable only from `shared/shadcn`; features may import `db` only with `import type`; every file in `src/` must belong to a layer (`no-unknown-files`).
+- **Naming and code style:** JSX files are PascalCase, components are `FC` arrow functions with props destructured on the first line; see `CLAUDE.md` → Code style (owner's rule, 2026-10-29).
+- **Data access:** only views and widgets (Server Components) call `src/db/queries`. Features receive data as serializable props, so they stay testable in Vitest without a database.
+- **Next special files** stay in `src/app`. A route file imports its view and re-exports `generateMetadata` / `generateStaticParams` when needed.
+- Next.js is unopinionated about project structure and documents "project files outside `app`" as a strategy; the rules above are the explicit additions that keep it safe.
+
+### Server and client components
+
+- Views and widgets are Server Components. `"use client"` only on interactive leaves: carousel, locale menu, theme menu, mobile drawer, and `shared/ui/Image` for its `onError`.
+- `"use client"` does not mean client-only rendering: client components are prerendered to HTML on the server and hydrated in the browser. Indexing does not depend on the server/client split.
+- Server-rendered content goes into client components through `children` (interleaving), e.g. the carousel receives server-rendered cards.
+- File-level rules from Next remain: a `"use client"` file must not export server code; a client component never imports a server component (pass it as `children`/props instead).
+- **Deterministic first render:** never choose markup from `window` (width, storage) during render; it causes hydration mismatches. Breakpoint differences are CSS.
+
+### Example: My top skills block
+
+```
+widgets/top-skills/TopSkills.tsx            server: getTopSkills()
+├─ shared/ui/SectionHeader.tsx               server
+├─ shared/ui/Tile.tsx                        server
+│  └─ features/skill-row/SkillRow.tsx        synchronous, gets a skill as a prop
+└─ shared/ui/ButtonLink.tsx                  server
+```
+
+- The block has no state, so it adds no client JavaScript. Search and domain filters belong to the `/skills` page, designed separately; `getSkills` waits there (owner's decision).
+- It shows every skill with `top = true` without a limit (owner's decision). The link counts all skills. No marked skill, no block.
+
+### Rendering, SEO and animation
+
+- Home stays **static** (prerendered at build, served from the CDN), which is server-rendered HTML for crawlers.
+- **Animation is CSS** (the reveal wipe in `globals.css`). Content is never hidden by JavaScript (no `opacity: 0` until an observer fires). The one client leaf, `RevealOnce`, only switches the wipe off after it has played.
+- **One wipe on load, on every block at the same time, and never again until a reload (owner's decision, 2026-11-01).** It replaces the design's stagger and scroll-driven reveal; `prefers-reduced-motion` disables it. See [[2026-10-30-home-motion]].
+
+### shared/ui adapters over shadcn
+
+- Purpose: if the UI library changes, only adapters change.
+- Adapters have their **own API in design terms** and their own prop types; Base UI / shadcn types and patterns (`render` prop, compound parts) never leak out.
+- Compound components become data: e.g. `Menu` takes `items`, `value`, `onValueChange`.
+- An adapter is written only when it gets its first consumer.
+- Adapters without state stay Server-Component-compatible (no `"use client"`); the library primitive is the client boundary.
+- Expected adapters for the home page:
+
+| Adapter | shadcn underneath | Used for |
+|---|---|---|
+| Button | Button | pills, round icon buttons, "Show all"; `ButtonLink` has the same look for links, so a plain button needs no router |
+| Menu | DropdownMenu + RadioGroup | locale and theme menus |
+| Drawer | Sheet | mobile navigation |
+
+- `ToggleGroup` and `SearchInput` left this table with the skills explorer: search and domain chips moved to the `/skills` page, which has its own design.
+- Own components in `shared/ui` without shadcn: Tile, Chip, SectionHeader, Carousel (CSS scroll-snap, no library), Image (over `next/image`, the only way to render an image on the site).
+- **`Carousel` track: never any horizontal padding (owner's rule, 2026-10-31),** neither in its classes nor through its `className`, which carries only the `lg` columns. The position and the arrows assume a slide as wide as the track. Padding goes on the parent or inside a slide.
+- `components.json` aliases point to `@/shared/shadcn/ui` and `@/shared/lib`, so `npx shadcn add` writes there.
+
+### Verification to include in the plan
+
+- Bundle: measure client JS with and without an adapter on the same component (bundle analyzer), to confirm adapters add no meaningful weight.
+- Lighthouse after layout: the first-screen wipe covers the photo, which is the LCP element.
+- Playwright mobile project fails on hydration errors in the console.
+
+## Steps
+
+Small steps, **one step per commit** (owner's decision). Working order: structure move → tokens/fonts → i18n routing → localized metadata → theme → header → first screen (hero, photo, contacts, About) → experience → skills → blog → motion pass (order confirmed by the owner, 2026-10-30). The remaining blocks have plans: [[2026-10-30-home-experience]], [[2026-10-30-home-skills]], [[2026-10-30-home-blog]], [[2026-10-30-home-motion]]. i18n goes before theme because the `[locale]` segment rebuilds the root layout (Claude's call).
+
+1. **Structure move + boundaries lint — done 2026-10-29.** shadcn → `src/shared/shadcn/ui`, `src/lib` → `src/shared/lib`, the temporary data dump → `src/views/home/HomePage.tsx` with a thin `src/app/page.tsx`, `components.json` aliases repointed, `eslint-plugin-boundaries` configured and checked against deliberate violations. `src/db/schema` and `src/db/seed` keep relative imports because drizzle-kit and tsx load them outside Next.
+2. **Tokens and fonts — done 2026-10-29.** `src/app/globals.css` uses the palette and extra tokens from `docs/design/shared/tokens.css` (shadcn `sidebar`/`chart` variables dropped as unused, Claude's call); the self-referencing `--font-sans` fixed; Geist preloads latin + cyrillic; Japanese falls back to a system font stack (owner's decision, see [[Localization]]). The reveal animation CSS waits for the motion step. Covered by `e2e/design-tokens.spec.ts` (palette in both themes, Geist applied).
+3. **i18n routing — done 2026-10-29.** `next-intl` 4.14, config in `src/shared/lib/i18n/`, routes under `src/app/[locale]/` (its layout is the root layout, locale via `next/root-params`, `generateStaticParams` for 8 locales), `src/proxy.ts` with locale detection and a one-year cookie, `messages/en.json` from the design plus empty files for the other locales merged over English (Claude's call, instead of the handoff's copies). Unknown paths: `[locale]/[...rest]` calls `notFound()`, temporary `[locale]/not-found.tsx`. The proxy is classified in the boundaries lint as a file category (`boundaries/files`), allowed to import `shared` only. Tests: `merge-messages.test.ts`, `e2e/i18n-routing.spec.ts`; all 8 locales prerendered.
+4. **Localized metadata and `hreflang` — done 2026-10-29** (column pushed and `en` value written by the owner; `meta_description` added to the `en_complete` check with a one-off transaction, because push skips changed checks, see [[ADR-0002 Database and ORM]]). Title (`name — headline`) and description come from the profile: new `profile_translations.meta_description` (owner's decision), required in `en`. `src/views/home/metadata.ts` exports `generateMetadata` (re-exported by the route): title, description, canonical, hreflang for 8 locales + `x-default` → `/`, basic Open Graph. `metadataBase` from `src/shared/lib/site-url.ts` (`VERCEL_PROJECT_PRODUCTION_URL`, localhost otherwise). A title template is postponed until there are other pages: the root layout cannot read the profile name (`app` must not import `db`). Tests: `alternates.test.ts`, `e2e/metadata.spec.ts`. Database order: push the nullable column → write the `en` value → add `meta_description` to the `en_complete` check → push again.
+5. **Theme — done 2026-10-29.** `next-themes` 0.4.6 in `src/app/_providers/ThemeProvider.tsx` (class, system default, no transitions on switch) with a client-only `scriptProps` type workaround for React 19's development error, see [[ADR-0008 Theme]] (owner's decision over a fork or an own provider). `<html suppressHydrationWarning>`. No visible switcher yet (header step). Tests: `ThemeProvider.test.tsx` (reproduces the client-side script error), `e2e/theme.spec.ts`. All Playwright tests now use `e2e/fixtures.ts`, which fails a test on any browser console error or uncaught exception; intentional 404 tests allow the browser's own 404 log.
+6. **Header — done, four commits** (owner agreed): frame → theme menu → locale menu → mobile menu. Navigation links to pages that do not exist yet lead to the 404 page (owner's decision).
+   1. **Header frame — done 2026-10-29.** `widgets/header/Header.tsx` (server: name from the profile, desktop nav from lg), `shared/ui/NavLink.tsx` (client leaf: locale-aware link, `aria-current` + brand/deco styling for the current section), `shared/lib/site-nav.ts` (items shared with the future mobile menu), `views/site-layout/SiteLayout.tsx` (frame rendered by the root layout, so the header is on every page and persists across navigations; a view because `app` may only compose views). Below lg the header is the mobile one, inner content capped at 720 px (handoff default for the undesigned tablet range). New message `Header.navLabel`. Tests: `NavLink.test.tsx`, `e2e/header.spec.ts`.
+   2. **Theme menu — done 2026-10-29.** shadcn `dropdown-menu` added (`src/shared/shadcn/ui`). Adapters: `shared/ui/Menu.tsx` (single-choice menu as data: `trigger`, `label`, `items` with optional `hint`, `value`, `onValueChange`; styled per the prototype) and `shared/ui/Button.tsx` (`tone`: default/brand/primary, `shape`: pill/circle/circle-to-pill; built on the shadcn "default" variant because "outline" brings aria-expanded/dark rules that override our colors). `shared/lib/useMounted.ts` (`useSyncExternalStore`, no setState in an effect). `features/theme-menu/ThemeMenu.tsx`: Dark/Light/System, "now dark/light" hint, resolved-theme icon after mount. Tests: `Menu.test.tsx`, `ThemeMenu.test.tsx`, theme menu case in `e2e/theme.spec.ts`; the token test now forces dark through the stored choice, since next-themes owns the `<html>` class.
+   3. **Locale menu — done 2026-10-29.** `features/locale-menu/LocaleMenu.tsx` on the same Menu/Button adapters: native names, uppercase code as hint and on the trigger, `router.replace(pathname, { locale })`. Switching changes the root layout, so Next loads the page fully; the proxy sets `NEXT_LOCALE` (one year) when the choice differs from the browser language, verified end to end. Tests: `LocaleMenu.test.tsx`, locale menu case in `e2e/i18n-routing.spec.ts`.
+   4. **Mobile menu — done 2026-10-29.** shadcn `sheet` added. Adapter `shared/ui/Drawer.tsx`: right-side panel, controlled (`open`/`onOpenChange`), visually hidden title, our own close button with a translated label (the shadcn one is hard-coded "Close") at the hamburger's spot. `features/mobile-nav/MobileNav.tsx`: hamburger below lg, the `siteNav` items through `NavLink` (17 px, 48 px rows), closes on link click via one delegated handler. Tests: `MobileNav.test.tsx`; `e2e/header.spec.ts` covers the panel, focus trap, Escape returning focus to the trigger, closing on navigation, and no hamburger on desktop.
+7. **First screen: hero, photo, contacts, About — done 2026-10-30** (owner agreed on the order): grid + Tile + hero → photo → Image adapter → contacts and CV → About.
+   - **Layout (owner chose option A):** one DOM order, the mobile one (hero, photo, contacts, About), placed by named `grid-template-areas`. Desktop: photo spans rows 1–2 and contacts row 3 in column 1; hero row 1 and About rows 2–3 in columns 2–4. Rejected: desktop column wrappers with `display: contents` on mobile (DOM order puts the photo before the name, a11y risk), and rendering the markup twice (two h1, duplicated content).
+   - **About (owner's decision):** the whole `aboutShort` document is shown on every breakpoint; no CSS hiding of a desktop-only paragraph.
+   1. **Grid, Tile, hero — done 2026-10-29.** `shared/ui/Tile.tsx` (surface, border, 20/24 radius, padding; `as` for `section`/`article`, `className` for grid placement and overrides), `shared/ui/Chip.tsx` (mono pill, colored text, no fill), `widgets/hero/Hero.tsx` (reads `getProfile` itself; the page's only h1, headline, chips from `heroSkills` as a list). `HomePage` gets the first-screen grid; the temporary dump stays below it. Empty grid areas keep their row gaps until their tiles arrive. Tests: `e2e/home-hero.spec.ts` (content, a single h1, grid position on desktop and mobile).
+   2. **Photo — done 2026-10-30.** Public Blob store created and connected in the Vercel dashboard; the owner uploaded a 1600×2000 sRGB JPEG master (q90, no EXIF) and the CV, and wrote the URLs to the database (`cv_url` with `?download=1`). `widgets/profile-photo/ProfilePhoto.tsx` (reads `getProfile` itself; the image is the LCP element, so it preloads). `next.config.ts`: `formats` AVIF + WebP, `qualities: [85]`, `remotePatterns` limited to our store. Quality measured on the real photo: 60–75 visibly soften the skin next to the source, 85 is the closest for about 6 KB more than 70; AVIF at q85 is 14 KB at 640 px, 21 KB at 828 px (desktop 2x), 34 KB at 1080 px (phone), about half the WebP size. Deviations from the handoff: `preload` instead of the deprecated `priority`; `object-position: 50% 0` instead of `50% 12%`, because the head nearly touches the top edge of this photo and 12% would cut about 6 px off it on mobile. To revisit in the About step: the desktop `sizes` value (400px is provisional, the tile height depends on About) and the horizontal position (the face sits left of centre). Tests: `e2e/home-photo.spec.ts`.
+   3. **Image adapter — done 2026-10-30** (owner's request). `shared/ui/Image.tsx`, client component: `fill` only (the parent sets the size, so the placeholder takes the image's exact place), `src` may be null, striped CSS placeholder with `role="img"` and the same label for a missing source or any load error. A browser reports only that a load failed, not the status, so this covers 4xx, 5xx and network errors alike. The failed URL is kept in state, so a new `src` retries without an effect. next/image replays pre-hydration errors when `onError` is set; Playwright confirms the photo is still downloaded once. The prototype's dashed border and 14 px radius join the placeholder with the first padded image (experience, blog). Tests: `Image.test.tsx`, failed-load and single-download cases in `e2e/home-photo.spec.ts`.
+   4. **Contacts and CV — done 2026-10-30.** `widgets/contacts/Contacts.tsx` (server, reads `getProfile` itself), slice-internal `ui/ContactList.tsx` (a labelled list in the `contacts` grid area, synchronous, so Vitest can render it), `ui/ContactLink.tsx` (56 px brand link, separate from `shared/ui/Button`, which is a 44 px pill in theme colors) and `ui/BrandIcons.tsx`. Owner chose real logos: the WhatsApp and LinkedIn marks are copied from `simple-icons` (CC0), no dependency; the 21st logo search returned nothing. The mail button keeps the design's envelope. WhatsApp and LinkedIn open in a new tab (Claude's call). Every button is optional and the whole list disappears when nothing is left (owner's decision): the UI does not rely on the database's NOT NULL rules, so the schema and the query stay as they are; `display` decides, because a derived `href` such as `mailto:` is never empty. Hover and focus styles added because the handoff has none. Deviations from the handoff: the WhatsApp button follows the brand's own style (owner's decision): white text and a white logo without a plate, instead of dark text and a teal logo on a white plate. The background is `#188842`, the brand's hue darkened for 4.53:1 (owner's decision, 2026-11-01); the official `#25D366` gives 1.98:1 with white, which kept Lighthouse Accessibility at 96. The LinkedIn logo also has no plate: 24 px, filled white, so the button's blue shows through its cut-out letters (owner's decision). The mailbox is 14 px on desktop, not 15 px, so it stays on one line and the button stays 56 px; the phone shows as `libphonenumber` formats it (`+374 93 310039`). Tests: `ContactList.test.tsx`, `e2e/home-contacts.spec.ts`; the file itself is not downloaded, to avoid hitting Blob.
+   5. **About — done 2026-10-30.** `widgets/about/About.tsx` (server, reads `getProfile` itself) in the `about` grid area. `shared/ui/RichText.tsx` renders the stored Tiptap document on the server from a known list of nodes (paragraph, bold, bullet list); an unknown node or mark keeps its text. Owner chose this over `@tiptap/static-renderer` (would bring editor packages before the admin) and over `generateHTML` with `dangerouslySetInnerHTML` (raw HTML, XSS surface); swap it when the blog needs more nodes, the stored data does not change. `shared/ui/Link.tsx` (owner's decision): the general link, styled as the design's text link (`text-brand`, 600 weight, `deco` underline) with no variants; the font size comes from its surroundings or `className`, and `showArrowIcon` adds the decorative arrow of "Learn more →". An `href` with a scheme or `//` is a plain anchor, web addresses open in a new tab with `rel="noopener noreferrer"`; everything else goes through the locale-aware router link. Deviations from the handoff (owner's decisions): "Read more" is that text link instead of a pill button and shows on desktop too, and the desktop-only paragraph is not used. The link points to `/about`, which is a 404 until that page exists. Photo finalized: the tile was 268×402 at 1280 (288×402 after the full-width change, step 8), so `object-cover` renders the image 322 px wide (345 px at 1024) and desktop `sizes` is 360px; `object-position: 0 0` instead of `50% 0` centers the face (Claude's call, mobile has no sideways crop). Tests: `RichText.test.tsx`, `e2e/home-about.spec.ts`.
+8. **Experience — done 2026-10-31** (closed by the owner), see [[2026-10-30-home-experience]], which lists what stayed deferred.
+   1. **Period and duration logic — done 2026-10-30.** `features/experience-card/lib/period.ts`: pure functions over `YYYY-MM-DD` strings. Both the first and the last month count (owner's decision), so 11/2024 – 10/2026 is 2 years. The prototype counts the same way, except Omega-R, which it shows as 2.1 and we as 2.2. Tests: `period.test.ts`.
+   2. **Card and grid — done 2026-10-30.** `widgets/experience/Experience.tsx` (server), `features/experience-card/ExperienceCard.tsx` (synchronous), `shared/ui/SectionHeader.tsx`, `shared/ui/ButtonLink.tsx`. `getExperience` adds `today`, read inside `"use cache"`, because a static render must not read the clock; it stays frozen until the next build or `updateTag`. `Button` stays free of routing: importing the router into it broke every Vitest test of a component with a plain button. The page gap is now the bento gap (12/16 px), and `SectionHeader`'s top padding separates the blocks, as in the prototype. The duration never breaks in the middle. Tests: `ExperienceCard.test.tsx`, `e2e/home-experience.spec.ts`.
+   3. **Full-width desktop layout — done 2026-10-30** (owner's decision, see Scope). The earlier 1200 px cap was border-box, so the site had 1120 px of content while the content-box prototype has 1200. Columns are now 288 px at 1280 and grow with the screen, so the photo's desktop `sizes` is `max(360px, 25vw)`: the fixed 360px loaded a blurred file above about 1440. Tests: `e2e/site-layout.spec.ts`, wide-screen case in `e2e/home-photo.spec.ts`, new numbers in the first-screen specs.
+   4. **Card image — done 2026-10-31.** `ExperienceCard` has a 140/180 px image area above the text, `alt` is the company name. `Image` gets a `framed` prop: 14 px radius on the image and the placeholder, a dashed border and the prototype's 1 px lines on the placeholder only. The prop lives on `Image` because the parent cannot tell a failed load from a working image. The photo's placeholder keeps its 8 px stripes: on a framed one they hide the dashes, since both use the `placeholder` color. Deviation from the prototype (Claude's call): no "COMPANY IMAGE" text. `sizes` is the rendered image width: the column minus the card's border and padding (258 px at 1280), at least 320 px on desktop, because `object-cover` scales a 16:9 file by the 180 px height. Card images: a 1600×900 opaque master, the logo centered in about 760×250 px. The box goes from 1.08:1 at 1024 to 4.7:1 between 720 and 1023, so only the central 60% of the width and 38% of the height is always visible. Files go to Blob by hand, the URL to `experience.image_url` and the seed data; the page shows it after the next build. A replaced file needs a new name: Blob serves it with a 30-day `max-age`. Tests: `Image.test.tsx`, `ExperienceCard.test.tsx`, placeholder and file-width cases in `e2e/home-experience.spec.ts`.
+   5. **Carousel — done 2026-10-31.** `shared/ui/Carousel.tsx` (client leaf, takes the server-rendered cards as `children`) with `shared/lib/carousel-index.ts`. One DOM: a scroll-snap row below `lg`, a grid from `lg`, and the caller passes the columns (`lg:grid-cols-4`). Below `lg` includes the tablet range, where the card fills 688 px. The position comes only from the scroll offset and is clamped for the iOS overscroll bounce. It is read through `useSyncExternalStore`: scroll-snap works before hydration, so a `useState` starting at 0 would show "1 / 4" on the second card. A `ResizeObserver` in the same subscription returns the track to its slide when the width changes, because iOS Safari keeps the old offset after a rotation (see [[2026-10-30-home-experience]]). Arrows only scroll, because setting the index on click makes the counter jump back during a smooth scroll. `role="group"`, not `region` (see the plan), `aria-live="polite"` on the position so an arrow press is announced, `aria-disabled` on the arrows so the focus survives the last slide, without the 35% dimming while the keyboard focus is there. The controls disappear when there is at most one slide. `Button` gets the `outline` tone. Messages moved to the top-level `Carousel` namespace. Tests: `carousel-index.test.ts`, `Carousel.test.tsx`, real arrows, a real touch swipe through CDP and reduced motion in `e2e/home-experience.spec.ts`.
+   6. **My top skills — done 2026-11-01.** Replaces the planned explorer, following the design of 2026-10-31. `skills.top`, `getTopSkills`, `features/skill-row/SkillRow.tsx`, `widgets/top-skills/TopSkills.tsx`, a Skills item in the navigation. The meter runs from 1 to 10 and the bar and the value always share a line (owner's decisions). Tests: `SkillRow.test.tsx`, `TopSkills.test.tsx`, `e2e/home-skills.spec.ts`. Detail: [[2026-10-30-home-skills]].
+   7. **Blog — done 2026-11-01.** Follows the design of 2026-11-01: a topic badge before the date. `post_topics`, `post_topic_translations` and a required `posts.topic_id` instead of the handoff's enum (owner's decision), all eight locales filled, `getLatestPosts` returns the translated label and carries a `postTopics` tag. `features/post-card/PostCard.tsx`, `widgets/blog/Blog.tsx` on the Carousel, `timeZone: "UTC"` in the i18n config. The last dump and `Footer.copyright` are gone, `HomePage` fetches nothing itself. Tests: `PostCard.test.tsx`, `Blog.test.tsx`, `request.test.ts`, `e2e/home-blog.spec.ts`. See [[2026-10-30-home-blog]].
+   8. **Accent wipe — done 2026-11-01.** `.reveal` and `.reveal-left` in `globals.css`, passed through `className`, one wipe on load on the header and every block at once. `shared/ui/RevealOnce.tsx`, mounted in `SiteLayout`, keeps it from playing again until a reload. Tests: `RevealOnce.test.tsx`, `e2e/home-motion.spec.ts`. See [[2026-10-30-home-motion]].
+   9. **Verification pass — done 2026-11-01, except the iOS simulator and the measurement on Vercel.** Lighthouse locally: desktop 100 on all four, mobile 95, 100, 100, 100; numbers in [[2026-10-30-home-motion]]. One 3 px focus ring in the `ring` color on every link and button, kept in forced colors mode; the visible text is part of the accessible name of every control; the photo is fetched with `fetchPriority="high"`; `experimental.inlineCss` stays on until the measurement on Vercel. Tests: `e2e/home-a11y.spec.ts`, `e2e/home.spec.ts`.
+
+## Open (resume here)
+
+1. **i18n:** client messages scope is all messages for now (Claude's call); measured again in [[2026-10-30-home-motion]].
+2. **Plans:** [[2026-10-30-home-motion]] is approved; the spec stays a draft until the iOS simulator check and the measurement on Vercel close the page.
+3. "Learn more" on experience cards goes to `/projects` for now (owner's decision, 2026-10-30), to be revisited when that page exists.
+
+## Calls made by Claude (to confirm on approval)
+
+- Folder name `shared/shadcn` (over `shared/components`), `eslint-plugin-boundaries` over Steiger, moving `src/lib` to `shared/lib`.

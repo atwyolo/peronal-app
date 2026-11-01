@@ -1,0 +1,58 @@
+---
+tags: [design, handoff, about]
+status: approved
+updated: 2026-11-01
+---
+
+# About Page Handoff
+
+`/[locale]/about` presents the extended bio as a short **interview**. Each section heading is a question a recruiter would ask, and the answer appears as a chat reply. Approved variant: **C (Interview)** on the design canvas.
+
+See [[README]] for shared rules and files. Data: `aboutSections` and `profile.about.results` in `shared/content.ts`. Messages: the `About` namespace.
+
+## Scope and order
+
+1. Static route: hero plus six `<section id>` blocks from `aboutSections`.
+2. Question and answer bubbles (server components).
+3. Sticky question chips (client: active state, smooth scroll, auto-scrolling the chip row).
+4. Reveal on scroll (CSS, or a tiny observer), with reduced motion respected.
+
+## Layout
+
+- **Hero**: label "About", h1 "About me" (56 px desktop, 36 px phone), and an intro of at most 640 px: "A short interview with myself: the questions recruiters ask most, answered properly."
+- **Question chips bar**, sticky under the header:
+  - `bg-background` with a bottom border, padding 12 × 48 px (desktop) and 10 × 14 px (phone).
+  - One chip per section, labelled with the section `title` (Who I am, How I work, …): mono 12 px, a pill with a `card-border` outline.
+  - The active chip is `bg-foreground text-background`.
+  - The row scrolls horizontally with the scrollbar hidden. When the active chip changes, scroll it into view.
+  - Clicking a chip smooth-scrolls to its section, offset by the header and the bar.
+- **Conversation column**: `max-width: 820px`, centered; padding 8 × 48 × 64 px on desktop and 8 × 14 × 40 px on phone; 28 px between sections (22 px on phone).
+
+## Section (`<section class="qa" id="{id}">`)
+
+- **Question = `h2`**, right-aligned bubble:
+  - max width 70% (85% on phone), padding 14 × 18 px, radius `20 20 6 20`;
+  - `bg-primary text-primary-foreground`: brand fill, so lime in dark and blue in light;
+  - inside: a small mono label with the section `title` (11 px uppercase, 75% opacity), then the `question` at 18 px / 600 (16 px on phone).
+- **Answer**, left-aligned, max width 88% (100% on phone):
+  - an avatar, a 40 px circle (32 px on phone), with a `card` fill, a `card-border` border and the initials "MA" in `brand` mono. Swap in the real photo later;
+  - a bubble: `card` with a `card-border` border, radius `20 20 20 6`, padding 18 × 20 px, and a 12 px gap between its parts:
+    - the `statement`: 19 px / 1.45 / 500 (16 px on phone);
+    - the `body` paragraphs: 16 px / 1.7, `foreground-soft`;
+    - section `results`: `profile.about.results` as the bullet list with `deco` squares;
+    - section `next`: also the contact buttons, compact (40 px, radius 12): WhatsApp, Mail, LinkedIn in brand colors, and Download CV in `primary`. The page has no footer, so this is the call to action.
+
+## Motion
+
+- When a section's top crosses 85% of the viewport, the question fades up (opacity 0→1, `translateY 16px→0`, 0.45–0.5 s). The answer follows 350 ms later.
+- With reduced motion, or without JS, everything is visible immediately. Do not hide content in the server HTML: start hidden only after hydration, for example with a `data-js` attribute on `<html>`.
+- **Active chip:** the last section whose top is above 40% of the viewport. At the bottom of the page, the last section is active.
+
+## Accessibility and SEO
+
+- Each section is a landmark-free `<section>` with its `h2`; the order of questions is the reading order.
+- The avatar is decorative (`aria-hidden`); the bubble text carries the content.
+- Chips are links `<a href="#id">` inside `<nav aria-label="Questions">`; the active one gets `aria-current="true"`.
+- Use JSON-LD `ProfilePage` + `Person` (name, jobTitle, sameAs: LinkedIn).
+
+Owner TODOs in `content.ts`: where you are based, what you're looking for, outside of work. The questions themselves can be reworded freely.

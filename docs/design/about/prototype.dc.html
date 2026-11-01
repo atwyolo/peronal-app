@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>C · Интервью: вопросы-заголовки, ответы в «чате»</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit}
+.bar{display:flex;align-items:center;gap:16px;height:56px;padding:0 24px;box-sizing:border-box;background:#FFFFFF;border-bottom:1px solid #DADDE6;font-family:'Geist',system-ui,sans-serif;color:#1E2230}
+.grp{display:inline-flex;padding:4px;border-radius:12px;background:#EEF0F5;gap:4px}
+.sb{min-height:32px;padding:0 12px;border:0;border-radius:9px;background:transparent;color:#454B66;font:500 13px/1 'Geist',sans-serif;cursor:pointer}
+.sb.on{background:#FFFFFF;color:#10142A;box-shadow:0 1px 2px rgba(16,20,42,.12)}
+.stage{display:flex;gap:24px;padding:20px 24px;align-items:flex-start}
+.cap{font:500 12px/1 'Geist Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:#5B6280;margin:0 0 8px 4px}
+.frame{position:relative;overflow:hidden;border:1px solid #C9CEDB;border-radius:14px;background:var(--bg);color:var(--ink);font-family:'Geist',system-ui,sans-serif;box-sizing:border-box}
+.frame.ph{border-radius:32px}
+.hd{position:absolute;left:0;right:0;top:0;z-index:20;display:flex;align-items:center;gap:24px;height:56px;padding:0 28px;box-sizing:border-box;background:var(--tile);border-bottom:1px solid var(--tile-line);font-size:15px}
+.hd b{flex-grow:1;font-weight:600;letter-spacing:-.02em;font-size:17px}
+.hd nav{display:flex;gap:22px;font-size:14px;color:var(--ink2)}
+.hd nav .on{color:var(--accent);font-weight:600;text-decoration:underline;text-decoration-color:var(--deco);text-decoration-thickness:3px;text-underline-offset:7px}
+.ph .hd{height:52px;padding:0 16px}
+.scr{position:absolute;left:0;right:0;bottom:0;top:56px;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
+.ph .scr{top:52px}
+.lbl{font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.meta{font-family:'Geist Mono',monospace;font-size:13px;letter-spacing:.04em;color:var(--mute)}
+.lead{margin:0;font-size:20px;line-height:1.45}
+.ctx{margin:0;font-size:15px;line-height:1.6;color:var(--ink2)}
+.did{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px}
+.did li{display:flex;gap:10px;font-size:15px;line-height:1.5;color:var(--ink2)}
+.did li::before{content:'';flex:0 0 8px;height:8px;margin-top:8px;border-radius:2px;background:var(--deco)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:'Geist Mono',monospace;font-size:12px;line-height:1;padding:7px 10px;border:1px solid var(--tile-line);border-radius:999px;color:var(--accent);font-weight:500}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{display:flex;flex-direction:column;gap:6px;padding:16px;border:1px solid var(--tile-line);border-radius:16px;background:var(--tile)}
+.stat b{font-size:34px;line-height:1;letter-spacing:-.03em;color:var(--accent)}
+.stat span{font-size:13px;color:var(--mute)}
+.img{background:repeating-linear-gradient(135deg,var(--line) 0 1px,transparent 1px 10px);border:1px dashed var(--line);border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:11px;color:var(--mute)}
+.co{margin:0;font-weight:700;letter-spacing:-.04em;line-height:.95}
+.yr{font-weight:800;letter-spacing:-.05em;line-height:.8;color:transparent;-webkit-text-stroke:1.5px var(--line);white-space:nowrap;pointer-events:none;user-select:none}
+.ph .lead{font-size:16px}
+.ph .did li{font-size:14px}
+.ph .stat{padding:12px}.ph .stat b{font-size:24px}
+.more{font-size:15px;font-weight:600;color:var(--accent);text-decoration:underline;text-decoration-color:var(--deco);text-decoration-thickness:2px;text-underline-offset:5px}
+.nextsec{padding:48px;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--tile-line)}
+.ph .nextsec{padding:28px 20px}
+
+.cta{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.cta a{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none}
+.cta .wa{background:#25D366;color:#10142A}.cta .em{background:#D93025;color:#FFFFFF}.cta .li{background:#0A66C2;color:#FFFFFF}
+.cta .cv{background:var(--accent);color:var(--on-accent)}
+.ph .cta a{min-height:38px;padding:0 12px;font-size:13px}
+.hero{padding:48px 64px 24px;display:flex;flex-direction:column;gap:10px}
+.hero h1{margin:0;font-size:56px;letter-spacing:-.04em;line-height:1}
+.ph .hero{padding:24px 18px 12px}.ph .hero h1{font-size:36px}
+.ctx{font-size:16px;line-height:1.7}
+.ph .ctx{font-size:15px;line-height:1.6}
+
+.iv{max-width:820px;margin:0 auto;padding:8px 48px 64px;display:flex;flex-direction:column;gap:28px}
+.qa{display:flex;flex-direction:column;gap:12px}
+.qa h2{align-self:flex-end;max-width:70%;margin:0;padding:14px 18px;border-radius:20px 20px 6px 20px;background:var(--accent);color:var(--on-accent);font-size:18px;line-height:1.35;font-weight:600;letter-spacing:-.01em}
+.qa h2 small{display:block;font:500 11px/1.2 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;opacity:.75;margin-bottom:4px}
+.ans{display:flex;gap:12px;align-items:flex-end;max-width:88%}
+.av{flex:0 0 40px;height:40px;border-radius:50%;background:var(--tile);border:1px solid var(--tile-line);display:flex;align-items:center;justify-content:center;font:600 12px/1 'Geist Mono',monospace;color:var(--accent)}
+.bub{padding:18px 20px;border-radius:20px 20px 20px 6px;background:var(--tile);border:1px solid var(--tile-line);display:flex;flex-direction:column;gap:12px}
+.bub .say{margin:0;font-size:19px;line-height:1.45;font-weight:500}
+.typing{display:none;gap:5px;padding:16px 18px;border-radius:20px 20px 20px 6px;background:var(--tile);border:1px solid var(--tile-line)}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--mute);animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.qa h2,.ans{opacity:0;transform:translateY(16px);transition:opacity .45s ease,transform .5s cubic-bezier(.2,.7,.2,1)}
+.qa[data-on="true"] h2{opacity:1;transform:none}
+.qa[data-on="true"] .ans{opacity:1;transform:none;transition-delay:.35s}
+.toc{position:sticky;top:0;z-index:6;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:12px 48px;background:var(--bg);border-bottom:1px solid var(--tile-line)}
+.toc a{flex:0 0 auto;font:500 12px/1 'Geist Mono',monospace;padding:8px 12px;border-radius:999px;border:1px solid var(--tile-line);color:var(--ink2);text-decoration:none}
+.toc a[data-on="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.ph .iv{padding:8px 14px 40px;gap:22px}
+.ph .qa h2{max-width:85%;font-size:16px}
+.ph .ans{max-width:100%}
+.ph .av{flex-basis:32px;height:32px;font-size:10px}
+.ph .bub{padding:14px 16px}.ph .bub .say{font-size:16px}
+.ph .toc{padding:10px 14px}
+</style>
+</helmet>
+<div style="width: 1552px; height: 816px; box-sizing: border-box; background: #E3E6EE; font-family: 'Geist', system-ui, sans-serif; --bg: {{t.bg}}; --tile: {{t.tile}}; --line: {{t.line}}; --tile-line: {{t.tileLine}}; --ink: {{t.ink}}; --ink2: {{t.ink2}}; --mute: {{t.mute}}; --accent: {{t.accent}}; --deco: {{t.deco}}; --on-accent: {{t.onAccent}}">
+<div class="bar"><strong style="font-size: 15px">C · Интервью: вопросы-заголовки, ответы в «чате»</strong>
+<div class="grp" role="group" aria-label="Theme"><button class="{{darkCls}}" onClick="{{toDark}}">Тёмная</button><button class="{{lightCls}}" onClick="{{toLight}}">Светлая</button></div>
+<span style="margin-left: auto; font-size: 13px; color: #5B6280">Нажмите Play и крутите колесо внутри экранов</span></div>
+<div class="stage">
+<div><p class="cap">Desktop</p><div class="frame" style="width: 1120px; height: 700px"><div class="hd"><b>Mikhail Aleksandrov</b><nav><span>Home</span><span class="on">About</span><span>Projects</span><span>Blog</span><span>Contact</span></nav></div><div class="scr" data-fx="interview"><header class="hero"><span class="lbl">About</span><h1>About me</h1><p class="ctx" style="margin: 0; max-width: 640px">A short interview with myself: the questions recruiters ask most, answered properly.</p></header><nav class="toc" aria-label="Questions"><a href="#who" data-i="0" data-go="0">Who I am</a><a href="#how" data-i="1" data-go="1">How I work</a><a href="#results" data-i="2" data-go="2">Results I'm proud of</a><a href="#scale" data-i="3" data-go="3">Teams and scale</a><a href="#next" data-i="4" data-go="4">What I'm looking for</a><a href="#life" data-i="5" data-go="5">Outside of work</a></nav><div class="iv"><section class="qa" id="who"><h2><small>Who I am</small>Who are you, in two sentences?</h2><div class="ans"><span class="av" aria-hidden="true">MA</span><div class="bub"><p class="say">I'm a Senior Frontend Engineer with 8+ years of commercial experience in React and Next.js.</p><p class="ctx">Most recently at Glovo, Sony PlayStation and EPAM. [2–3 sentences: where you are based, how you got into frontend and what kind of products you enjoy building.]</p></div></div></section><section class="qa" id="how"><h2><small>How I work</small>How do you like to work?</h2><div class="ans"><span class="av" aria-hidden="true">MA</span><div class="bub"><p class="say">I own the whole cycle, from the first talk with the product owner to an automated release.</p><p class="ctx">Beyond writing code, I have 2 years of team leadership experience, managing the full development cycle: from gathering requirements with the product owner to setting up a fully automated release process with high test coverage, detailed analytics and CI/CD.</p></div></div></section><section class="qa" id="results"><h2><small>Results I'm proud of</small>What results are you proud of?</h2><div class="ans"><span class="av" aria-hidden="true">MA</span><div class="bub"><p class="say">I measure frontend work in numbers the business cares about.</p><ul class="did"><li>At EPAM, I helped migrate an e-commerce store from PHP to Next.js, which raised conversion by 12.4% and made pages load 37% faster.</li><li>At Glovo, I introduced unit testing that cut production defects by 23%, and shipped an offline mode that increased average session time by 17%.</li><li>At Sony PlayStation, I helped build an in-game notification system from scratch, hired and onboarded 3 developers, and brought test coverage to 95%.</li></ul></div></div></section><section class="qa" id="scale"><h2><small>Teams and scale</small>What kind of teams have you worked in?</h2><div class="ans"><span class="av" aria-hidden="true">MA</span><div class="bub"><p class="say">Comfortable with both startup speed and enterprise process.</p><p class="ctx">I've worked in small teams of 2–10 people and on large products with 1M+ users and teams of up to 60 engineers.</p></div></div></section><section class="qa" id="next"><h2><small>What I'm looking for</small>What are you looking for next?</h2><div class="ans"><span class="av" aria-hidden="true">MA</span><div class="bub"><p class="say">[One sentence: the role, team and product you want next.]</p><p class="ctx">[2–3 sentences: role, format (remote or relocation), domains that interest you.]</p><div class="cta"><a class="wa" href="#">WhatsApp</a><a class="em" href="#">Mail</a><a class="li" href="#">LinkedIn</a><a class="cv" href="#">Download CV</a></div></div></div></section><section class="qa" id="life"><h2><small>Outside of work</small>And outside of work?</h2><div class="ans"><span class="av" aria-hidden="true">MA</span><div class="bub"><p class="say">[A human detail people remember.]</p><p class="ctx">[2–3 sentences: hobbies, languages you speak, where you live.]</p></div></div></section></div></div></div></div>
+<div><p class="cap">Phone</p><div class="frame ph" style="width: 360px; height: 700px"><div class="hd"><b>Mikhail Aleksandrov</b><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></div><div class="scr" data-fx="interview"><header class="hero"><span class="lbl">About</span><h1>About me</h1><p class="ctx" style="margin: 0; max-width: 640px">A short interview with myself: the questions recruiters ask most, answered properly.</p></header><nav class="toc" aria-label="Questions"><a href="#who" data-i="0" data-go="0">Who I am</a><a href="#how" data-i="1" data-go="1">How I work</a><a href="#results" data-i="2" data-go="2">Results I'm proud of</a><a href="#scale" data-i="3" data-go="3">Teams and scale</a><a href="#next" data-i="4" data-go="4">What I'm looking for</a><a href="#life" data-i="5" data-go="5">Outside of work</a></nav><div class="iv"><section class="qa" id="who"><h2><small>Who I am</small>Who are you, in two sentences?</h2><div class="ans"><span class="av" aria-hidden="true">MA</span><div class="bub"><p class="say">I'm a Senior Frontend Engineer with 8+ years of commercial experience in React and Next.js.</p><p class="ctx">Most recently at Glovo, Sony PlayStation and EPAM. [2–3 sentences: where you are based, how you got into frontend and what kind of products you enjoy building.]</p></div></div></section><section class="qa" id="how"><h2><small>How I work</small>How do you like to work?</h2><div class="ans"><span class="av" aria-hidden="true">MA</span><div class="bub"><p class="say">I own the whole cycle, from the first talk with the product owner to an automated release.</p><p class="ctx">Beyond writing code, I have 2 years of team leadership experience, managing the full development cycle: from gathering requirements with the product owner to setting up a fully automated release process with high test coverage, detailed analytics and CI/CD.</p></div></div></section><section class="qa" id="results"><h2><small>Results I'm proud of</small>What results are you proud of?</h2><div class="ans"><span class="av" aria-hidden="true">MA</span><div class="bub"><p class="say">I measure frontend work in numbers the business cares about.</p><ul class="did"><li>At EPAM, I helped migrate an e-commerce store from PHP to Next.js, which raised conversion by 12.4% and made pages load 37% faster.</li><li>At Glovo, I introduced unit testing that cut production defects by 23%, and shipped an offline mode that increased average session time by 17%.</li><li>At Sony PlayStation, I helped build an in-game notification system from scratch, hired and onboarded 3 developers, and brought test coverage to 95%.</li></ul></div></div></section><section class="qa" id="scale"><h2><small>Teams and scale</small>What kind of teams have you worked in?</h2><div class="ans"><span class="av" aria-hidden="true">MA</span><div class="bub"><p class="say">Comfortable with both startup speed and enterprise process.</p><p class="ctx">I've worked in small teams of 2–10 people and on large products with 1M+ users and teams of up to 60 engineers.</p></div></div></section><section class="qa" id="next"><h2><small>What I'm looking for</small>What are you looking for next?</h2><div class="ans"><span class="av" aria-hidden="true">MA</span><div class="bub"><p class="say">[One sentence: the role, team and product you want next.]</p><p class="ctx">[2–3 sentences: role, format (remote or relocation), domains that interest you.]</p><div class="cta"><a class="wa" href="#">WhatsApp</a><a class="em" href="#">Mail</a><a class="li" href="#">LinkedIn</a><a class="cv" href="#">Download CV</a></div></div></div></section><section class="qa" id="life"><h2><small>Outside of work</small>And outside of work?</h2><div class="ans"><span class="av" aria-hidden="true">MA</span><div class="bub"><p class="say">[A human detail people remember.]</p><p class="ctx">[2–3 sentences: hobbies, languages you speak, where you live.]</p></div></div></section></div></div></div></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1552,"height":816}}'>
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { theme: 'dark' };
+    this.onResize = () => this.setup(true);
+  }
+  componentDidMount() { this.setup(); window.addEventListener('resize', this.onResize); setTimeout(() => this.setup(true), 400); }
+  componentWillUnmount() { window.removeEventListener('resize', this.onResize); }
+  componentDidUpdate() { this.setup(); }
+  setup(force) {
+    const all = document.querySelectorAll('[data-fx]');
+    Array.prototype.forEach.call(all, (el) => {
+      if (el.__fx && !force) return;
+      const fx = el.getAttribute('data-fx');
+      const fn = this[fx] ? this[fx].bind(this, el) : null;
+      if (!fn) return;
+      if (!el.__fx) {
+        el.__fx = fn;
+        el.addEventListener('scroll', () => { if (!el.__raf) el.__raf = requestAnimationFrame(() => { el.__raf = 0; el.__fx(); }); }, { passive: true });
+        if (this[fx + 'Init']) this[fx + 'Init'](el);
+      }
+      el.style.setProperty('--H', el.clientHeight + 'px');
+      if (this[fx + 'Size']) this[fx + 'Size'](el);
+      fn();
+    });
+  }
+  clamp(v) { return Math.max(0, Math.min(1, v)); }
+  // shared: highlight rail items / counters
+  mark(root, sel, i) {
+    Array.prototype.forEach.call(root.querySelectorAll(sel), (n) => n.setAttribute('data-on', String(+n.getAttribute('data-i') === i)));
+  }
+  count(root, i, n) {
+    Array.prototype.forEach.call(root.querySelectorAll('[data-count]'), (c) => { c.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(n).padStart(2, '0'); });
+  }
+
+  interviewInit(el) {
+    Array.prototype.forEach.call(el.querySelectorAll('a[data-go]'), (a) => a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const s = el.querySelectorAll('.qa')[+a.getAttribute('data-go')];
+      const toc = el.querySelector('.toc');
+      if (s) el.scrollTo({ top: s.getBoundingClientRect().top - el.getBoundingClientRect().top + el.scrollTop - (toc ? toc.offsetHeight + 12 : 0), behavior: 'smooth' });
+    }));
+  }
+  interview(el) {
+    const vh = el.clientHeight;
+    const top0 = el.getBoundingClientRect().top;
+    let act = 0;
+    Array.prototype.forEach.call(el.querySelectorAll('.qa'), (q, i) => {
+      const y = q.getBoundingClientRect().top - top0;
+      if (y < vh * 0.85) q.setAttribute('data-on', 'true');
+      if (y < vh * 0.4) act = i;
+    });
+    if (el.scrollTop + vh >= el.scrollHeight - 2) act = el.querySelectorAll('.qa').length - 1;
+    this.mark(el, '.toc [data-i]', act);
+    const a = el.querySelector('.toc [data-on="true"]');
+    const toc = el.querySelector('.toc');
+    if (a && toc) toc.scrollTo({ left: a.offsetLeft - 14, behavior: 'smooth' });
+  }
+
+  renderVals() {
+
+    const T = {
+      dark: { bg: '#10142A', tile: '#181E3B', line: '#2A3360', tileLine: '#2A3360', ink: '#EDEFF7', ink2: '#B4BAD2', mute: '#8E96B5', accent: '#C6F432', deco: '#C6F432', onAccent: '#10142A' },
+      light: { bg: '#F3F5F9', tile: '#FFFFFF', line: '#E1E5EE', tileLine: '#BFCBF4', ink: '#10142A', ink2: '#454B66', mute: '#5B6280', accent: '#2347E8', deco: '#FFD23F', onAccent: '#FFFFFF' }
+    };
+    const s = this.state;
+    return {
+      t: T[s.theme],
+      darkCls: s.theme === 'dark' ? 'sb on' : 'sb',
+      lightCls: s.theme === 'light' ? 'sb on' : 'sb',
+      toDark: () => this.setState({ theme: 'dark' }),
+      toLight: () => this.setState({ theme: 'light' })
+    };
+  }
+}
+
+</script>
+</body>
+</html>
