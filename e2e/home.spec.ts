@@ -1,15 +1,29 @@
 import { expect, test } from "./fixtures";
 
-test("sends the CSS inside the document, so a first visit has no render-blocking request", async ({ page }) => {
+test("preloads one font and leaves the first screen's bandwidth to the photo", async ({ page }) => {
   await page.goto("/en");
 
-  await expect(page.locator('head link[rel="stylesheet"]')).toHaveCount(0);
+  await expect(page.locator('head link[rel="preload"][as="font"]')).toHaveCount(1);
+});
 
-  const inlined = await page
-    .locator("head style")
-    .evaluateAll((styles) => styles.some((style) => style.textContent?.includes(".reveal")));
+test("sends the CSS as a file, which the browser caches between pages", async ({ page }) => {
+  await page.goto("/en");
 
-  expect(inlined).toBe(true);
+  await expect(page.locator('head link[rel="stylesheet"]')).not.toHaveCount(0);
+});
+
+test("keeps Cyrillic glyphs available on demand, without a preload", async ({ page }) => {
+  await page.goto("/ru");
+
+  // Asks for a glyph directly: the Cyrillic on the page is content, which the owner replaces.
+  const faces = await page.evaluate(async () => {
+    const family = getComputedStyle(document.body).fontFamily;
+    const loaded = await document.fonts.load(`16px ${family}`, "Ж");
+
+    return loaded.map((font) => ({ family: font.family, range: font.unicodeRange }));
+  });
+
+  expect(faces.filter((face) => face.family.startsWith("Geist") && face.range.includes("U+400-45F"))).toHaveLength(1);
 });
 
 // Smoke test: the home page renders content that comes from the database.
