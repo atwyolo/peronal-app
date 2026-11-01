@@ -65,7 +65,7 @@ Verify: numbers recorded in the spec and the journal. Depends on: Task 1.
 
 - **SEO:** a run on a port other than the build's reports 92, because the canonical URL carries the port. A build for that port gives 100, so this is a local artifact.
 - **LCP:** the mobile figure is Lighthouse's simulation. A hundred needs about 1850 ms there. With real throttling (`--throttling-method=devtools`) the page scored 99 with an LCP of 1636 ms, and Chromium on Slow 4G with a 4× slower CPU reports 760 ms. The local server speaks HTTP/1.1. Repeat Lighthouse on Vercel, where HTTP/2, the CDN and the image optimizer are real.
-- **`inlineCss` (owner's decision, 2026-11-01, to be checked on Vercel):** FCP went from 904 to 788 ms in every run. LCP stayed within the noise of the simulation: 2562, 2835 and 2987 ms against 2910 to 3136 ms without it. The HTML grew from 17.2 to 39.3 KB gzip, because the CSS is sent twice, in `<style>` and in the RSC payload. Turn it off if Vercel shows no clear gain.
+- **`inlineCss` was tried and turned off (owner's decision, 2026-11-01):** FCP went from 904 to 788 ms in every run, but LCP stayed within the noise of the simulation: 2562, 2835 and 2987 ms against 2910 to 3136 ms without it. The HTML grew from 17.2 to 39.3 KB gzip, because the CSS is sent twice, in `<style>` and in the RSC payload.
 - **Base UI out of the first load** was tried and rejected: 53 KB less JS, LCP 2910 ms, Performance 95, within the same noise.
 - **The photo is fully visible** at 890 ms, and at 1610 ms on Slow 4G with the slower CPU.
 - **Client JS on `/en`:** 225.6 KB gzip in 9 files: React DOM 70, Base UI with the icons about 87, the Next runtime about 45. The own code of every module in `shared/ui` is about 5 KB, 2.2% of it, so the adapters add no meaningful weight. Measured with esbuild instead of the interactive `next analyze`: an adapter's own code is exactly the difference, because the shadcn component under it ships either way.
@@ -73,12 +73,32 @@ Verify: numbers recorded in the spec and the journal. Depends on: Task 1.
 - **Hydration:** a deliberate mismatch in `RevealOnce` failed the suite with React error #418, so the fixture covers the new leaf.
 - **Accessibility:** axe in `en` and `ru`, both themes, 390 and 1280 px: no violations. The WhatsApp button moved from the official `#25d366` (1.98:1) to `#188842` with the same hue, 4.53:1 with white (owner's decision, 2026-11-01). Buttons and carousel arrows are at least 44 px; the handoff does not ask that of text links, the smallest being the desktop navigation at 23 px high with 28 px between items. The keyboard order is logical, and no ring is clipped or hidden under the sticky header.
 
+**On Vercel (2026-11-01, `/en`, commit `d4dee13`, HTTP/2 and Brotli, median of three runs from a local Chromium):**
+
+| | Mobile | Desktop |
+|---|---|---|
+| Performance | 96 | 100 |
+| Accessibility | 100 | 100 |
+| Best practices | 100 | 100 |
+| SEO | 100 | 100 |
+| FCP | 1012 ms | 301 ms |
+| LCP, simulated | 2618 ms | 527 ms |
+| TBT | 20 ms | 0 ms |
+| CLS | 0 | 0 |
+
+- Runs differ by under 40 ms in LCP, far less than on the local server, so one deployment can be compared with another.
+- `/ru` gives 97; `/` gives 96 and adds a 307 redirect to the locale.
+- With real throttling mobile is 99 with an LCP of 2143 ms. The photo waits behind the fonts: 18 KB take 1453 ms, because three preloaded fonts of 67 KB share the connection at the same High priority.
+- Without throttling Chromium reports an LCP of 264 to 332 ms. Lighthouse's own run records its first paint at 1316 ms, which is an artifact of that run: the file arrives at 285 ms.
+
+**After these numbers (owner's decision, 2026-11-01):** only the Latin file of Geist is preloaded. `subsets: ["latin"]` drops the Cyrillic file from the preloads, 15 KB, and `preload: false` drops Geist Mono, 23 KB, so the photo no longer shares the connection with them. Other glyphs still load on demand through `unicode-range`, and fonts use `font-display: swap`. `inlineCss` went off in the same step, so the next deployment measures both together.
+
 **Fixed by this task:** one 3 px ring in the solid `ring` color on every link and button, where the site had three kinds, two of them weak; buttons keep an outline in forced colors mode, where the browser drops box shadows; the visible text is now part of the accessible name of the language button and the CV link; the photo is fetched with `fetchPriority="high"`. That raises its priority from Low to High and passes the Lighthouse check, but Lighthouse's LCP did not change (2985 and 3061 ms are noise).
 
 ## Checkpoint
 
 - [x] Definition of done from `CLAUDE.md` is green (2026-11-01: 124 unit, 237 e2e).
-- [ ] Lighthouse repeated on Vercel; `inlineCss` kept or turned off by the result.
+- [ ] Lighthouse repeated on Vercel after the font change.
 - [ ] Spec status changes from draft, and [[Roadmap]] is updated.
 
 ## Deferred (from the review of Task 1)
