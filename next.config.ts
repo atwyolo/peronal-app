@@ -7,6 +7,10 @@ const withNextIntl = createNextIntlPlugin("./src/shared/lib/i18n/request.ts");
 const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
+  experimental: {
+    // Twice as fast a first paint on a slow connection, see docs/decisions/ADR-0011 Inline CSS.md.
+    inlineCss: true,
+  },
   partialPrefetching: true,
   // Dev server only: the home subnet, to open the site on a phone whatever address the router hands out.
   allowedDevOrigins: ["192.168.1.*"],

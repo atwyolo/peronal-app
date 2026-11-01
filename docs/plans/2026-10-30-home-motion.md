@@ -65,7 +65,7 @@ Verify: numbers recorded in the spec and the journal. Depends on: Task 1.
 
 - **SEO:** a run on a port other than the build's reports 92, because the canonical URL carries the port. A build for that port gives 100, so this is a local artifact.
 - **LCP:** the mobile figure is Lighthouse's simulation. A hundred needs about 1850 ms there. With real throttling (`--throttling-method=devtools`) the page scored 99 with an LCP of 1636 ms, and Chromium on Slow 4G with a 4× slower CPU reports 760 ms. The local server speaks HTTP/1.1. Repeat Lighthouse on Vercel, where HTTP/2, the CDN and the image optimizer are real.
-- **`inlineCss` was tried and turned off (owner's decision, 2026-11-01):** FCP went from 904 to 788 ms in every run, but LCP stayed within the noise of the simulation: 2562, 2835 and 2987 ms against 2910 to 3136 ms without it. The HTML grew from 17.2 to 39.3 KB gzip, because the CSS is sent twice, in `<style>` and in the RSC payload.
+- **`inlineCss` locally:** FCP went from 904 to 788 ms in every run and LCP stayed within the noise of the simulation, while the HTML grew from 17.2 to 39.3 KB gzip, because the CSS is sent twice, in `<style>` and in the RSC payload. That looked like a bad trade and was turned off; Vercel showed otherwise, see below.
 - **Base UI out of the first load** was tried and rejected: 53 KB less JS, LCP 2910 ms, Performance 95, within the same noise.
 - **The photo is fully visible** at 890 ms, and at 1610 ms on Slow 4G with the slower CPU.
 - **Client JS on `/en`:** 225.6 KB gzip in 9 files: React DOM 70, Base UI with the icons about 87, the Next runtime about 45. The own code of every module in `shared/ui` is about 5 KB, 2.2% of it, so the adapters add no meaningful weight. Measured with esbuild instead of the interactive `next analyze`: an adapter's own code is exactly the difference, because the shadcn component under it ships either way.
@@ -105,12 +105,16 @@ Verify: numbers recorded in the spec and the journal. Depends on: Task 1.
 
 `/ru` scattered between 96 and 100. The photo still takes 1247 ms under real throttling, next to the HTML of 31 KB and the one remaining preloaded font of 29 KB. A hundred on mobile needs a simulated LCP of about 1850 ms.
 
+**On Vercel with `inlineCss` off:** mobile 97, and with real throttling FCP doubled from 921 to 1862 ms, while LCP stayed at about 2070 ms and the document fell from 31 to 16 KB. `inlineCss` is back on (owner's decision, 2026-11-01), see [[ADR-0011 Inline CSS]].
+
+**Where this stops (owner's decision, 2026-11-01):** mobile 98, with an LCP of about 0.3 s without throttling. A hundred needs a simulated LCP of about 1850 ms. The last candidate, no preload for the Latin file of Geist, would swap the Hero title visibly on a slow connection, and the gap between 98 and 100 lives only in the simulation.
+
 **Fixed by this task:** one 3 px ring in the solid `ring` color on every link and button, where the site had three kinds, two of them weak; buttons keep an outline in forced colors mode, where the browser drops box shadows; the visible text is now part of the accessible name of the language button and the CV link; the photo is fetched with `fetchPriority="high"`. That raises its priority from Low to High and passes the Lighthouse check, but Lighthouse's LCP did not change (2985 and 3061 ms are noise).
 
 ## Checkpoint
 
 - [x] Definition of done from `CLAUDE.md` is green (2026-11-01: 124 unit, 237 e2e).
-- [ ] Lighthouse repeated on Vercel after the font change.
+- [x] Lighthouse repeated on Vercel after the font change.
 - [ ] Spec status changes from draft, and [[Roadmap]] is updated.
 
 ## Deferred (from the review of Task 1)
