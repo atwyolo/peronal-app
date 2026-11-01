@@ -91,7 +91,19 @@ Verify: numbers recorded in the spec and the journal. Depends on: Task 1.
 - With real throttling mobile is 99 with an LCP of 2143 ms. The photo waits behind the fonts: 18 KB take 1453 ms, because three preloaded fonts of 67 KB share the connection at the same High priority.
 - Without throttling Chromium reports an LCP of 264 to 332 ms. Lighthouse's own run records its first paint at 1316 ms, which is an artifact of that run: the file arrives at 285 ms.
 
-**After these numbers (owner's decision, 2026-11-01):** only the Latin file of Geist is preloaded. `subsets: ["latin"]` drops the Cyrillic file from the preloads, 15 KB, and `preload: false` drops Geist Mono, 23 KB, so the photo no longer shares the connection with them. Other glyphs still load on demand through `unicode-range`, and fonts use `font-display: swap`. `inlineCss` went off in the same step, so the next deployment measures both together.
+**After these numbers (owner's decision, 2026-11-01):** only the Latin file of Geist is preloaded. `subsets: ["latin"]` drops the Cyrillic file from the preloads, 15 KB, and `preload: false` drops Geist Mono, 23 KB, so the photo no longer shares the connection with them. Other glyphs still load on demand through `unicode-range`, and fonts use `font-display: swap`. `inlineCss` went off in the same step, but that change was lost in a merge, so the deployment below measures the fonts alone.
+
+**On Vercel after the font change (2026-11-01, `/en`, `inlineCss` still on, median of three):** mobile 98, 100, 100, 100; desktop 100 on all four. Against the deployment above:
+
+| Mobile | Before | After |
+|---|---|---|
+| Performance | 96 | 98 |
+| LCP, simulated | 2618 ms | 2444 ms |
+| LCP, real throttling | 2143 ms | 1978 ms |
+| Speed Index | 2792 ms | 1373 ms |
+| CLS | 0 | 0.0006 |
+
+`/ru` scattered between 96 and 100. The photo still takes 1247 ms under real throttling, next to the HTML of 31 KB and the one remaining preloaded font of 29 KB. A hundred on mobile needs a simulated LCP of about 1850 ms.
 
 **Fixed by this task:** one 3 px ring in the solid `ring` color on every link and button, where the site had three kinds, two of them weak; buttons keep an outline in forced colors mode, where the browser drops box shadows; the visible text is now part of the accessible name of the language button and the CV link; the photo is fetched with `fetchPriority="high"`. That raises its priority from Low to High and passes the Lighthouse check, but Lighthouse's LCP did not change (2985 and 3061 ms are noise).
 
