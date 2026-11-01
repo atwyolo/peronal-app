@@ -6,10 +6,16 @@ test("preloads one font and leaves the first screen's bandwidth to the photo", a
   await expect(page.locator('head link[rel="preload"][as="font"]')).toHaveCount(1);
 });
 
-test("sends the CSS as a file, which the browser caches between pages", async ({ page }) => {
+test("sends the CSS inside the document, so a first visit has no render-blocking request", async ({ page }) => {
   await page.goto("/en");
 
-  await expect(page.locator('head link[rel="stylesheet"]')).not.toHaveCount(0);
+  await expect(page.locator('head link[rel="stylesheet"]')).toHaveCount(0);
+
+  const inlined = await page
+    .locator("head style")
+    .evaluateAll((styles) => styles.some((style) => style.textContent?.includes(".reveal")));
+
+  expect(inlined).toBe(true);
 });
 
 test("keeps Cyrillic glyphs available on demand, without a preload", async ({ page }) => {

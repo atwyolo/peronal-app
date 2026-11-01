@@ -28,15 +28,16 @@ Map of content for the `personal` site project. Open this folder as an Obsidian 
 - [[ADR-0008 Theme]]
 - [[ADR-0009 Agent Workflow]] — superseded by ADR-0010
 - [[ADR-0010 Superpowers Workflow]]
+- [[ADR-0011 Inline CSS]]
 
 ## Specs
-- [[2026-10-29-home-page-design]] — home page architecture, draft; everything done except the iOS simulator check and the measurement on Vercel
+- [[2026-10-29-home-page-design]] — home page architecture, draft; everything done except the iOS simulator check
 
 ## Plans
 - [[2026-10-30-home-experience]] — Experience block, done; deferred items listed there
 - [[2026-10-30-home-skills]] — My top skills block, done, reviewed by the owner
 - [[2026-10-30-home-blog]] — Blog block with translated topics and clean-up, done, reviewed by the owner
-- [[2026-10-30-home-motion]] — accent wipe and local verification done; iOS simulator and Vercel left
+- [[2026-10-30-home-motion]] — accent wipe and verification done; iOS simulator left
 
 ## Journal
 - [[2026-10-26]] — kickoff: decisions, scaffold

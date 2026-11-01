@@ -21,6 +21,8 @@ The project runs with `cacheComponents: true`, so "ISR" means cached functions w
 
 `cacheComponents` also keeps a left route in the DOM: `<Activity>` hides it with `display: none`. Its state survives, and a CSS animation on it restarts when the visitor comes back, which is why [[2026-10-30-home-motion]] needs `RevealOnce`. A locator such as `h1` can match the hidden page too.
 
+`experimental.inlineCss` puts the CSS of a first load into a `<style>` tag instead of a render-blocking `<link>`, on every route. See [[ADR-0011 Inline CSS]].
+
 Notes to expand: streaming with `Suspense` on the blog list, `loading.tsx` / `error.tsx` per segment.
 
 Related: [[ADR-0001 Framework and Rendering]]

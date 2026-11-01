@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   experimental: {
-    // A first visit gets the CSS with the document, without a render-blocking request. Most visitors of a portfolio are new.
+    // Twice as fast a first paint on a slow connection, see docs/decisions/ADR-0011 Inline CSS.md.
     inlineCss: true,
   },
   partialPrefetching: true,
